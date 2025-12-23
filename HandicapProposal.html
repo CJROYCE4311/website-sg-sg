@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG@SG Handicap Proposal</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
+                <a href="index.html"
+                    class="text-xl font-bold tracking-tight text-gray-900 hover:text-green-700 transition">SG@SG </a>
+                <img src="Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
+            </div>
+
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="index.html" class="text-gray-500 hover:text-green-700 transition">Home</a>
+                <a href="AdminPortal.html" class="text-green-700 font-semibold transition">Admin Portal</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-6 py-12 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-8 md:p-12">
+
+            <!-- Title -->
+            <div class="mb-10 text-center">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
+                    SG@SG Tournament Handicap Audit
+                </h1>
+                <p class="text-xl text-green-700 font-medium">Proposed Methodology for Fairer Competition</p>
+            </div>
+
+            <!-- Content -->
+            <div class="prose prose-lg prose-green max-w-none text-gray-600">
+                <p class="lead text-lg">
+                    The SG@SG monthly golf tournament has grown remarkably from a small Saturday gathering to a popular
+                    event attracting over 40 players, with strong support from the club’s Director of Golf and Head Pro.
+                    The shotgun start format allows the field to finish together, followed by payouts and social time at
+                    Copper & Rye, fostering a vibrant community atmosphere.
+                </p>
+                <p>
+                    However, as participation has increased, concerns about handicap fairness have emerged—particularly
+                    around the honor-based self-reporting of scores into the GHIN system, which forms the basis of
+                    official USGA Handicap Indexes.
+                </p>
+                <div class="bg-green-50 border-l-4 border-green-500 p-6 my-8 rounded-r-lg">
+                    <p class="font-medium text-gray-900 m-0">
+                        To address perceived inequities while maintaining the spirit of the game, the admin team is
+                        exploring a tournament-specific handicap adjustment. The goal is to create a more level playing
+                        field for SG@SG events by deriving an “Implied Index” based solely on actual performance in our
+                        tournaments, rather than relying entirely on external GHIN postings.
+                    </p>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">Methodology Overview</h2>
+                <p>The proposed approach recalculates each player’s handicap using only their gross scores from SG@SG
+                    tournaments (limited to the last 13 months):</p>
+
+                <ol class="list-decimal pl-6 space-y-4 marker:text-green-600 marker:font-bold">
+                    <li>
+                        <strong>Identify Best Scores:</strong> For each player, identify their best (lowest) gross
+                        scores in the group’s events.
+                    </li>
+                    <li>
+                        <strong>Compute a “Tournament Implied Index” in two variants:</strong>
+                        <ul class="list-disc pl-6 mt-2 space-y-2 marker:text-gray-400">
+                            <li><span class="font-semibold text-gray-900">Best 3 Analysis:</span> Average the player’s 3
+                                lowest gross scores, then convert that average to a Handicap Index using the course’s
+                                standard rating and slope (mirroring the differential formula but based on tournament
+                                performance).</li>
+                            <li><span class="font-semibold text-gray-900">Best 6 Analysis:</span> Average the player’s 6
+                                lowest gross scores for the same calculation (used when players have sufficient rounds
+                                for a more stable sample).</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Compare Indices:</strong> Compare the Implied Index to the player’s current GHIN
+                        Handicap Index.
+                    </li>
+                    <li>
+                        <strong>Calculate Adjustment:</strong> Calculate a Suggested Adjustment = Implied Index –
+                        Current Index.
+                        <ul class="list-disc pl-6 mt-2 space-y-1 marker:text-gray-400">
+                            <li><span class="text-red-600 font-medium">Negative adjustments</span> indicate players
+                                performing significantly better in SG@SG events than their official index suggests
+                                (potential “tournament sharpening” or under-posting elsewhere).</li>
+                            <li><span class="text-green-600 font-medium">Positive or zero adjustments</span> indicate
+                                alignment or over-performance relative to their GHIN index.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">Interactive Dashboard</h2>
+                <p>This data is visualized in an interactive dashboard that displays:</p>
+                <ul class="list-disc pl-6 space-y-2 marker:text-green-600">
+                    <li>Total players and group average gross score</li>
+                    <li>Top 3 largest suggested adjustments</li>
+                    <li>A sortable, filterable table showing each player’s Implied Index, Current Index, Suggested
+                        Adjustment, average gross/net scores, rounds played, and notes (e.g., low round count warnings)
+                    </li>
+                </ul>
+                <p class="mt-4">
+                    The dashboard allows toggling between Best 3 and Best 6 modes, searching players, and filtering by
+                    minimum rounds played, enabling transparent discussion within the group.
+                </p>
+
+                <div class="mt-12 pt-8 border-t border-gray-200 text-center">
+                    <p class="italic text-gray-500">
+                        This tournament-specific adjustment would only apply to SG@SG events and aims to reward
+                        consistent performance in our competitive setting while gently addressing discrepancies. It
+                        preserves the honor system but supplements it with empirical data from our own field, promoting
+                        fairness as the event continues to grow.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="mt-10 flex justify-center">
+                <a href="AdminPortal.html"
+                    class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+                    Back to Admin Portal
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
+            &copy; 2026 SG@SG. Authorized Personnel Only.
+        </div>
+    </footer>
+
+</body>
+
+</html>

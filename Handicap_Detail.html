@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handicap Top 5 Detail | SG@SG</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <span>SG@SG</span>
+                        <span class="text-emerald-600">Handicap Detail</span>
+                    </h1>
+                    <p class="text-slate-500 text-xs mt-0.5">Player Performance & History</p>
+                </div>
+            </div>
+
+            <nav class="flex gap-4">
+                <a href="AdminPortal.html"
+                    class="text-sm font-medium text-slate-500 hover:text-emerald-600 transition flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Admin
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-6 py-8">
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="font-bold text-lg text-slate-800">Top 5 Rounds Detail</h2>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="Search players..."
+                        class="pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 w-64">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr
+                            class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('player')">
+                                Player <i id="icon-player" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('date')">
+                                Date <i id="icon-date" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('gross')">
+                                Gross <i id="icon-gross" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('hcp')">
+                                HCP Used <i id="icon-hcp" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('net')">
+                                Net <i id="icon-net" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('diff')">
+                                Differential <i id="icon-diff" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('rounds')">
+                                Rounds Avail <i id="icon-rounds" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('notes')">
+                                Notes <i id="icon-notes" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="text-sm text-slate-700 divide-y divide-slate-100">
+                        <!-- Rows will be populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 text-xs text-slate-400 text-center">
+                Showing all records based on provided metrics.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
+            &copy; 2026 SG@SG. Member Driven.
+        </div>
+    </footer>
+
+    <!-- Raw Data Storage -->
+    <script id="rawData" type="text/plain">
+Player	Date	Gross Score	HCP Used	Net Score	Round Differential	Total_Rounds_Available	Notes
+Andrew Burnheimer	2025-11-15	83	-2	85	11.4	1	Only had 1 rounds
+Andy Meach	2025-12-20	88	6	82	15.9	8	
+Andy Meach	2025-11-15	82	7	75	10.5	8	
+Andy Meach	2025-10-04	85	6	79	13.2	8	
+Andy Meach	2025-05-10	83	4	79	11.4	8	
+Andy Meach	2025-04-05	81	5	76	9.6	8	
+Andy Meach	2025-02-08	78			6.8	8	
+Andy Meach	2024-12-14	84	4	80	12.3	8	
+Andy Meach	2024-11-23	81	3	78	9.6	8	
+Ben Magnone	2025-12-20	78	10	68	6.8	10	
+Ben Magnone	2025-11-15	79	10	69	7.7	10	
+Ben Magnone	2025-09-13	84	9	75	12.3	10	
+Ben Magnone	2025-08-09	85	10	75	13.2	10	
+Ben Magnone	2025-07-19	86	11	75	14.1	10	
+Ben Magnone	2025-06-07	83	11	72	11.4	10	
+Ben Magnone	2025-05-10	89	12	77	16.9	10	
+Ben Magnone	2025-04-05	80	13	67	8.7	10	
+Ben Magnone	2025-03-08	89	13	76	16.9	10	
+Ben Magnone	2024-12-14	85	13	72	13.2	10	
+Brad Ackley	2025-10-04	92	14	78	19.6	1	Only had 1 rounds
+Brian Howell	2025-10-04	81	6	75	9.6	2	Only had 2 rounds
+Brian Howell	2025-09-13	82	6	76	10.5	2	Only had 2 rounds
+Bud Scott	2025-12-20	92	9	83	19.6	2	Only had 2 rounds
+Bud Scott	2025-11-15	83	10	73	11.4	2	Only had 2 rounds
+Buddy Goldstone	2025-04-05	94	13	81	21.4	3	
+Buddy Goldstone	2025-03-08	84	13	71	12.3	3	
+Buddy Goldstone	2025-02-08	96	13	83	23.2	3	
+Chris Beck	2025-12-20	90	13	77	17.8	11	
+Chris Beck	2025-11-15	93	13	80	20.5	11	
+Chris Beck	2025-10-04	82	15	67	10.5	11	
+Chris Beck	2025-09-13	89	14	75	16.9	11	
+Chris Beck	2025-06-07	88	13	75	15.9	11	
+Chris Beck	2025-05-10	88	14	74	15.9	11	
+Chris Beck	2025-04-05	87	14	73	15	11	
+Chris Beck	2025-03-08	94	15	79	21.4	11	
+Chris Beck	2025-02-08	90	15	75	17.8	11	
+Chris Beck	2024-12-14	88	14	74	15.9	11	
+Chris Beck	2024-11-23	86	14	72	14.1	11	
+Chris Husong	2025-08-09	86	8	78	14.1	6	
+Chris Husong	2025-05-10	89	10	79	16.9	6	
+Chris Husong	2025-04-05	85	10	75	13.2	6	
+Chris Husong	2025-02-08	86			14.1	6	
+Chris Husong	2024-12-14	88	12	76	15.9	6	
+Chris Husong	2024-11-23	81	13	68	9.6	6	
+Chris Ryan	2025-11-15	87	13	74	15	6	
+Chris Ryan	2025-09-13	94	13	81	21.4	6	
+Chris Ryan	2025-08-09	89	14	75	16.9	6	
+Chris Ryan	2025-07-19	95	14	81	22.3	6	
+Chris Ryan	2025-03-08	94	18	76	21.4	6	
+Chris Ryan	2024-12-14	95	18	77	22.3	6	
+Christopher Royce	2025-12-20	85	14	71	13.2	12	
+Christopher Royce	2025-11-15	88	11	77	15.9	12	
+Christopher Royce	2025-09-13	87	16	71	15	12	
+Christopher Royce	2025-08-09	96	15	81	23.2	12	
+Christopher Royce	2025-07-19	97	14	83	24.1	12	
+Christopher Royce	2025-06-07	88	14	74	15.9	12	
+Christopher Royce	2025-05-10	98	14	84	25.1	12	
+Christopher Royce	2025-04-05	91	13	78	18.7	12	
+Christopher Royce	2025-03-08	90	13	77	17.8	12	
+Christopher Royce	2025-02-08	90	13	77	17.8	12	
+Christopher Royce	2024-12-14	96	19	77	23.2	12	
+Christopher Royce	2024-11-23	98	18	80	25.1	12	
+Clark Koch	2025-12-20	80	8	72	8.7	9	
+Clark Koch	2025-11-15	82	8	74	10.5	9	
+Clark Koch	2025-09-13	83	6	77	11.4	9	
+Clark Koch	2025-08-09	86	5	81	14.1	9	
+Clark Koch	2025-07-19	83	5	78	11.4	9	
+Clark Koch	2025-06-07	78	6	72	6.8	9	
+Clark Koch	2025-04-05	78	8	70	6.8	9	
+Clark Koch	2025-03-08	83	8	75	11.4	9	
+Clark Koch	2024-12-14	84	7	77	12.3	9	
+Conrad Copeland	2025-09-13	91	11	80	18.7	1	Only had 1 rounds
+Dan Denham	2025-12-20	81	6	75	9.6	3	
+Dan Denham	2025-11-15	82	4	78	10.5	3	
+Dan Denham	2025-07-19	76	3	73	5	3	
+Dana Beckley	2025-12-20	96	6	90	23.2	2	Only had 2 rounds
+Dana Beckley	2025-11-15	84	6	78	12.3	2	Only had 2 rounds
+Darrin Harn	2025-02-08	77	-2	79	5.9	1	Only had 1 rounds
+David Edwards	2025-03-08	81	8	73	9.6	2	Only had 2 rounds
+David Edwards	2024-12-14	82	6	76	10.5	2	Only had 2 rounds
+David Pearson	2025-12-20	83	9	74	11.4	1	Only had 1 rounds
+Dean Fisk	2025-08-09	88	7	81	15.9	3	
+Dean Fisk	2025-06-07	86	8	78	14.1	3	
+Dean Fisk	2025-04-05	83	10	73	11.4	3	
+Derek Becko	2025-12-20	79	2	77	7.7	9	
+Derek Becko	2025-10-04	78	3	75	6.8	9	
+Derek Becko	2025-09-13	77	2	75	5.9	9	
+Derek Becko	2025-07-19	75	3	72	4.1	9	
+Derek Becko	2025-06-07	77	3	74	5.9	9	
+Derek Becko	2025-04-05	83	5	78	11.4	9	
+Derek Becko	2025-03-08	81	5	76	9.6	9	
+Derek Becko	2024-12-14	84	4	80	12.3	9	
+Derek Becko	2024-11-23	82	4	78	10.5	9	
+Dusty Wasmund	2025-12-20	82	7	75	10.5	4	
+Dusty Wasmund	2025-11-15	84	6	78	12.3	4	
+Dusty Wasmund	2025-10-04	81	7	74	9.6	4	
+Dusty Wasmund	2025-09-13	76	7	69	5	4	
+Eric Lamb	2025-05-10	96	25	71	23.2	1	Only had 1 rounds
+Eric Weiss	2025-12-20	76	0	76	5	10	
+Eric Weiss	2025-11-15	76	-1	77	5	10	
+Eric Weiss	2025-10-04	74	-1	75	3.2	10	
+Eric Weiss	2025-09-13	74	-1	75	3.2	10	
+Eric Weiss	2025-08-09	72	-2	74	1.4	10	
+Eric Weiss	2025-06-07	67	-1	68	-3.2	10	
+Eric Weiss	2025-03-08	73	-2	75	2.3	10	
+Eric Weiss	2025-02-08	72	-2	74	1.4	10	
+Eric Weiss	2024-12-14	72	0	72	1.4	10	
+Eric Weiss	2024-11-23	72	0	72	1.4	10	
+Frank Angeloro	2025-11-15	82	6	76	10.5	9	
+Frank Angeloro	2025-10-04	80	7	73	8.7	9	
+Frank Angeloro	2025-07-19	83	7	76	11.4	9	
+Frank Angeloro	2025-06-07	78	7	71	6.8	9	
+Frank Angeloro	2025-05-10	82	8	74	10.5	9	
+Frank Angeloro	2025-04-05	84	7	77	12.3	9	
+Frank Angeloro	2025-03-08	80	8	72	8.7	9	
+Frank Angeloro	2025-02-08	76	8	68	5	9	
+Frank Angeloro	2024-12-14	84	7	77	12.3	9	
+Glenn Brand	2025-12-20	96	11	85	23.2	1	Only had 1 rounds
+Greg Funk	2025-11-15	79	4	75	7.7	12	
+Greg Funk	2025-10-04	78	4	74	6.8	12	
+Greg Funk	2025-09-13	80	5	75	8.7	12	
+Greg Funk	2025-08-09	78	4	74	6.8	12	
+Greg Funk	2025-07-19	81	3	78	9.6	12	
+Greg Funk	2025-06-07	76	3	73	5	12	
+Greg Funk	2025-05-10	78	2	76	6.8	12	
+Greg Funk	2025-04-05	79	1	78	7.7	12	
+Greg Funk	2025-03-08	74	2	72	3.2	12	
+Greg Funk	2025-02-08	72	2	70	1.4	12	
+Greg Funk	2024-12-14	79	2	77	7.7	12	
+Greg Funk	2024-11-23	76	4	72	5	12	
+Hans Anderson	2025-09-13	75	-1	76	4.1	3	
+Hans Anderson	2025-08-09	79	-1	80	7.7	3	
+Hans Anderson	2025-04-05	67	-2	69	-3.2	3	
+James Feutz	2025-02-08	70			-0.5	2	Only had 2 rounds
+James Feutz	2024-12-14	74	-2	76	3.2	2	Only had 2 rounds
+Jamey Davis	2025-11-15	85	13	72	13.2	3	
+Jamey Davis	2025-10-04	82	14	68	10.5	3	
+Jamey Davis	2025-09-13	89	14	75	16.9	3	
+Jared Strathe	2025-11-15	69	-6	75	-1.4	3	
+Jared Strathe	2025-02-08	72			1.4	3	
+Jared Strathe	2024-12-14	67	-5	72	-3.2	3	
+Jeff Avery	2025-11-15	88	11	77	15.9	3	
+Jeff Avery	2025-09-13	80	12	68	8.7	3	
+Jeff Avery	2025-05-10	92	10	82	19.6	3	
+Jeff Cloepfil	2025-12-20	87	12	75	15	7	
+Jeff Cloepfil	2025-11-15	87	10	77	15	7	
+Jeff Cloepfil	2025-10-04	82	10	72	10.5	7	
+Jeff Cloepfil	2025-09-13	83	9	74	11.4	7	
+Jeff Cloepfil	2025-08-09	83	9	74	11.4	7	
+Jeff Cloepfil	2025-07-19	85	9	76	13.2	7	
+Jeff Cloepfil	2025-06-07	84	9	75	12.3	7	
+Jeff De Laveaga	2025-12-20	70	-1	71	-0.5	3	
+Jeff De Laveaga	2025-11-15	71	-2	73	0.5	3	
+Jeff De Laveaga	2025-09-13	69	-1	70	-1.4	3	
+Jim Brown	2024-12-14	78	5	73	6.8	1	Only had 1 rounds
+Jim Restivo	2025-12-20	89	12	77	16.6	6	
+Jim Restivo	2025-10-04	87	12	75	15	6	
+Jim Restivo	2025-08-09	88	12	76	15.9	6	
+Jim Restivo	2025-04-05	92	14	78	19.6	6	
+Jim Restivo	2025-03-08	86	14	72	14.1	6	
+Jim Restivo	2025-02-08	90	14	76	17.8	6	
+Joe Sepessy	2025-12-20	79	5	74	7.7	6	
+Joe Sepessy	2025-11-15	82	3	79	10.5	6	
+Joe Sepessy	2025-10-04	81	3	78	9.6	6	
+Joe Sepessy	2025-09-13	73	4	69	2.3	6	
+Joe Sepessy	2025-08-09	77	4	73	5.9	6	
+Joe Sepessy	2025-07-19	74	4	70	3.2	6	
+Jon Vrolyks	2025-12-20	88	5	83	15.9	7	
+Jon Vrolyks	2025-11-15	80	5	75	8.7	7	
+Jon Vrolyks	2025-10-04	82	5	77	10.5	7	
+Jon Vrolyks	2025-09-13	85	4	81	13.2	7	
+Jon Vrolyks	2025-06-07	78	4	74	6.8	7	
+Jon Vrolyks	2025-04-05	82	4	78	10.5	7	
+Jon Vrolyks	2024-11-23	81	3	78	9.6	7	
+Justin Deuker	2025-12-20	79	2	77	7.7	7	
+Justin Deuker	2025-08-09	79	1	78	7.7	7	
+Justin Deuker	2025-04-05	80	4	76	8.7	7	
+Justin Deuker	2025-03-08	75	4	71	4.1	7	
+Justin Deuker	2025-02-08	77	4	73	5.9	7	
+Justin Deuker	2024-12-14	81	5	76	9.6	7	
+Justin Deuker	2024-11-23	79	3	76	7.7	7	
+Kevin Barber	2025-12-20	84	15	69	12.3	8	
+Kevin Barber	2025-11-15	89	18	71	16.9	8	
+Kevin Barber	2025-09-13	91	13	78	18.7	8	
+Kevin Barber	2025-07-19	92	16	76	19.6	8	
+Kevin Barber	2025-06-07	83	16	67	11.4	8	
+Kevin Barber	2025-04-05	91	18	73	18.7	8	
+Kevin Barber	2024-12-14	89	14	75	16.9	8	
+Kevin Barber	2024-11-23	86	17	69	14.1	8	
+Kevin Mueller	2025-05-10	89	9	80	16.9	1	Only had 1 rounds
+Kiernan Mattson	2025-12-20	79	0	79	7.7	7	
+Kiernan Mattson	2025-09-13	72	-2	74	1.4	7	
+Kiernan Mattson	2025-06-07	82	-1	83	10.5	7	
+Kiernan Mattson	2025-05-10	80	1	79	8.7	7	
+Kiernan Mattson	2025-04-05	76	0	76	5	7	
+Kiernan Mattson	2025-02-08	71			0.5	7	
+Kiernan Mattson	2024-12-14	69	2	67	-1.4	7	
+Korey Jerome	2025-12-20	97	9	88	24.1	9	
+Korey Jerome	2025-11-15	81	7	74	9.6	9	
+Korey Jerome	2025-10-04	97	6	91	24.1	9	
+Korey Jerome	2025-09-13	81	6	75	9.6	9	
+Korey Jerome	2025-08-09	81	6	75	9.6	9	
+Korey Jerome	2025-07-19	81	8	73	9.6	9	
+Korey Jerome	2025-06-07	78	9	69	6.8	9	
+Korey Jerome	2025-05-10	87	10	77	15	9	
+Korey Jerome	2025-04-05	89	10	79	16.9	9	
+Larry Caplan	2025-11-15	93	16	77	20.5	5	
+Larry Caplan	2025-10-04	92	15	77	19.6	5	
+Larry Caplan	2025-09-13	101	14	87	27.8	5	
+Larry Caplan	2025-08-09	100	15	85	26.9	5	
+Larry Caplan	2025-07-19	83	16	67	11.4	5	
+Mark Albedyll	2025-12-20	100	15	85	26.9	5	
+Mark Albedyll	2025-09-13	88	16	72	15.9	5	
+Mark Albedyll	2025-08-09	91	17	74	18.7	5	
+Mark Albedyll	2025-07-19	93	17	76	20.5	5	
+Mark Albedyll	2025-06-07	92	16	76	19.6	5	
+Mark James	2025-10-04	93	12	81	20.5	3	
+Mark James	2025-08-09	89	13	76	16.9	3	
+Mark James	2025-03-08	88	10	78	15.9	3	
+Mark Lewis	2025-12-20	88	10	78	15.9	7	
+Mark Lewis	2025-11-15	80	10	70	8.7	7	
+Mark Lewis	2025-09-13	86	11	75	14.1	7	
+Mark Lewis	2025-05-10	87	11	76	15	7	
+Mark Lewis	2025-04-05	88	11	77	15.9	7	
+Mark Lewis	2025-03-08	93	10	83	20.5	7	
+Mark Lewis	2024-12-14	81	11	70	9.6	7	
+Matt Neimeier	2025-12-20	92	12	80	19.6	9	
+Matt Neimeier	2025-10-04	88	10	78	15.9	9	
+Matt Neimeier	2025-09-13	84	9	75	12.3	9	
+Matt Neimeier	2025-08-09	83	10	73	11.4	9	
+Matt Neimeier	2025-07-19	83	11	72	11.4	9	
+Matt Neimeier	2025-04-05	96	13	83	23.2	9	
+Matt Neimeier	2025-03-08	83	11	72	11.4	9	
+Matt Neimeier	2025-02-08	82	11	71	10.5	9	
+Matt Neimeier	2024-12-14	93	11	82	20.5	9	
+Michael Falagrady	2025-11-15	84	5	79	12.3	3	
+Michael Falagrady	2025-09-13	79	5	74	7.7	3	
+Michael Falagrady	2025-08-09	81	6	75	9.6	3	
+Mike Muller	2025-12-20	89	6	83	16.9	10	
+Mike Muller	2025-11-15	84	7	77	12.3	10	
+Mike Muller	2025-10-04	84	7	77	12.3	10	
+Mike Muller	2025-09-13	90	5	85	17.8	10	
+Mike Muller	2025-08-09	82	6	76	10.5	10	
+Mike Muller	2025-06-07	77	7	70	5.9	10	
+Mike Muller	2025-04-05	80	6	74	8.7	10	
+Mike Muller	2025-03-08	82	5	77	10.5	10	
+Mike Muller	2025-02-08	77	5	72	5.9	10	
+Mike Muller	2024-11-23	75	5	70	4.1	10	
+Mike Wilkins	2024-11-23	86	10	76	14.1	1	Only had 1 rounds
+Nate Adams	2025-11-15	65	-9	74	-5	1	Only had 1 rounds
+Neil Harris	2025-12-20	73	-3	76	2.3	12	
+Neil Harris	2025-11-15	69	-4	73	-1.4	12	
+Neil Harris	2025-10-04	69	-4	73	-1.4	12	
+Neil Harris	2025-08-09	75	-4	79	4.1	12	
+Neil Harris	2025-07-19	69	-4	73	-1.4	12	
+Neil Harris	2025-06-07	68	-2	70	-2.3	12	
+Neil Harris	2025-05-10	75	-3	78	4.1	12	
+Neil Harris	2025-04-05	71	-3	74	0.5	12	
+Neil Harris	2025-03-08	77	-3	80	5.9	12	
+Neil Harris	2025-02-08	68	-3	71	-2.3	12	
+Neil Harris	2024-12-14	70	-3	73	-0.5	12	
+Neil Harris	2024-11-23	68	-3	71	-2.3	12	
+Pat Feutz	2025-10-04	77	5	72	5.9	1	Only had 1 rounds
+Patrick Schueppert	2025-12-20	102	17	85	28.7	12	
+Patrick Schueppert	2025-11-15	97	17	80	24.1	12	
+Patrick Schueppert	2025-10-04	90	17	73	17.8	12	
+Patrick Schueppert	2025-09-13	94	16	78	21.4	12	
+Patrick Schueppert	2025-08-09	97	17	80	24.1	12	
+Patrick Schueppert	2025-06-07	95	16	79	22.3	12	
+Patrick Schueppert	2025-05-10	93	15	78	20.5	12	
+Patrick Schueppert	2025-04-05	97	14	83	24.1	12	
+Patrick Schueppert	2025-03-08	94	14	80	21.4	12	
+Patrick Schueppert	2025-02-08	93	14	79	20.5	12	
+Patrick Schueppert	2024-12-14	90	14	76	17.8	12	
+Patrick Schueppert	2024-11-23	88	13	75	15.9	12	
+Paul Benga	2025-12-20	80	3	77	8.7	13	
+Paul Benga	2025-11-15	73	4	69	2.3	13	
+Paul Benga	2025-10-04	76	4	72	5	13	
+Paul Benga	2025-09-13	76	4	72	5	13	
+Paul Benga	2025-08-09	84	3	81	12.3	13	
+Paul Benga	2025-07-19	77	3	74	5.9	13	
+Paul Benga	2025-06-07	80	3	77	8.7	13	
+Paul Benga	2025-05-10	76	3	73	5	13	
+Paul Benga	2025-04-05	82	4	78	10.5	13	
+Paul Benga	2025-03-08	80	4	76	8.7	13	
+Paul Benga	2025-02-08	82	4	78	10.5	13	
+Paul Benga	2024-12-14	79	3	76	7.7	13	
+Paul Benga	2024-11-23	78	2	76	6.8	13	
+Rich Fagan	2025-08-09	98	12	86	25.1	5	
+Rich Fagan	2025-07-19	88	15	73	15.9	5	
+Rich Fagan	2025-05-10	94	15	79	21.4	5	
+Rich Fagan	2025-04-05	88	14	74	15.9	5	
+Rich Fagan	2024-11-23	86	13	73	14.1	5	
+Rich McKeon	2025-12-20	86	11	75	14.1	3	
+Rich McKeon	2025-11-15	81	9	72	9.6	3	
+Rich McKeon	2025-02-08	91			18.7	3	
+Richard Lederman	2025-11-15	85	13	72	13.2	7	
+Richard Lederman	2025-06-07	91	13	78	18.7	7	
+Richard Lederman	2025-05-10	93	13	80	20.5	7	
+Richard Lederman	2025-04-05	85	10	75	13.2	7	
+Richard Lederman	2025-02-08	88			15.9	7	
+Richard Lederman	2024-12-14	89	12	77	16.9	7	
+Richard Lederman	2024-11-23	88	12	76	15.9	7	
+Rick Deloney	2025-11-15	89	6	83	16.9	7	
+Rick Deloney	2025-07-19	89	6	83	16.9	7	
+Rick Deloney	2025-06-07	82	5	77	10.5	7	
+Rick Deloney	2025-04-05	78	7	71	6.8	7	
+Rick Deloney	2025-03-08	81	7	74	9.6	7	
+Rick Deloney	2025-02-08	85	7	78	13.2	7	
+Rick Deloney	2024-12-14	87	6	81	15	7	
+Rick Meewes	2025-12-20	77	6	71	5.9	3	
+Rick Meewes	2025-11-15	80	3	77	8.7	3	
+Rick Meewes	2025-05-10	83	6	77	11.4	3	
+Rob Oliver	2025-12-20	90	18	72	17.8	6	
+Rob Oliver	2025-10-04	94	17	77	21.4	6	
+Rob Oliver	2025-07-19	93	17	76	20.5	6	
+Rob Oliver	2025-03-08	86	17	69	14.1	6	
+Rob Oliver	2025-02-08	96	17	79	23.2	6	
+Rob Oliver	2024-11-23	89	16	73	16.9	6	
+Robert Hill	2025-11-15	94	18	76	21.4	8	
+Robert Hill	2025-08-09	104	19	85	30.5	8	
+Robert Hill	2025-05-10	96	19	77	23.2	8	
+Robert Hill	2025-04-05	101	19	82	27.8	8	
+Robert Hill	2025-03-08	100	19	81	26.9	8	
+Robert Hill	2025-02-08	94	19	75	21.4	8	
+Robert Hill	2024-12-14	94	19	75	21.4	8	
+Robert Hill	2024-11-23	95	20	75	22.3	8	
+Ron Amstutz	2025-12-20	91	12	79	18.7	6	
+Ron Amstutz	2025-10-04	90	10	80	17.8	6	
+Ron Amstutz	2025-06-07	83	10	73	11.4	6	
+Ron Amstutz	2025-05-10	84	10	74	12.3	6	
+Ron Amstutz	2025-04-05	85	10	75	13.2	6	
+Ron Amstutz	2025-03-08	81	11	70	9.6	6	
+Ron Marino	2025-12-20	79	6	73	7.7	7	
+Ron Marino	2025-11-15	80	7	73	8.7	7	
+Ron Marino	2025-10-04	85	6	79	13.2	7	
+Ron Marino	2025-05-10	83	7	76	11.4	7	
+Ron Marino	2025-02-08	78			6.8	7	
+Ron Marino	2024-12-14	82	7	75	10.5	7	
+Ron Marino	2024-11-23	79	6	73	7.7	7	
+Scott Benton	2025-12-20	88	12	76	15.9	8	
+Scott Benton	2025-11-15	90	11	79	17.8	8	
+Scott Benton	2025-10-04	83	11	72	11.4	8	
+Scott Benton	2025-09-13	94	12	82	21.4	8	
+Scott Benton	2025-08-09	87	11	76	15	8	
+Scott Benton	2025-07-19	90	10	80	17.8	8	
+Scott Benton	2024-12-14	87	9	78	15	8	
+Scott Benton	2024-11-23	79	10	69	7.7	8	
+Scott Bracken	2025-10-04	85	9	76	13.2	9	
+Scott Bracken	2025-08-09	84	9	75	12.3	9	
+Scott Bracken	2025-07-19	83	9	74	11.4	9	
+Scott Bracken	2025-06-07	84	9	75	12.3	9	
+Scott Bracken	2025-05-10	88	9	79	15.9	9	
+Scott Bracken	2025-04-05	80	9	71	8.7	9	
+Scott Bracken	2025-03-08	80	9	71	8.7	9	
+Scott Bracken	2024-12-14	83	7	76	11.4	9	
+Scott Bracken	2024-11-23	79	7	72	7.7	9	
+Scott Lucas	2025-10-04	81	11	70	9.6	5	
+Scott Lucas	2025-07-19	91	12	79	18.7	5	
+Scott Lucas	2025-06-07	86	11	75	14.1	5	
+Scott Lucas	2025-02-08	88			15.9	5	
+Scott Lucas	2024-12-14	82	10	72	10.5	5	
+Shane Bolosan	2025-12-20	86	7	79	14.1	13	
+Shane Bolosan	2025-11-15	80	7	73	8.7	13	
+Shane Bolosan	2025-10-04	81	7	74	9.6	13	
+Shane Bolosan	2025-09-13	75	8	67	4.1	13	
+Shane Bolosan	2025-08-09	83	10	73	11.4	13	
+Shane Bolosan	2025-07-19	91	10	81	18.7	13	
+Shane Bolosan	2025-06-07	86	10	76	14.1	13	
+Shane Bolosan	2025-05-10	94	10	84	21.4	13	
+Shane Bolosan	2025-04-05	81	10	71	9.6	13	
+Shane Bolosan	2025-03-08	87	11	76	15	13	
+Shane Bolosan	2025-02-08	88	11	77	15.9	13	
+Shane Bolosan	2024-12-14	82	10	72	10.5	13	
+Shane Bolosan	2024-11-23	80	12	68	8.7	13	
+Shawn Warner	2025-04-05	88	13	75	15.9	1	Only had 1 rounds
+Stephen Cherepy	2025-09-13	87	11	76	15	1	Only had 1 rounds
+Steve McCormick	2025-12-20	84	9	75	12.3	10	
+Steve McCormick	2025-11-15	84	10	74	12.3	10	
+Steve McCormick	2025-10-04	88	10	78	15.9	10	
+Steve McCormick	2025-09-13	91	11	80	18.7	10	
+Steve McCormick	2025-08-09	92	11	81	19.6	10	
+Steve McCormick	2025-06-07	85	8	77	13.2	10	
+Steve McCormick	2025-05-10	88	9	79	15.9	10	
+Steve McCormick	2025-04-05	83	8	75	11.4	10	
+Steve McCormick	2025-03-08	83	9	74	11.4	10	
+Steve McCormick	2025-02-08	78	9	69	6.8	10	
+Steve Rosenbluth	2025-12-20	84	8	76	12.3	5	
+Steve Rosenbluth	2025-11-15	88	6	82	15.9	5	
+Steve Rosenbluth	2025-04-05	84	8	76	12.3	5	
+Steve Rosenbluth	2025-03-08	85	8	77	13.2	5	
+Steve Rosenbluth	2025-02-08	90	8	82	17.8	5	
+Stewart Polakov	2025-11-15	74	4	70	3.2	1	Only had 1 rounds
+Thomas Earl	2025-04-05	83	4	79	11.4	2	Only had 2 rounds
+Thomas Earl	2025-03-08	83	5	78	11.4	2	Only had 2 rounds
+Todd Densley	2025-12-20	76	-2	78	5	7	
+Todd Densley	2025-11-15	71	-1	72	0.5	7	
+Todd Densley	2025-10-04	72	-1	73	1.4	7	
+Todd Densley	2025-06-07	72	-2	74	1.4	7	
+Todd Densley	2025-05-10	72	-1	73	1.4	7	
+Todd Densley	2025-04-05	73	-1	74	2.3	7	
+Todd Densley	2024-12-14	70	-2	72	-0.5	7	
+Tracy Copenhaver	2025-11-15	89	15	74	16.9	4	
+Tracy Copenhaver	2025-05-10	90	14	76	17.8	4	
+Tracy Copenhaver	2025-02-08	97			24.1	4	
+Tracy Copenhaver	2024-12-14	87	14	73	15	4	
+Travis Ingram	2025-12-20	79	6	73	7.7	9	
+Travis Ingram	2025-11-15	81	4	77	9.6	9	
+Travis Ingram	2025-09-13	79	5	74	7.7	9	
+Travis Ingram	2025-08-09	83	8	75	11.4	9	
+Travis Ingram	2025-06-07	81	7	74	9.6	9	
+Travis Ingram	2025-05-10	82	7	75	10.5	9	
+Travis Ingram	2025-04-05	81	6	75	9.6	9	
+Travis Ingram	2025-03-08	78	7	71	6.8	9	
+Travis Ingram	2025-02-08	78	7	71	6.8	9	
+Travis Jorgensen	2025-03-08	84	8	76	12.3	1	Only had 1 rounds
+Trent Dana	2025-11-15	100	16	84	26.9	6	
+Trent Dana	2025-07-19	98	14	84	25.1	6	
+Trent Dana	2025-06-07	85	14	71	13.2	6	
+Trent Dana	2025-04-05	87	16	71	15	6	
+Trent Dana	2025-03-08	95	17	78	22.3	6	
+Trent Dana	2025-02-08	92	17	75	19.6	6	
+Win Doolittle	2025-12-20	90	7	83	17.8	1	Only had 1 rounds
+Zach Coe	2025-05-10	75	0	75	4.1	4	
+Zach Coe	2025-04-05	76	0	76	5	4	
+Zach Coe	2025-02-08	72			1.4	4	
+Zach Coe	2024-11-23	69	0	69	-1.4	4	
+Zach Fleishman	2025-06-07	85	11	74	13.2	4	
+Zach Fleishman	2025-04-05	87	13	74	15	4	
+Zach Fleishman	2025-03-08	87	13	74	15	4	
+Zach Fleishman	2024-11-23	89	13	76	16.9	4	
+Zane Eisenbarth	2025-11-15	83	3	80	11.4	7	
+Zane Eisenbarth	2025-09-13	78	4	74	6.8	7	
+Zane Eisenbarth	2025-06-07	82	4	78	10.5	7	
+Zane Eisenbarth	2025-04-05	88	6	82	15.9	7	
+Zane Eisenbarth	2025-03-08	84	6	78	12.3	7	
+Zane Eisenbarth	2025-02-08	78	6	72	6.8	7	
+Zane Eisenbarth	2024-11-23	81	5	76	9.6	7	
+zach mattson	2025-04-05	79	5	74	7.7	2	Only had 2 rounds
+zach mattson	2024-12-14	89	8	81	16.9	2	Only had 2 rounds
+
+    </script>
+
+    <script>
+        let allData = [];
+        let currentSort = { column: null, direction: 'asc' };
+        let searchTerm = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawData = document.getElementById('rawData').textContent.trim();
+            const lines = rawData.split('\n');
+
+            // Skip header (i=1)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const cols = line.split(/\t/).map(c => c.trim());
+
+                // Parse row data
+                const row = {
+                    player: cols[0] || '',
+                    date: cols[1] || '',
+                    gross: parseNumber(cols[2]),
+                    hcp: parseNumber(cols[3]),
+                    net: parseNumber(cols[4]),
+                    diff: parseNumber(cols[5]),
+                    rounds: parseNumber(cols[6]),
+                    notes: cols[7] || '',
+                    // Keep original strings for display if needed, but we render from these values
+                    grossDisplay: cols[2] || '',
+                    hcpDisplay: cols[3] || '',
+                    netDisplay: cols[4] || '',
+                    diffDisplay: cols[5] || '',
+                    roundsDisplay: cols[6] || ''
+                };
+                allData.push(row);
+            }
+
+            renderTable();
+
+            // Search Filter
+            document.getElementById('searchInput').addEventListener('keyup', function (e) {
+                searchTerm = e.target.value.toLowerCase();
+                renderTable();
+            });
+        });
+
+        function parseNumber(val) {
+            if (!val) return -999999; // For sorting empty values to bottom/top
+            const num = parseFloat(val);
+            return isNaN(num) ? -999999 : num;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            // Filter
+            let displayData = allData.filter(row => {
+                if (!searchTerm) return true;
+                // Search mostly on player name, maybe date
+                return row.player.toLowerCase().includes(searchTerm);
+            });
+
+            // Sort
+            if (currentSort.column) {
+                displayData.sort((a, b) => {
+                    let valA = a[currentSort.column];
+                    let valB = b[currentSort.column];
+
+                    if (typeof valA === 'string') {
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            // Render
+            displayData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
+
+                tr.innerHTML = `
+                    <td class="p-4 font-medium text-slate-800">${row.player}</td>
+                    <td class="p-4 text-slate-600">${row.date}</td>
+                    <td class="p-4 text-center font-medium">${row.grossDisplay}</td>
+                    <td class="p-4 text-center text-slate-500">${row.hcpDisplay}</td>
+                    <td class="p-4 text-center font-bold text-emerald-700 bg-emerald-50 rounded-lg">${row.netDisplay}</td>
+                    <td class="p-4 text-center text-slate-600">${row.diffDisplay}</td>
+                    <td class="p-4 text-center text-slate-600">${row.roundsDisplay}</td>
+                    <td class="p-4 text-xs italic text-slate-400">${row.notes}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateIcons();
+        }
+
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            renderTable();
+        }
+
+        function updateIcons() {
+            // Reset all icons
+            const icons = document.querySelectorAll('[id^="icon-"]');
+            icons.forEach(icon => {
+                icon.className = "fa-solid fa-sort text-slate-300 ml-1";
+            });
+
+            // Set active icon
+            if (currentSort.column) {
+                const icon = document.getElementById(`icon-${currentSort.column}`);
+                if (icon) {
+                    icon.className = `fa-solid fa-sort-${currentSort.direction === 'asc' ? 'up' : 'down'} text-emerald-600 ml-1`;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

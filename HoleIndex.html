@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sterling Grove Handicap Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="SG-SG Map.png" alt="SG-SG Map" class="h-12 w-12 mr-4" onerror="this.style.display='none'">
+                <a href="index.html"
+                    class="text-2xl font-bold text-gray-800 hover:text-green-700 transition duration-300">SG@SG</a>
+                <img src="Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-12 w-12 ml-4"
+                    onerror="this.style.display='none'">
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="index.html" class="text-gray-600 hover:text-green-700 transition duration-300">Home</a>
+                <a href="index.html#events"
+                    class="text-gray-600 hover:text-green-700 transition duration-300">Events</a>
+                <a href="index.html#leaderboard"
+                    class="text-gray-600 hover:text-green-700 transition duration-300">Leaderboard</a>
+                <a href="index.html#contact"
+                    class="text-gray-600 hover:text-green-700 transition duration-300">Contact</a>
+            </nav>
+            <button class="md:hidden flex items-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 max-w-6xl">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Sterling Grove vs. SG@SG Handicap Index</h1>
+                <p class="text-gray-600">Side-by-side comparison of hole stroke index assignments for the SG@SG setup.
+                </p>
+                <p class="text-gray-600 mt-2">The dashed diagonal shows the Sterling Grove stroke index for each hole,
+                    while the colored dots plot SG@SG results—points above the line signal the hole is playing easier
+                    than the baseline, and points below indicate it’s playing tougher.</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 mb-8">
+            <div class="relative h-[600px] w-full">
+                <canvas id="handicapChart"></canvas>
+            </div>
+
+            <div id="calloutBox" class="mt-6 p-4 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 text-sm">
+            </div>
+
+            <div class="mt-6 p-6 bg-slate-50 rounded-lg border border-slate-100 text-sm text-slate-600">
+                <h3 class="font-bold text-slate-800 text-lg mb-3">Chart Analysis Guide</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="mb-2">
+                            This scatter plot compares the <strong>Stroke Index (Handicap Ranking)</strong> of each
+                            hole.
+                            The labels above the dots represent the <strong>Hole Number</strong>.
+                        </p>
+                        <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
+                            <li><strong>X-Axis:</strong> Standard Sterling Grove Ranking (1 = Hardest).</li>
+                            <li><strong>Y-Axis:</strong> SG@SG Tournament Ranking.</li>
+                            <li><strong>Diagonal Line:</strong> The "Line of Equality". Points on this line have not
+                                changed ranking.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="mb-2 font-semibold">How to read the data:</p>
+                        <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
+                            <li><span class="font-medium text-slate-900">Above the Line:</span> The hole's index number
+                                is higher in the SG@SG setup (e.g., Hole 2 moved from Index 15 to Index 18).</li>
+                            <li><span class="font-medium text-slate-900">Below the Line:</span> The hole's index number
+                                is lower in the SG@SG setup.</li>
+                            <li><span class="font-medium text-slate-900">Numbers:</span> The number displayed floating
+                                above each dot indicates which Hole it is.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
+                <h2 class="font-semibold text-slate-700">Source Data</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3">Hole #</th>
+                            <th class="px-6 py-3">Sterling Grove Index</th>
+                            <th class="px-6 py-3">SG@SG Index</th>
+                            <th class="px-6 py-3">Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody" class="divide-y divide-slate-200">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data parsed from your input
+        // Hole, Sterling Grove Index (X), SG@SG Index (Y)
+        const rawData = [
+            {
+                "hole": 8,
+                "x": 3,
+                "y": 1
+            },
+            {
+                "hole": 12,
+                "x": 2,
+                "y": 2
+            },
+            {
+                "hole": 5,
+                "x": 1,
+                "y": 3
+            },
+            {
+                "hole": 1,
+                "x": 5,
+                "y": 4
+            },
+            {
+                "hole": 18,
+                "x": 4,
+                "y": 5
+            },
+            {
+                "hole": 17,
+                "x": 8,
+                "y": 6
+            },
+            {
+                "hole": 4,
+                "x": 7,
+                "y": 7
+            },
+            {
+                "hole": 7,
+                "x": 9,
+                "y": 8
+            },
+            {
+                "hole": 13,
+                "x": 16,
+                "y": 9
+            },
+            {
+                "hole": 10,
+                "x": 12,
+                "y": 10
+            },
+            {
+                "hole": 3,
+                "x": 13,
+                "y": 11
+            },
+            {
+                "hole": 9,
+                "x": 11,
+                "y": 12
+            },
+            {
+                "hole": 15,
+                "x": 6,
+                "y": 13
+            },
+            {
+                "hole": 14,
+                "x": 10,
+                "y": 14
+            },
+            {
+                "hole": 2,
+                "x": 15,
+                "y": 15
+            },
+            {
+                "hole": 6,
+                "x": 17,
+                "y": 16
+            },
+            {
+                "hole": 11,
+                "x": 14,
+                "y": 17
+            },
+            {
+                "hole": 16,
+                "x": 18,
+                "y": 18
+            }
+        ];
+
+        // --- 0. Callouts for large deltas ---
+        const calloutBox = document.getElementById('calloutBox');
+        const calloutHoles = rawData
+            .map(item => ({ ...item, diff: item.y - item.x }))
+            .filter(item => Math.abs(item.diff) >= 4)
+            .sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+
+        if (calloutHoles.length === 0) {
+            calloutBox.textContent = 'No holes are shifting by 4 or more slots between the Sterling Grove and SG@SG indices.';
+        } else {
+            const listItems = calloutHoles.map(item => {
+                const sign = item.diff > 0 ? '+' : '';
+                const trendText = item.diff > 0 ? 'playing easier (moved higher in index)' : 'playing tougher (moved lower in index)';
+                return `<li class="mb-1"><span class="font-semibold">Hole ${item.hole}</span> — SG@SG ${item.y} vs Sterling ${item.x} (${sign}${item.diff}); ${trendText}</li>`;
+            }).join('');
+            calloutBox.innerHTML = `
+                <p class="font-semibold mb-2">Big Movers (±4 or more):</p>
+                <ul class="list-disc list-inside">${listItems}</ul>
+            `;
+        }
+
+        // --- 1. Populate Table ---
+        const tableBody = document.getElementById('dataTableBody');
+        rawData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-50";
+            const diff = row.y - row.x;
+            const diffColor = diff > 0 ? 'text-red-500' : (diff < 0 ? 'text-green-500' : 'text-slate-400');
+            const diffText = diff > 0 ? `+${diff}` : (diff === 0 ? '-' : diff);
+
+            tr.innerHTML = `
+                <td class="px-6 py-4 font-medium text-slate-900">${row.hole}</td>
+                <td class="px-6 py-4 text-slate-600">${row.x}</td>
+                <td class="px-6 py-4 text-slate-600">${row.y}</td>
+                <td class="px-6 py-4 font-bold ${diffColor}">${diffText}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+
+        // --- 2. Build Chart ---
+        const ctx = document.getElementById('handicapChart').getContext('2d');
+
+        // Transform data: One dataset per hole for coloring
+        const holeDatasets = rawData.map(item => {
+            const hue = ((item.hole - 1) * 20) % 360;
+            const color = `hsla(${hue}, 70%, 50%, 0.9)`;
+
+            return {
+                label: `Hole ${item.hole}`,
+                data: [item],
+                backgroundColor: color,
+                borderColor: '#fff',
+                borderWidth: 1,
+                pointRadius: 8,
+                pointHoverRadius: 12
+            };
+        });
+
+        // Add the reference line
+        holeDatasets.push({
+            label: '1:1 Reference Line',
+            data: [{ x: 0, y: 0 }, { x: 19, y: 19 }], // Line goes to 19 now
+            type: 'line',
+            borderColor: '#cbd5e1',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false,
+            showLine: true
+        });
+
+        // Custom plugin to draw hole numbers above dots
+        const holeLabelPlugin = {
+            id: 'holeLabelPlugin',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                chart.data.datasets.forEach((dataset, i) => {
+                    // Skip the reference line
+                    if (dataset.type === 'line') return;
+
+                    const meta = chart.getDatasetMeta(i);
+                    if (!meta.hidden) {
+                        meta.data.forEach((element, index) => {
+                            // Draw the hole number above the point
+                            const holeNum = dataset.data[index].hole;
+                            ctx.fillStyle = '#1e293b'; // Slate-800
+                            // Draw text 15 pixels above the dot
+                            ctx.fillText(holeNum, element.x, element.y - 15);
+                        });
+                    }
+                });
+                ctx.restore();
+            }
+        };
+
+        // Plugin to circle outliers (±4 or more) and add brief callouts
+        const highlightOutliersPlugin = {
+            id: 'highlightOutliersPlugin',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                calloutHoles.forEach(item => {
+                    const dsIndex = chart.data.datasets.findIndex(ds => ds.label === `Hole ${item.hole}`);
+                    if (dsIndex === -1) return;
+                    const meta = chart.getDatasetMeta(dsIndex);
+                    if (!meta || !meta.data || !meta.data[0]) return;
+
+                    const point = meta.data[0];
+                    const { x, y } = point.getProps(['x', 'y'], true);
+
+                    const circleColor = item.diff > 0 ? '#f97316' : '#10b981'; // amber for easier, green for tougher
+                    ctx.save();
+
+                    // Circle around the point
+                    ctx.strokeStyle = circleColor;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 22, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    // Text bubble
+                    const sign = item.diff > 0 ? '+' : '';
+                    const trend = item.diff > 0 ? 'playing easier' : 'playing tougher';
+                    const text = `Hole ${item.hole}: ${sign}${item.diff} (${trend})`;
+                    ctx.font = '12px "Inter", sans-serif';
+                    const padding = 6;
+                    const textWidth = ctx.measureText(text).width;
+                    const boxWidth = textWidth + padding * 2;
+                    const boxHeight = 26;
+                    const boxX = x + 18;
+                    const boxY = y - boxHeight - 6;
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.strokeStyle = circleColor;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 6);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, boxX + padding, boxY + boxHeight / 2);
+
+                    ctx.restore();
+                });
+            }
+        };
+
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: holeDatasets
+            },
+            plugins: [holeLabelPlugin, highlightOutliersPlugin], // Activate custom labels and outlier callouts
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 20, // Extra padding for labels at the top
+                        right: 20
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const pt = context.raw;
+                                if (!pt.hole) return null;
+                                return `Hole ${pt.hole}: Sterling ${pt.x} vs SG@SG ${pt.y}`;
+                            }
+                        },
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                    },
+                    legend: {
+                        display: false // REMOVED LEGEND
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Sterling Grove Handicap Index',
+                            font: { weight: 'bold' }
+                        },
+                        min: 0,
+                        max: 19, // INCREASED TO 19
+                        grid: {
+                            color: '#f1f5f9'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'SG@SG Handicap Index',
+                            font: { weight: 'bold' }
+                        },
+                        min: 0,
+                        max: 19, // INCREASED TO 19
+                        grid: {
+                            color: '#f1f5f9'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <footer id="contact" class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Sterling Grove Golf and Country Club</h3>
+                    <p class="text-gray-400">11440 North Greenwich Boulevard<br>Surprise, AZ 85388</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Quick Links</h3>
+                    <ul>
+                        <li class="mb-2"><a href="index.html" class="text-gray-400 hover:text-white">Dashboards Home</a>
+                        </li>
+                        <li class="mb-2"><a href="index.html#events" class="text-gray-400 hover:text-white">Events</a>
+                        </li>
+                        <li class="mb-2"><a href="index.html#leaderboard"
+                                class="text-gray-400 hover:text-white">Leaderboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Contact Us</h3>
+                    <p class="text-gray-400">Paul Benga: <a href="https://wa.me/14806202088" class="hover:text-white"
+                            target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+                    <p class="text-gray-400">Patrick Schueppert: <a href="https://wa.me/17024996923"
+                            class="hover:text-white" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+                    <p class="text-gray-400">Chris Royce: <a href="https://wa.me/17195104311" class="hover:text-white"
+                            target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>&copy; 2026 SG@SG. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

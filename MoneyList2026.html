@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG@SG Money List 2026</title>
+    <!-- Vite will handle this in development, but for direct linking we point to src -->
+    <!-- Mobile Menu Script (Inlined) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.querySelector('button.md\\:hidden');
+            const nav = document.querySelector('nav');
+
+            if (mobileMenuButton && nav) {
+                mobileMenuButton.addEventListener('click', () => {
+                    nav.classList.toggle('hidden');
+                    nav.classList.toggle('flex');
+                    nav.classList.toggle('flex-col');
+                    nav.classList.toggle('absolute');
+                    nav.classList.toggle('top-16');
+                    nav.classList.toggle('left-0');
+                    nav.classList.toggle('w-full');
+                    nav.classList.toggle('bg-white');
+                    nav.classList.toggle('p-4');
+                    nav.classList.toggle('shadow-lg');
+                    nav.classList.toggle('z-50');
+                });
+            }
+        });
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Keep page-specific styles if needed, but prefer utility classes */
+        .sortable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sortable::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            margin-top: -6px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            opacity: 0.5;
+        }
+
+        .sort-asc::after {
+            border-bottom: 6px solid #1f2937;
+        }
+
+        .sort-desc::after {
+            border-top: 6px solid #1f2937;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header Section (Duplicate for now, will be componentized later if needed) -->
+    <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
+                <a href="index.html" class="text-xl font-bold text-gray-900 hover:text-green-700 transition">SG@SG</a>
+                <img src="Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="index.html" class="text-gray-500 hover:text-green-700 transition">Home</a>
+                <a href="index.html#events" class="text-gray-500 hover:text-green-700 transition">Events</a>
+                <a href="index.html#leaderboard"
+                    class="text-gray-900 font-bold hover:text-green-700 transition">Leaderboard</a>
+                <a href="index.html#contact" class="text-gray-500 hover:text-green-700 transition">Contact</a>
+            </nav>
+            <button class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-6 py-12 min-h-screen">
+        <section id="money-list" class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <h2 class="text-3xl font-bold text-gray-900">Money List 2026</h2>
+
+                <!-- Search Input -->
+                <div class="relative w-full md:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" onkeyup="searchPlayer()" placeholder="Search player..."
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table id="moneyTable" class="min-w-full bg-white divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="sortable text-left py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="player" onclick="sortTable(0)">Player</th>
+                            <th class="sortable text-right py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="best_ball" onclick="sortTable(1)">Best Ball</th>
+                            <th class="sortable text-right py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="quota" onclick="sortTable(2)">Quota</th>
+                            <th class="sortable text-right py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="net_skins" onclick="sortTable(3)">Net Skins</th>
+                            <th class="sortable text-right py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="gross_skins" onclick="sortTable(4)">Gross Skins</th>
+                            <th class="sortable text-right py-4 px-6 font-semibold text-gray-600 text-xs uppercase tracking-wider"
+                                data-column="net_earnings" onclick="sortTable(5)">Net Medal</th>
+                            <th class="sortable text-right py-4 px-6 font-bold text-green-700 text-xs uppercase tracking-wider bg-gray-100"
+                                data-column="total_earnings" onclick="sortTable(6)">Total Earnings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-200">
+                        <!-- Table rows will be populated by JavaScript -->
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-gray-500">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contact" class="bg-gray-800 text-white mt-auto">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Sterling Grove Golf Club</h3>
+                    <p class="text-gray-400 text-sm">11440 North Greenwich Blvd<br>Surprise, AZ 85388</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
+                <p>&copy; 2026 SG@SG. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const csvData = `Name,Best_Ball_Earnings,Quota_Earnings,Net_Skins_Earnings,Gross_Skins_Earnings,Net_Earnings,Total Earnings
+Ron Marino,47.0,40.0,107.5,165.0,0.0,359.5
+Mark Lewis,47.0,0.0,107.5,0.0,180.0,334.5
+Rick Meewes,0.0,180.0,0.0,116.0,12.0,308.0
+Michael Falagrady,282.0,0.0,0.0,0.0,0.0,282.0
+Chris Ryan,282.0,0.0,0.0,0.0,0.0,282.0
+Kevin Barber,47.0,0.0,51.43,0.0,162.0,260.43
+Christopher Royce,0.0,180.0,51.43,0.0,12.0,243.43
+Paul Benga,47.0,0.0,0.0,0.0,180.0,227.0
+Derek Becko,0.0,180.0,0.0,0.0,0.0,180.0
+Rich McKeon,0.0,180.0,0.0,0.0,0.0,180.0
+Travis Ingram,0.0,0.0,51.43,116.0,0.0,167.43
+Andrew Burnheimer,0.0,0.0,0.0,165.0,0.0,165.0
+Ben Magnone,0.0,0.0,0.0,0.0,162.0,162.0
+Jeff Avery,47.0,0.0,107.5,0.0,0.0,154.5
+Dusty Wasmund,0.0,0.0,107.5,0.0,0.0,107.5
+Dan Denham,47.0,0.0,51.43,0.0,0.0,98.43
+Jeff De Laveaga,0.0,0.0,0.0,58.0,12.0,70.0
+Mark Albedyll,0.0,0.0,51.43,0.0,0.0,51.43
+Chris Beck,0.0,0.0,51.43,0.0,0.0,51.43
+Clark Koch,0.0,0.0,51.43,0.0,0.0,51.43
+Steve McCormick,47.0,0.0,0.0,0.0,0.0,47.0
+Frank Angeloro,47.0,0.0,0.0,0.0,0.0,47.0
+David Pearson,0.0,40.0,0.0,0.0,0.0,40.0
+Stewart Polakov,0.0,0.0,0.0,0.0,40.0,40.0
+Dana Beckley,0.0,0.0,0.0,0.0,0.0,0.0
+Andy Meach,0.0,0.0,0.0,0.0,0.0,0.0
+Justin Deuker,0.0,0.0,0.0,0.0,0.0,0.0
+Jon Vrolyks,0.0,0.0,0.0,0.0,0.0,0.0
+Joe Sepessy,0.0,0.0,0.0,0.0,0.0,0.0
+Jim Restivo,0.0,0.0,0.0,0.0,0.0,0.0
+Jeff Cloepfil,0.0,0.0,0.0,0.0,0.0,0.0
+Jared Strathe,0.0,0.0,0.0,0.0,0.0,0.0
+Greg Funk,0.0,0.0,0.0,0.0,0.0,0.0
+Jamey Davis,0.0,0.0,0.0,0.0,0.0,0.0
+Glenn Brand,0.0,0.0,0.0,0.0,0.0,0.0
+Eric Weiss,0.0,0.0,0.0,0.0,0.0,0.0
+Bud Scott,0.0,0.0,0.0,0.0,0.0,0.0
+Mike Muller,0.0,0.0,0.0,0.0,0.0,0.0
+Matt Neimeier,0.0,0.0,0.0,0.0,0.0,0.0
+Kiernan Mattson,0.0,0.0,0.0,0.0,0.0,0.0
+Larry Caplan,0.0,0.0,0.0,0.0,0.0,0.0
+Korey Jerome,0.0,0.0,0.0,0.0,0.0,0.0
+Rick Deloney,0.0,0.0,0.0,0.0,0.0,0.0
+Richard Lederman,0.0,0.0,0.0,0.0,0.0,0.0
+Neil Harris,0.0,0.0,0.0,0.0,0.0,0.0
+Patrick Schueppert,0.0,0.0,0.0,0.0,0.0,0.0
+Nate Adams,0.0,0.0,0.0,0.0,0.0,0.0
+Robert Hill,0.0,0.0,0.0,0.0,0.0,0.0
+Ron Amstutz,0.0,0.0,0.0,0.0,0.0,0.0
+Rob Oliver,0.0,0.0,0.0,0.0,0.0,0.0
+Shane Bolosan,0.0,0.0,0.0,0.0,0.0,0.0
+Scott Benton,0.0,0.0,0.0,0.0,0.0,0.0
+Todd Densley,0.0,0.0,0.0,0.0,0.0,0.0
+Steve Rosenbluth,0.0,0.0,0.0,0.0,0.0,0.0
+Tracy Copenhaver,0.0,0.0,0.0,0.0,0.0,0.0
+Trent Dana,0.0,0.0,0.0,0.0,0.0,0.0
+Win Doolittle,0.0,0.0,0.0,0.0,0.0,0.0
+Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0,0.0`;
+
+        let playersData = [];
+
+        // Parse CSV String
+        function parseCSV(data) {
+            const lines = data.trim().split(/\r?\n/);
+            const rows = lines.map(line => line.split(',').map(item => item.trim()));
+            if (rows.length) {
+                const headerCell = rows[0][0].toLowerCase();
+                if (headerCell === 'name' || headerCell === 'player' || headerCell.includes('name')) {
+                    return rows.slice(1);
+                }
+            }
+            return rows;
+        }
+
+        function formatAmount(amt) {
+            if (!amt) return '$0.00';
+            const num = parseFloat(amt.toString().replace('$', '').replace(',', '')) || 0;
+            return `$${num.toFixed(2)}`;
+        }
+
+        function loadData() {
+            try {
+                // Use embedded data
+                playersData = parseCSV(csvData);
+                populateTable();
+
+                sortDirections[6] = 'asc'; // Prepare for desc sort
+                sortTable(6); // Sort by total earnings default
+            } catch (err) {
+                console.error(err);
+                document.querySelector('#tableBody').innerHTML = '<tr><td colspan="7" class="text-center py-4 text-red-500">Error loading data. Please check console.</td></tr>';
+            }
+        }
+
+        window.onload = loadData;
+
+        function populateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            playersData.forEach((player, index) => {
+                const row = tbody.insertRow();
+                row.className = 'hover:bg-gray-50 transition-colors duration-150';
+
+                if (player.length >= 7) {
+                    // Highlight top earners
+                    const earningsClass = index < 3 ? 'font-bold text-gray-900' : 'text-gray-600';
+                    const totalClass = 'font-bold text-gray-800 bg-gray-50';
+
+                    row.innerHTML = `
+                        <td class="text-left py-3 px-6 whitespace-nowrap text-gray-900 font-medium">${player[0]}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap text-gray-500 font-mono">${formatAmount(player[1])}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap text-gray-500 font-mono">${formatAmount(player[2])}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap text-gray-500 font-mono">${formatAmount(player[3])}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap text-gray-500 font-mono">${formatAmount(player[4])}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap text-gray-500 font-mono">${formatAmount(player[5])}</td>
+                        <td class="text-right py-3 px-6 whitespace-nowrap ${totalClass} font-mono">${formatAmount(player[6])}</td>
+                    `;
+                }
+            });
+        }
+
+        const sortDirections = {};
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById("moneyTable");
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            const header = table.tHead.rows[0].cells[columnIndex];
+            const direction = sortDirections[columnIndex] === 'asc' ? 'desc' : 'asc';
+            sortDirections[columnIndex] = direction;
+
+            document.querySelectorAll('#moneyTable th').forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
+            header.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].innerText;
+                const cellB = rowB.cells[columnIndex].innerText;
+                let valA, valB;
+
+                if (columnIndex > 0) {
+                    valA = parseFloat(cellA.replace(/[^0-9.-]+/g, ""));
+                    valB = parseFloat(cellB.replace(/[^0-9.-]+/g, ""));
+                } else {
+                    valA = cellA.toLowerCase();
+                    valB = cellB.toLowerCase();
+                }
+
+                return direction === 'asc' ? (valA < valB ? -1 : 1) : (valA > valB ? -1 : 1);
+            });
+
+            rows.forEach((row, index) => tbody.appendChild(row));
+        }
+
+        function searchPlayer() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const rows = document.getElementById("tableBody").getElementsByTagName("tr");
+
+            // Simple debounce could go here, but raw implementation matches existing behavior
+            for (let i = 0; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName("td")[0];
+                if (nameCell) {
+                    const txt = nameCell.textContent || nameCell.innerText;
+                    rows[i].style.display = txt.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
