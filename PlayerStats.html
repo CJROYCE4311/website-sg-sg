@@ -155,16 +155,16 @@
         </div>
     </footer>
     <script>
-        const playerStatsData = `Name,Average Gross Score,Average Net Score,Net to Par
+        const playerStatsData = `Player,Gross_Score,net_score,Net_to_Par
 Andrew Burnheimer,83.0,85.0,13.0
-Andy Meach,82.75,78.43,6.43
+Andy Meach,82.75,78.38,6.38
 Ben Magnone,83.8,72.6,0.6
 Brad Ackley,92.0,78.0,6.0
 Brian Howell,81.5,75.5,3.5
 Bud Scott,87.5,78.0,6.0
 Buddy Goldstone,91.33,78.33,6.33
 Chris Beck,88.64,74.64,2.64
-Chris Husong,85.83,75.2,3.2
+Chris Husong,85.83,77.0,5.0
 Chris Ryan,92.33,77.33,5.33
 Christopher Royce,92.0,77.5,5.5
 Clark Koch,81.89,75.11,3.11
@@ -183,9 +183,9 @@ Frank Angeloro,81.0,73.78,1.78
 Glenn Brand,96.0,85.0,13.0
 Greg Funk,77.5,74.5,2.5
 Hans Anderson,73.67,75.0,3.0
-James Feutz,72.0,76.0,4.0
+James Feutz,72.0,73.0,1.0
 Jamey Davis,85.33,71.67,-0.33
-Jared Strathe,69.33,73.5,1.5
+Jared Strathe,69.33,73.0,1.0
 Jeff Avery,86.67,75.67,3.67
 Jeff Cloepfil,84.43,74.71,2.71
 Jeff De Laveaga,70.0,71.33,-0.67
@@ -196,7 +196,7 @@ Jon Vrolyks,82.29,78.0,6.0
 Justin Deuker,78.57,75.29,3.29
 Kevin Barber,88.12,72.25,0.25
 Kevin Mueller,89.0,80.0,8.0
-Kiernan Mattson,75.57,76.33,4.33
+Kiernan Mattson,75.57,75.57,3.57
 Korey Jerome,85.78,77.89,5.89
 Larry Caplan,93.8,78.6,6.6
 Mark Albedyll,92.8,76.6,4.6
@@ -212,34 +212,34 @@ Pat Feutz,77.0,72.0,0.0
 Patrick Schueppert,94.17,78.83,6.83
 Paul Benga,78.69,75.31,3.31
 Rich Fagan,90.8,77.0,5.0
-Rich McKeon,86.0,73.5,1.5
-Richard Lederman,88.43,76.33,4.33
+Rich Mckeon,86.0,79.33,7.33
+Richard Lederman,88.43,78.0,6.0
 Rick Deloney,84.43,78.14,6.14
 Rick Meewes,80.0,75.0,3.0
 Rob Oliver,91.33,74.33,2.33
 Robert Hill,97.25,78.25,6.25
 Ron Amstutz,85.67,75.17,3.17
-Ron Marino,80.86,74.83,2.83
+Ron Marino,80.86,75.29,3.29
 Scott Benton,87.25,76.5,4.5
 Scott Bracken,82.89,74.33,2.33
-Scott Lucas,85.6,74.0,2.0
+Scott Lucas,85.6,76.8,4.8
 Shane Bolosan,84.15,74.69,2.69
 Shawn Warner,88.0,75.0,3.0
 Stephen Cherepy,87.0,76.0,4.0
-Steve McCormick,85.6,76.2,4.2
+Steve Mccormick,85.6,76.2,4.2
 Steve Rosenbluth,86.2,78.6,6.6
 Stewart Polakov,74.0,70.0,-2.0
 Thomas Earl,83.0,78.5,6.5
 Todd Densley,72.29,73.71,1.71
-Tracy Copenhaver,90.75,74.33,2.33
+Tracy Copenhaver,90.75,80.0,8.0
 Travis Ingram,80.22,73.89,1.89
 Travis Jorgensen,84.0,76.0,4.0
 Trent Dana,92.83,77.17,5.17
 Win Doolittle,90.0,83.0,11.0
-Zach Coe,73.0,73.33,1.33
+Zach Coe,73.0,73.0,1.0
 Zach Fleishman,87.0,74.5,2.5
-Zane Eisenbarth,82.0,77.14,5.14
-zach mattson,84.0,77.5,5.5`;
+Zach Mattson,84.0,77.5,5.5
+Zane Eisenbarth,82.0,77.14,5.14`;
 
         // CSV Parser Function
         function parseCSV(data) {
