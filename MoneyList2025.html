@@ -143,103 +143,281 @@
     <script>
         // Paste your plain text CSV data here. Each line should be:
         // Player Name,Best Ball,Net Skins,Gross Skins,Net Earnings,Total Earnings
-        const csvData = `Name,Best_Ball_Earnings,Net_Skins_Earnings,Gross_Skins_Earnings,Net_Earnings,Total Earnings
-Shane Bolosan,437.5,127.5,0.0,168.0,733.0
-Korey Jerome,295.0,180.0,37.5,156.0,668.5
-Matt Neimeier,240.0,125.36,80.0,177.0,622.36
-Chris Beck,567.0,0.0,0.0,0.0,567.0
-Ben Magnone,191.0,136.19,0.0,228.0,555.19
-Ron Amstutz,192.0,42.86,0.0,240.0,474.86
-Mark Albedyll,197.5,210.0,0.0,66.0,473.5
-Scott Lucas,218.0,150.0,0.0,90.0,458.0
-Hans Anderson,258.0,0.0,0.0,114.0,372.0
-Larry Caplan,168.0,50.0,33.33,114.0,365.33
-Dusty Wasmund,210.0,82.5,57.5,14.0,364.0
-Eric Weiss,219.0,0.0,66.67,78.0,363.67
-Justin Deuker,339.0,0.0,0.0,0.0,339.0
-Mike Muller,162.0,92.86,33.33,26.0,314.19
-Greg Funk,125.0,0.0,99.58,84.0,308.58
-Chris Husong,282.0,0.0,0.0,0.0,282.0
-Joe Sepessy,26.0,0.0,160.82999999999998,93.0,279.83
-Ron Marino,212.0,67.5,0.0,0.0,279.5
-Jeff Avery,105.0,82.5,0.0,84.0,271.5
-Todd Densley,192.0,0.0,42.0,28.0,262.0
-Buddy Goldstone,139.0,42.86,0.0,78.0,259.86
-Eric Lamb,0.0,67.5,0.0,168.0,235.5
-Paul Benga,156.0,67.5,0.0,0.0,223.5
-Jamey Davis,32.0,0.0,0.0,180.0,212.0
-Steve McCormick,204.0,0.0,0.0,0.0,204.0
-Jeff Cloepfil,0.0,93.33,80.0,30.0,203.32999999999998
-Derek Becko,183.0,0.0,18.75,0.0,201.75
-Frank Angeloro,30.0,0.0,0.0,168.0,198.0
-Travis Ingram,90.0,93.33,0.0,0.0,183.32999999999998
-Mark James,180.0,0.0,0.0,0.0,180.0
-Thomas Earl,105.0,70.0,0.0,0.0,175.0
-Neil Harris,0.0,0.0,165.75,0.0,165.75
-Rob Oliver,81.0,75.0,0.0,0.0,156.0
-Scott Bracken,96.0,50.0,0.0,0.0,146.0
-Jared Strathe,0.0,45.0,84.0,0.0,129.0
-Chris Ryan,17.5,90.0,21.0,0.0,128.5
-Robert Hill,0.0,115.0,0.0,0.0,115.0
-Rich Fagan,43.0,70.0,0.0,0.0,113.0
-Christopher Royce,0.0,112.86,0.0,0.0,112.86
-Clark Koch,32.0,42.86,0.0,38.0,112.86
-Brad Ackley,0.0,75.0,28.75,0.0,103.75
-Zach Coe,102.0,0.0,0.0,0.0,102.0
-Jon Vrolyks,96.0,0.0,0.0,0.0,96.0
-Mark Lewis,90.0,0.0,0.0,0.0,90.0
-Kevin Barber,81.0,0.0,0.0,0.0,81.0
-Trent Dana,0.0,70.0,0.0,0.0,70.0
-Rick Meewes,0.0,67.5,0.0,0.0,67.5
-Patrick Schueppert,0.0,45.0,0.0,0.0,45.0
-Jim Restivo,35.0,0.0,0.0,0.0,35.0
-Andy Meach,34.0,0.0,0.0,0.0,34.0
-Kiernan Mattson,0.0,0.0,0.0,28.0,28.0
-James Feutz,0.0,0.0,21.0,0.0,21.0
-Brian Howell,17.5,0.0,0.0,0.0,17.5
-Conrad Copeland,0.0,0.0,0.0,0.0,0.0
-Dan Denham,0.0,0.0,0.0,0.0,0.0
-Jim Brown,0.0,0.0,0.0,0.0,0.0
-David Edwards,0.0,0.0,0.0,0.0,0.0
-Darrin Harn,0.0,0.0,0.0,0.0,0.0
-Dean Fisk,0.0,0.0,0.0,0.0,0.0
-Jeff De Laveaga,0.0,0.0,0.0,0.0,0.0
-Michael Falagrady,0.0,0.0,0.0,0.0,0.0
-Kevin Mueller,0.0,0.0,0.0,0.0,0.0
-Scott Benton,0.0,0.0,0.0,0.0,0.0
-Rick Deloney,0.0,0.0,0.0,0.0,0.0
-Pat Feutz,0.0,0.0,0.0,0.0,0.0
-Mike Wilkins,0.0,0.0,0.0,0.0,0.0
-Rich McKeon,0.0,0.0,0.0,0.0,0.0
-Richard Lederman,0.0,0.0,0.0,0.0,0.0
-Steve Rosenbluth,0.0,0.0,0.0,0.0,0.0
-Stephen Cherepy,0.0,0.0,0.0,0.0,0.0
-Shawn Warner,0.0,0.0,0.0,0.0,0.0
-Tracy Copenhaver,0.0,0.0,0.0,0.0,0.0
-Travis Jorgensen,0.0,0.0,0.0,0.0,0.0
-Zach Fleishman,0.0,0.0,0.0,0.0,0.0
-Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0
-zach mattson,0.0,0.0,0.0,0.0,0.0`
-
-        let playersData = [];
-
-        // Parse the CSV data string into an array of arrays
-        function parseCSV(data) {
-            const lines = data.trim().split(/\r?\n/);
-            const rows = lines.map(line => line.split(',').map(item => item.trim()));
-
-            // Drop the header row if the first cell matches the column name
-            if (rows.length && rows[0][0].toLowerCase() === 'name') {
-                return rows.slice(1);
-            }
-
-            return rows;
-        }
-
-        // Format amount to ensure .00 decimals
-        function formatAmount(amt) {
-            const num = parseFloat(amt.replace('$', '').replace(',', '')) || 0;
-            return `$${num.toFixed(2)}`;
+        const csvData = `date,Player,Placement,net_tot,net_medal_earnings
+date,player,placement,net score,net medal earnings
+2025-12-20 00:00:00,Ben Magnone,1,-4,162
+2025-12-20 00:00:00,Kevin Barber,1,-4,162
+2025-12-20 00:00:00,Christopher Royce,3,-1,12
+2025-12-20 00:00:00,Jeff De Laveaga,3,-1,12
+2025-12-20 00:00:00,Rick Meewes,3,-1,12
+2025-12-20 00:00:00,Clark Koch,6,0,
+2025-12-20 00:00:00,Ron Marino,6,0,
+2025-12-20 00:00:00,Travis Ingram,8,1,
+2025-12-20 00:00:00,David Pearson,9,2,
+2025-12-20 00:00:00,Joe Sepessy,9,2,
+2025-12-20 00:00:00,Dan Denham,11,3,
+2025-12-20 00:00:00,Dusty Wasmund,11,3,
+2025-12-20 00:00:00,Rich McKeon,11,3,
+2025-12-20 00:00:00,Eric Weiss,14,4,
+2025-12-20 00:00:00,Jim Restivo,14,4,
+2025-12-20 00:00:00,Neil Harris,14,4,
+2025-12-20 00:00:00,Scott Benton,14,4,
+2025-12-20 00:00:00,Steve Rosenbluth,14,4,
+2025-12-20 00:00:00,Derek Becko,19,5,
+2025-12-20 00:00:00,Paul Benga,19,5,
+2025-12-20 00:00:00,Mark Lewis,21,6,
+2025-12-20 00:00:00,Todd Densley,21,6,
+2025-12-20 00:00:00,Kiernan Mattson,23,7,
+2025-12-20 00:00:00,Ron Amstutz,23,7,
+2025-12-20 00:00:00,Shane Bolosan,23,7,
+2025-12-20 00:00:00,Matt Neimeier,26,8,
+2025-12-20 00:00:00,Andy Meach,27,10,
+2025-12-20 00:00:00,Bud Scott,28,11,
+2025-12-20 00:00:00,Jon Vrolyks,28,11,
+2025-12-20 00:00:00,Mike Muller,28,11,
+2025-12-20 00:00:00,Win Doolittle,28,11,
+2025-12-20 00:00:00,Glenn Brand,32,13,
+2025-12-20 00:00:00,Mark Albedyll,32,13,
+2025-12-20 00:00:00,Patrick Schueppert,32,13,
+2025-12-20 00:00:00,Korey Jerome,35,16,
+2025-12-20 00:00:00,Dana Beckley,36,18,
+2025-09-13 00:00:00,Shane Bolosan,1,-6,168
+2025-09-13 00:00:00,Jeff Avery,2,-5,84
+2025-09-13 00:00:00,Dusty Wasmund,T3,-3,14
+2025-09-13 00:00:00,Joe Sepessy,T3,-3,14
+2025-09-13 00:00:00,Jeff De Laveaga,5,-2,0
+2025-09-13 00:00:00,Mark Albedyll,6,-1,0
+2025-09-13 00:00:00,Paul Benga,7,0,0
+2025-09-13 00:00:00,Jeff Cloepfil,T8,2,0
+2025-09-13 00:00:00,Kiernan Mattson,T8,2,0
+2025-09-13 00:00:00,Matt Neimeier,T8,2,0
+2025-09-13 00:00:00,Michael Falagrady,T8,2,0
+2025-09-13 00:00:00,Travis Ingram,T8,2,0
+2025-09-13 00:00:00,Zane Eisenbarth,T8,2,0
+2025-09-13 00:00:00,Derek Becko,T14,3,0
+2025-09-13 00:00:00,Eric Weiss,T14,3,0
+2025-09-13 00:00:00,Greg Funk,T14,3,0
+2025-09-13 00:00:00,Jamey Davis,T14,3,0
+2025-09-13 00:00:00,Korey Jerome,T14,3,0
+2025-09-13 00:00:00,Mark Lewis,T14,3,0
+2025-09-13 00:00:00,Brian Howell,T20,4,0
+2025-09-13 00:00:00,Hans Anderson,T20,4,0
+2025-09-13 00:00:00,Stephen Cherepy,T20,4,0
+2025-09-13 00:00:00,Clark Koch,T23,5,0
+2025-09-13 00:00:00,Patrick Schueppert,T23,5,0
+2025-09-13 00:00:00,Kevin Barber,25,6,0
+2025-09-13 00:00:00,Jon Vrolyks,26,9,0
+2025-09-13 00:00:00,Mike Muller,27,13,0
+2025-09-13 00:00:00,Larry Caplan,28,14,0
+2025-06-07 00:00:00,Korey Jerome,1,-4,156
+2025-06-07 00:00:00,Eric Weiss,2,-4,78
+2025-06-07 00:00:00,Mike Muller,3,-3,26
+2025-06-07 00:00:00,Neil Harris,4,-2,0
+2025-06-07 00:00:00,Ben Magnone,5,-1,0
+2025-06-07 00:00:00,Clark Koch,6,-1,0
+2025-06-07 00:00:00,Frank Angeloro,7,-1,0
+2025-06-07 00:00:00,Jon Vrolyks,8,1,0
+2025-06-07 00:00:00,Greg Funk,9,1,0
+2025-06-07 00:00:00,Ron Amstutz,10,1,0
+2025-06-07 00:00:00,Christopher Royce,11,2,0
+2025-06-07 00:00:00,Derek Becko,12,2,0
+2025-06-07 00:00:00,Travis Ingram,13,2,0
+2025-06-07 00:00:00,Chris Beck,14,2,0
+2025-06-07 00:00:00,Todd Densley,15,2,0
+2025-06-07 00:00:00,Jeff Cloepfil,16,3,0
+2025-06-07 00:00:00,Scott Bracken,17,3,0
+2025-06-07 00:00:00,Scott Lucas,18,3,0
+2025-06-07 00:00:00,Shane Bolosan,19,3,0
+2025-06-07 00:00:00,Mark Albedyll,20,4,0
+2025-06-07 00:00:00,Dean Fisk,21,5,0
+2025-06-07 00:00:00,Paul Benga,22,5,0
+2025-06-07 00:00:00,Zane Eisenbarth,23,6,0
+2025-06-07 00:00:00,Patrick Schueppert,24,7,0
+2025-06-07 00:00:00,Kiernan Mattson,25,10,0
+2025-04-05 00:00:00,Ben Magnone,1,-5,228
+2025-04-05 00:00:00,Hans Anderson,2,-3,114
+2025-04-05 00:00:00,Clark Koch,3,-2,38
+2025-04-05 00:00:00,Shane Bolosan,4,-1,0
+2025-04-05 00:00:00,Scott Bracken,5,-1,0
+2025-04-05 00:00:00,Kevin Barber,6,1,0
+2025-04-05 00:00:00,Dean Fisk,7,1,0
+2025-04-05 00:00:00,Todd Densley,8,1,0
+2025-04-05 00:00:00,zach mattson,9,2,0
+2025-04-05 00:00:00,Mike Muller,10,2,0
+2025-04-05 00:00:00,Rich Fagan,11,2,0
+2025-04-05 00:00:00,Neil Harris,12,2,0
+2025-04-05 00:00:00,Zach Fleishman,13,2,0
+2025-04-05 00:00:00,Ron Amstutz,14,2,0
+2025-04-05 00:00:00,Chris Husong,15,3,0
+2025-04-05 00:00:00,Kiernan Mattson,16,3,0
+2025-04-05 00:00:00,Travis Ingram,17,3,0
+2025-04-05 00:00:00,Shawn Warner,18,3,0
+2025-04-05 00:00:00,Greg Funk,19,3,0
+2025-04-05 00:00:00,Mark Lewis,20,4,0
+2025-04-05 00:00:00,Justin Deuker,21,4,0
+2025-04-05 00:00:00,Andy Meach,22,4,0
+2025-04-05 00:00:00,Steve Rosenbluth,23,4,0
+2025-04-05 00:00:00,Zach Coe,24,4,0
+2025-04-05 00:00:00,Frank Angeloro,25,5,0
+2025-04-05 00:00:00,Christopher Royce,26,6,0
+2025-04-05 00:00:00,Paul Benga,27,6,0
+2025-04-05 00:00:00,Jim Restivo,28,6,0
+2025-04-05 00:00:00,Derek Becko,29,6,0
+2025-04-05 00:00:00,Jon Vrolyks,30,6,0
+2025-04-05 00:00:00,Korey Jerome,31,7,0
+2025-04-05 00:00:00,Buddy Goldstone,32,9,0
+2025-04-05 00:00:00,Robert Hill,33,10,0
+2025-04-05 00:00:00,Zane Eisenbarth,34,10,0
+2025-04-05 00:00:00,Matt Neimeier,35,11,0
+2025-04-05 00:00:00,Patrick Schueppert,36,11,0
+2025-04-05 00:00:00,Brian Howell,-,0,0
+2025-04-05 00:00:00,Dusty Wasmund,-,0,0
+2025-11-15 00:00:00,Mark Lewis,T1,-3,180
+2025-11-15 00:00:00,Paul Benga,T1,-3,180
+2025-11-15 00:00:00,Stewart Polakov,3,-2,40
+2025-11-15 00:00:00,Kevin Barber,T4,-1,0
+2025-11-15 00:00:00,Rich McKeon,T4,-1,0
+2025-11-15 00:00:00,Jamey Davis,T6,0,0
+2025-11-15 00:00:00,Richard Lederman,T6,0,0
+2025-11-15 00:00:00,Ron Marino,T6,0,0
+2025-11-15 00:00:00,Todd Densley,T6,0,0
+2025-11-15 00:00:00,Bud Scott,T10,1,0
+2025-11-15 00:00:00,Jeff De Laveaga,T10,1,0
+2025-11-15 00:00:00,Neil Harris,T10,1,0
+2025-11-15 00:00:00,Shane Bolosan,T10,1,0
+2025-11-15 00:00:00,Chris Ryan,T14,2,0
+2025-11-15 00:00:00,Clark Koch,T14,2,0
+2025-11-15 00:00:00,Korey Jerome,T14,2,0
+2025-11-15 00:00:00,Andy Meach,T17,3,0
+2025-11-15 00:00:00,Greg Funk,T17,3,0
+2025-11-15 00:00:00,Jared Strathe,T17,3,0
+2025-11-15 00:00:00,Jon Vrolyks,T17,3,0
+2025-11-15 00:00:00,Frank Angeloro,T21,4,0
+2025-11-15 00:00:00,Mike Muller,T21,4,0
+2025-11-15 00:00:00,Robert Hill,T21,4,0
+2025-11-15 00:00:00,Christopher Royce,T24,5,0
+2025-11-15 00:00:00,Eric Weiss,T24,5,0
+2025-11-15 00:00:00,Jeff Avery,T24,5,0
+2025-11-15 00:00:00,Larry Caplan,T24,5,0
+2025-11-15 00:00:00,Rick Meewes,T24,5,0
+2025-11-15 00:00:00,Travis Ingram,T24,5,0
+2025-11-15 00:00:00,Dan Denham,T30,6,0
+2025-11-15 00:00:00,Dana Beckley,T30,6,0
+2025-11-15 00:00:00,Dusty Wasmund,T30,6,0
+2025-11-15 00:00:00,Joe Sepessy,T33,7,0
+2025-11-15 00:00:00,Michael Falagrady,T33,7,0
+2025-11-15 00:00:00,Patrick Schueppert,T35,8,0
+2025-11-15 00:00:00,Zane Eisenbarth,T35,8,0
+2025-11-15 00:00:00,Steve Rosenbluth,37,10,0
+2025-11-15 00:00:00,Rick Deloney,38,11,0
+2025-11-15 00:00:00,Andrew Burnheimer,39,13,0
+2025-11-15 00:00:00,David Pearson,-,0,0
+2025-12-07 00:00:00,Derek Becko,1,-1,192
+2025-12-07 00:00:00,Jim Restivo,2,0,96
+2025-12-07 00:00:00,Andy Meach,3,0,32
+2025-05-10 00:00:00,Eric Lamb,1,-1,168
+2025-05-10 00:00:00,Ron Amstutz,2,1,84
+2025-05-10 00:00:00,Todd Densley,3,1,28
+2025-05-10 00:00:00,Paul Benga,4,1,0
+2025-05-10 00:00:00,Frank Angeloro,5,2,0
+2025-05-10 00:00:00,Chris Beck,6,2,0
+2025-05-10 00:00:00,Zach Coe,7,3,0
+2025-05-10 00:00:00,Travis Ingram,8,3,0
+2025-05-10 00:00:00,Korey Jerome,9,4,0
+2025-05-10 00:00:00,Mark Lewis,10,4,0
+2025-05-10 00:00:00,Greg Funk,11,4,0
+2025-05-10 00:00:00,Ron Marino,12,4,0
+2025-05-10 00:00:00,Tracy Copenhaver,13,4,0
+2025-05-10 00:00:00,Ben Magnone,14,5,0
+2025-05-10 00:00:00,Robert Hill,15,5,0
+2025-05-10 00:00:00,Rick Meewes,16,5,0
+2025-05-10 00:00:00,Neil Harris,17,6,0
+2025-05-10 00:00:00,Patrick Schueppert,18,6,0
+2025-05-10 00:00:00,Steve McCormick,19,6,0
+2025-05-10 00:00:00,Andy Meach,20,7,0
+2025-05-10 00:00:00,Kiernan Mattson,21,7,0
+2025-05-10 00:00:00,Chris Husong,22,7,0
+2025-05-10 00:00:00,Scott Bracken,23,7,0
+2025-05-10 00:00:00,Rich Fagan,24,7,0
+2025-05-10 00:00:00,Jeff Avery,25,10,0
+2025-05-10 00:00:00,Shane Bolosan,26,12,0
+2025-05-10 00:00:00,Christopher Royce,27,12,0
+2025-05-10 00:00:00,Dusty Wasmund,28,0,0
+2025-08-09 00:00:00,Matt Neimeier,1,1,132
+2025-08-09 00:00:00,Mark Albedyll,2,1,66
+2025-08-09 00:00:00,Joe Sepessy,3,1,22
+2025-08-09 00:00:00,Shane Bolosan,4,1,0
+2025-08-09 00:00:00,Jeff Cloepfil,5,2,0
+2025-08-09 00:00:00,Eric Weiss,6,2,0
+2025-08-09 00:00:00,Greg Funk,7,2,0
+2025-08-09 00:00:00,Michael Falagrady,8,3,0
+2025-08-09 00:00:00,Scott Bracken,9,3,0
+2025-08-09 00:00:00,Travis Ingram,10,3,0
+2025-08-09 00:00:00,Jim Restivo,11,4,0
+2025-08-09 00:00:00,Mike Muller,12,4,0
+2025-08-09 00:00:00,Chris Husong,13,5,0
+2025-08-09 00:00:00,Hans Anderson,14,8,0
+2025-08-09 00:00:00,Paul Benga,15,8,0
+2025-08-09 00:00:00,Patrick Schueppert,16,8,0
+2025-08-09 00:00:00,Steve McCormick,17,9,0
+2025-08-09 00:00:00,Clark Koch,18,9,0
+2025-08-09 00:00:00,Larry Caplan,19,13,0
+2025-08-09 00:00:00,Robert Hill,20,13,0
+2025-08-09 00:00:00,Rich Fagan,21,14,0
+2025-03-08 00:00:00,Ron Amstutz,1,-2,156
+2025-03-08 00:00:00,Buddy Goldstone,2,-2,78
+2025-03-08 00:00:00,Matt Neimeier,3,-1,26
+2025-02-08 00:00:00,Frank Angeloro,1,-4,168
+2025-02-08 00:00:00,Greg Funk,2,-3,84
+2025-02-08 00:00:00,Kiernan Mattson,3,-3,28
+2025-10-04 00:00:00,Jamey Davis,1,-4,180
+2025-10-04 00:00:00,Scott Lucas,2,-3,90
+2025-10-04 00:00:00,Jeff Cloepfil,3,0,30
+2025-10-04 00:00:00,Paul Benga,4,0,0
+2025-10-04 00:00:00,Pat Feutz,5,0,0
+2025-10-04 00:00:00,Todd Densley,6,1,0
+2025-10-04 00:00:00,Patrick Schueppert,7,1,0
+2025-10-04 00:00:00,Frank Angeloro,8,1,0
+2025-10-04 00:00:00,Dusty Wasmund,9,1,0
+2025-10-04 00:00:00,Neil Harris,10,1,0
+2025-10-04 00:00:00,Greg Funk,11,2,0
+2025-10-04 00:00:00,Shane Bolosan,12,2,0
+2025-10-04 00:00:00,Jim Restivo,13,3,0
+2025-10-04 00:00:00,Derek Becko,14,3,0
+2025-10-04 00:00:00,Brian Howell,15,3,0
+2025-10-04 00:00:00,Eric Weiss,16,3,0
+2025-10-04 00:00:00,Larry Caplan,17,4,0
+2025-10-04 00:00:00,Scott Bracken,18,4,0
+2025-10-04 00:00:00,Rob Oliver,19,5,0
+2025-10-04 00:00:00,Jon Vrolyks,20,5,0
+2025-10-04 00:00:00,Mike Muller,21,5,0
+2025-10-04 00:00:00,Matt Neimeier,22,6,0
+2025-10-04 00:00:00,Brad Ackley,23,6,0
+2025-10-04 00:00:00,Joe Sepessy,24,6,0
+2025-10-04 00:00:00,Andy Meach,25,6,0
+2025-10-04 00:00:00,Ron Marino,26,7,0
+2025-10-04 00:00:00,Ron Amstutz,27,8,0
+2025-10-04 00:00:00,Korey Jerome,28,19,0
+2025-10-04 00:00:00,Mark Lewis,-,0,0
+2025-10-04 00:00:00,Tracy Copenhaver,-,0,0
+2025-07-19 00:00:00,Larry Caplan,1,-5,114
+2025-07-19 00:00:00,Joe Sepessy,2,-2,57
+2025-07-19 00:00:00,Matt Neimeier,3,0,19
+2025-07-19 00:00:00,Derek Becko,4,0,0
+2025-07-19 00:00:00,Rich Fagan,5,1,0
+2025-07-19 00:00:00,Dan Denham,6,1,0
+2025-07-19 00:00:00,Paul Benga,7,2,0
+2025-07-19 00:00:00,Frank Angeloro,8,3,0
+2025-07-19 00:00:00,Ben Magnone,9,3,0
+2025-07-19 00:00:00,Kevin Barber,10,4,0
+2025-07-19 00:00:00,Rob Oliver,11,4,0
+2025-07-19 00:00:00,Jeff Cloepfil,12,4,0
+2025-07-19 00:00:00,Mark Albedyll,13,4,0
+2025-07-19 00:00:00,Clark Koch,14,6,0
+2025-07-19 00:00:00,Greg Funk,15,6,0
+2025-07-19 00:00:00,Shane Bolosan,16,9,0
+2025-07-19 00:00:00,Christopher Royce,17,11,0
+2025-07-19 00:00:00,Rick Deloney,18,11,0`;
         }
 
         // Populate table on page load
