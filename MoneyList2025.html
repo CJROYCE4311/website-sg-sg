@@ -143,7 +143,7 @@
     <script>
         // Paste your plain text CSV data here. Each line should be:
         // Player Name,Best Ball,Net Skins,Gross Skins,Net Earnings,Total Earnings
-        const csvData = `Name,BB Earnings,Nskins earnings,Gskins earnings,net medal earnings,Total Earningsings
+        const csvData = `Name,Best_Ball_Earnings,Net_Skins_Earnings,Gross_Skins_Earnings,Net_Earnings,Total Earnings
 Shane Bolosan,437.5,127.5,0.0,168.0,733.0
 Korey Jerome,295.0,180.0,37.5,156.0,668.5
 Matt Neimeier,240.0,125.36,80.0,177.0,622.36
@@ -220,6 +220,30 @@ Mike Wilkins,0.0,0.0,0.0,0.0,0.0
 Pat Feutz,0.0,0.0,0.0,0.0,0.0
 Rick Deloney,0.0,0.0,0.0,0.0,0.0
 Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0`;
+
+
+        // Parse CSV Data
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const result = [];
+            // Skip header (i=1)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line) {
+                    const parts = line.split(',');
+                    // Clean up any extra whitespace from splitting
+                    const cleanedParts = parts.map(part => part.trim());
+                    result.push(cleanedParts);
+                }
+            }
+            return result;
+        }
+
+        // Format Currency
+        function formatAmount(value) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return '$0.00';
+            return '$' + num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
         // Populate table on page load
