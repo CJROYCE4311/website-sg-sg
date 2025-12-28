@@ -64,7 +64,6 @@ def generate_writeup_html(file_path):
         # Quota Game (Team)
         if 'Quota' in xls:
             quota_df = xls['Quota'].copy()
-            quota_df = to_numeric_safe(quota_df, ['Team_earnings'])
             quota_df['Player'] = quota_df['Player'].astype(str).str.strip().str.title()
             
             teams = {}
@@ -83,14 +82,13 @@ def generate_writeup_html(file_path):
                 
                 for team_name, data in sorted_teams:
                     if data['Earnings'] > 0:
-                        writeup += f"<li><strong>{data['Placement']} Place:</strong> {team_name} - ${data['Earnings']:.2f}</li>"
+                        writeup += f"<li><strong>{data['Placement']}(st/nd/rd) Place:</strong> {team_name} - ${data['Earnings']:.2f}</li>"
                 writeup += "</ul>"
 
 
         # Net Medal (Individual)
         if 'NetMedal' in xls:
             net_medal_df = xls['NetMedal'].copy()
-            net_medal_df = to_numeric_safe(net_medal_df, ['net_medal_earnings'])
             net_medal_df['Player'] = net_medal_df['Player'].astype(str).str.strip().str.title()
             
             writeup += "<h5>Individual Net Medal</h5><p>Players were going mano a mano!</p><ul>"
@@ -99,7 +97,7 @@ def generate_writeup_html(file_path):
                 if group['net_medal_earnings'].sum() > 0:
                     names = ", ".join(group['Player'].tolist())
                     earnings = group['net_medal_earnings'].sum()
-                    writeup += f"<li><strong>{placement} Place:</strong> {names} - ${earnings:.2f}</li>"
+                    writeup += f"<li><strong>{placement}(st/nd/rd) Place:</strong> {names} - ${earnings:.2f}</li>"
             writeup += "</ul>"
 
 
@@ -108,10 +106,9 @@ def generate_writeup_html(file_path):
         for skin_type in ['GrossSkins', 'NetSkins']:
             if skin_type in xls:
                 skins_df = xls[skin_type].copy()
-                earnings_col = 'Gskins_earnings' if skin_type == 'GrossSkins' else 'Nskins_earnings'
-                skins_df = to_numeric_safe(skins_df, [earnings_col])
                 if not skins_df.empty:
                     skins_df['Player'] = skins_df['Player'].astype(str).str.strip().str.title()
+                    earnings_col = 'Gskins_earnings' if skin_type == 'GrossSkins' else 'Nskins_earnings'
                     if earnings_col in skins_df.columns:
                         skins_summary = skins_df.groupby('Player')[earnings_col].sum().sort_values(ascending=False)
                         if not skins_summary.empty:
