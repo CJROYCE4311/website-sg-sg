@@ -16,9 +16,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def clean_player_data(df):
-    """Normalizes names and dates for data files (not scorecard)."""
     if df.empty: return df
-    df.columns = [c.strip().replace(' ', '_') for c in df.columns]
+    df.columns = [c.strip() for c in df.columns]
     p_col = next((c for c in df.columns if c.lower() in ['player', 'name']), None)
     if p_col:
         df = df.rename(columns={p_col: 'Player'})
@@ -30,20 +29,16 @@ def clean_player_data(df):
     return df
 
 def to_numeric_safe(df, columns):
-    """Forces columns to numbers, treating errors/text as 0."""
     for col in columns:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col].astype(str).str.replace('$', '').str.replace(',', '').str.strip(), errors='coerce').fillna(0.0)
     return df
 
-def inject_to_html(filename, var_name, content, is_json=False, is_detail_tag=False):
+def inject_to_html(filename, var_name, content, is_json=False):
     filepath = os.path.join(BASE_PATH, filename)
     if not os.path.exists(filepath): return
     with open(filepath, 'r') as f: html = f.read()
-    if is_detail_tag:
-        pattern = rf'(<script id="{var_name}" type="text/plain">).*?(</script>)'
-        replacement = rf'\1\nPlayer\tDate\tGross Score\tHCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes\n{content}\2'
-    elif is_json:
+    if is_json:
         replacement = f"const {var_name} = {json.dumps(content, indent=4)};"
         pattern = rf"const {var_name}\s*=\s*\[.*?\];"
     else:
@@ -56,6 +51,7 @@ def inject_to_html(filename, var_name, content, is_json=False, is_detail_tag=Fal
 def run_pipeline():
     print("--- ⛳ Starting Site Refresh ---")
     excel_files = glob.glob(os.path.join(BASE_PATH, "*.xlsx"))
+    print(f"Found {len(excel_files)} data files.")
     
     # Load Scorecard
     scorecard = pd.read_csv(SCORECARD_FILE) if os.path.exists(SCORECARD_FILE) else pd.DataFrame()
@@ -63,47 +59,42 @@ def run_pipeline():
         scorecard.columns = [c.strip() for c in scorecard.columns]
         h_col = next((c for c in scorecard.columns if 'hole' in c.lower()), 'Hole')
         p_col = next((c for c in scorecard.columns if 'par' in c.lower()), 'Par')
-        i_col = next((c for c in scorecard.columns if 'index' in c.lower() or 'sterling' in c.lower()), 'Index')
-        scorecard = scorecard.rename(columns={h_col: 'Hole', p_col: 'Par', i_col: 'Sterling_Index'})
+        scorecard = scorecard.rename(columns={h_col: 'Hole', p_col: 'Par'})
         scorecard['Hole'] = pd.to_numeric(scorecard['Hole'].astype(str).str.replace('H', ''), errors='coerce')
-        scorecard = scorecard.dropna(subset=['Hole'])
+        scorecard = scorecard[['Hole', 'Par']].dropna()
 
-    dfs = {k: [] for k in ['RawScores', 'NetMedal', 'BB', 'Team', 'Quota', 'GrossSkins', 'NetSkins', 'Handicaps']}
+    # Load All Tournament Data
+    dfs = {k: [] for k in ['RawScores', 'NetMedal', 'BB', 'Team', 'Quota', 'GrossSkins', 'NetSkins']}
     for f in excel_files:
         xls = pd.read_excel(f, sheet_name=None)
         for key in dfs.keys():
             if key in xls: dfs[key].append(clean_player_data(xls[key]))
     master = {k: pd.concat(v, ignore_index=True) if v else pd.DataFrame() for k, v in dfs.items()}
 
-    # 2. CONSOLIDATE DATA
+    # Aggregate Scores & Earnings
     raw = master['RawScores'].copy()
-    if raw.empty: return print("❌ No RawScores found.")
     raw = to_numeric_safe(raw, ['Gross_Score'] + [f'H{i}' for i in range(1, 19)])
     raw['Tournament_Year'] = raw['date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
 
-    # Standardize Earnings
+    print(f"Total Rounds found: {len(raw)}")
+    print(f"2025 Rounds: {len(raw[raw.Tournament_Year == 2025])}")
+    print(f"2026 Rounds: {len(raw[raw.Tournament_Year == 2026])}")
+
+    # Process Money
     net_medal = to_numeric_safe(master['NetMedal'].copy(), ['net_medal_earnings'])
     gross_skins = to_numeric_safe(master['GrossSkins'].copy(), ['Gskins_earnings'])
     net_skins = to_numeric_safe(master['NetSkins'].copy(), ['Nskins_earnings'])
     bb_df = to_numeric_safe(pd.concat([master['Team'].rename(columns={'Team_earnings': 'BB_Earn'}), 
                                       master['BB'].rename(columns={'BB_earnings': 'BB_Earn'})], ignore_index=True), ['BB_Earn'])
-    
-    # Fix for KeyError: 'Quota_earnings' - Sum whatever quota columns exist
     quota_df = master['Quota'].copy()
     q_cols = [c for c in ['Team_earnings', 'Quota_earnings', 'Quota_Earn'] if c in quota_df.columns]
     quota_df = to_numeric_safe(quota_df, q_cols)
-    quota_df['Quota_Earn_Total'] = quota_df[q_cols].sum(axis=1) if q_cols else 0.0
+    quota_df['Quota_Earn'] = quota_df[q_cols].sum(axis=1) if q_cols else 0.0
 
     # Master Merge
     base = raw.rename(columns={'Gross_Score': 'Gross_Score'})
-    merge_targets = [
-        (net_medal, 'net_medal_earnings'), 
-        (bb_df, 'BB_Earn'), 
-        (quota_df.rename(columns={'Quota_Earn_Total': 'Quota_Earn'}), 'Quota_Earn'), 
-        (gross_skins, 'Gskins_earnings'), 
-        (net_skins, 'Nskins_earnings')
-    ]
-    for df_to_merge, col_name in merge_targets:
+    for df_to_merge, col_name in [(net_medal, 'net_medal_earnings'), (bb_df, 'BB_Earn'), 
+                                 (quota_df, 'Quota_Earn'), (gross_skins, 'Gskins_earnings'), (net_skins, 'Nskins_earnings')]:
         if not df_to_merge.empty:
             df_agg = df_to_merge.groupby(['date', 'Player'])[col_name].sum().reset_index()
             base = base.merge(df_agg, on=['date', 'Player'], how='left')
@@ -114,34 +105,42 @@ def run_pipeline():
     base = base.fillna(0)
     base['Total_Earnings'] = base[money_cols].sum(axis=1)
 
-    # 3. UPDATE DASHBOARDS
+    # 1. Update Money Lists (FIXING HEADERS)
     for year in [2025, 2026]:
         df_year = base[base['Tournament_Year'] == year].groupby('Player').agg({
             'BB_Earn': 'sum', 'Quota_Earn': 'sum', 'Nskins_earnings': 'sum', 'Gskins_earnings': 'sum', 'net_medal_earnings': 'sum', 'Total_Earnings': 'sum'
         }).reset_index().sort_values('Total_Earnings', ascending=False)
-        cols_out = ['Player', 'BB_Earn', 'Nskins_earnings', 'Gskins_earnings', 'net_medal_earnings', 'Total_Earnings']
-        if year == 2026: cols_out.insert(2, 'Quota_Earn')
-        df_out = df_year[cols_out]
-        df_out.columns = ['Name'] + [c.replace('_', ' ').replace('Earn', 'Earnings') for c in df_out.columns[1:]]
+        
+        # Mapping columns to match exact HTML Variable Requirements
+        if year == 2025:
+            df_out = df_year[['Player', 'BB_Earn', 'Nskins_earnings', 'Gskins_earnings', 'net_medal_earnings', 'Total_Earnings']]
+            df_out.columns = ['Name', 'Best_Ball_Earnings', 'Net_Skins_Earnings', 'Gross_Skins_Earnings', 'Net_Earnings', 'Total Earnings']
+        else:
+            df_out = df_year[['Player', 'BB_Earn', 'Quota_Earn', 'Nskins_earnings', 'Gskins_earnings', 'net_medal_earnings', 'Total_Earnings']]
+            df_out.columns = ['Name', 'Best_Ball_Earnings', 'Quota_Earnings', 'Net_Skins_Earnings', 'Gross_Skins_Earnings', 'Net_Earnings', 'Total Earnings']
+        
         inject_to_html(f"MoneyList{year}.html", "csvData", df_out.to_csv(index=False))
 
-    # Average Score Fix
+    # 2. Update Average Score (FIXING NaN)
     melted = raw.melt(id_vars=['Player', 'date'], value_vars=[f'H{i}' for i in range(1, 19)], var_name='hole', value_name='score')
     melted['hole'] = pd.to_numeric(melted['hole'].str.replace('H', ''), errors='coerce')
     hole_avg = melted.groupby('hole')['score'].mean().round(2).reset_index()
+    
     if not scorecard.empty:
         hole_avg['hole'] = hole_avg['hole'].astype(int)
         scorecard['Hole'] = scorecard['Hole'].astype(int)
         hole_avg = hole_avg.merge(scorecard, left_on='hole', right_on='Hole', how='left')
+    
+    # Force par to 4 if missing to prevent NaN
     hole_avg['Par'] = hole_avg['Par'].fillna(4).astype(int)
     inject_to_html("AverageScore.html", "holeData", hole_avg[['hole', 'score', 'Par']].to_dict('records'), is_json=True)
 
 def sync():
-    print("🚀 Syncing...")
+    print("🚀 Pushing to GitHub...")
     subprocess.run(["git", "add", "."], cwd=BASE_PATH)
-    subprocess.run(["git", "commit", "-m", "Fixed Quota KeyError and Average Score NaN"], cwd=BASE_PATH)
+    subprocess.run(["git", "commit", "-m", "Final Fix: Corrected Header mapping and NaN Par mapping"], cwd=BASE_PATH)
     subprocess.run(["git", "push"], cwd=BASE_PATH)
-    print("🎉 Done!")
+    print("🎉 Dashboards are now fully populated!")
 
 if __name__ == "__main__":
     run_pipeline()
