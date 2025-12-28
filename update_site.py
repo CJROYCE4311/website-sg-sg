@@ -59,9 +59,19 @@ def generate_writeup_html(file_path):
     try:
         xls = pd.read_excel(file_path, sheet_name=None)
         
-        writeup = "<h4>BOO-YAH!</h4><p>Welcome back to the SG@SG post-game wrap-up, where the only thing cooler than the winter air is the ice in our players' veins. Let's get right to the action!</p>"
+        # Header
+        writeup = """
+        <div class="mb-4 space-y-1">
+            <h4 class="font-bold text-gray-900 text-lg m-0">BOO-YAH!</h4>
+            <p class="text-sm m-0">Another classic SG@SG saturday in the books. Here is the lowdown.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+            <div class="space-y-4">
+        """
 
-        # Quota Game (Team)
+        # LEFT COLUMN: Quota & Net Medal
+        # Quota Game
         if 'Quota' in xls:
             quota_df = xls['Quota'].copy()
             quota_df = to_numeric_safe(quota_df, ['Team_earnings'])
@@ -71,7 +81,6 @@ def generate_writeup_html(file_path):
             for placement, group in quota_df.groupby('Placement'):
                 players = group['Player'].tolist()
                 earnings = group['Team_earnings'].sum()
-                
                 team_name = " & ".join(players)
                 if team_name not in teams:
                     teams[team_name] = {'Placement': placement, 'Earnings': earnings}
@@ -79,52 +88,55 @@ def generate_writeup_html(file_path):
             sorted_teams = sorted(teams.items(), key=lambda item: item[1]['Placement'])
 
             if sorted_teams:
-                writeup += "<h5>Team Quota Game</h5><p>Things were tighter than a new pair of golf shoes!</p><ul>"
-                
+                writeup += "<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Team Quota</h5><ul class='list-none pl-0 m-0 space-y-1'>"
                 for team_name, data in sorted_teams:
                     if data['Earnings'] > 0:
-                        writeup += f"<li><strong>{data['Placement']} Place:</strong> {team_name} - ${data['Earnings']:.2f}</li>"
-                writeup += "</ul>"
+                        writeup += f"<li class='m-0'><span class='font-semibold'>{data['Placement']} Place:</span> {team_name} - ${data['Earnings']:.0f}</li>"
+                writeup += "</ul></div>"
 
-
-        # Net Medal (Individual)
+        # Net Medal
         if 'NetMedal' in xls:
             net_medal_df = xls['NetMedal'].copy()
             net_medal_df = to_numeric_safe(net_medal_df, ['net_medal_earnings'])
             net_medal_df['Player'] = net_medal_df['Player'].astype(str).str.strip().str.title()
             
-            writeup += "<h5>Individual Net Medal</h5><p>Players were going mano a mano!</p><ul>"
-            
+            writeup += "<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Net Medal</h5><ul class='list-none pl-0 m-0 space-y-1'>"
+            valid_entries = False
             for placement, group in net_medal_df.groupby('Placement'):
                 if group['net_medal_earnings'].sum() > 0:
+                    valid_entries = True
                     names = ", ".join(group['Player'].tolist())
                     earnings = group['net_medal_earnings'].sum()
-                    writeup += f"<li><strong>{placement} Place:</strong> {names} - ${earnings:.2f}</li>"
-            writeup += "</ul>"
+                    writeup += f"<li class='m-0'><span class='font-semibold'>{placement} Place:</span> {names} - ${earnings:.0f}</li>"
+            writeup += "</ul></div>"
 
+        writeup += "</div><div class='space-y-4'>" # End Left Col, Start Right Col
 
-        # Skins
-        skins_writeup = ""
+        # RIGHT COLUMN: Skins
+        skins_html = ""
         for skin_type in ['GrossSkins', 'NetSkins']:
             if skin_type in xls:
                 skins_df = xls[skin_type].copy()
                 earnings_col = 'Gskins_earnings' if skin_type == 'GrossSkins' else 'Nskins_earnings'
                 skins_df = to_numeric_safe(skins_df, [earnings_col])
+                
                 if not skins_df.empty:
                     skins_df['Player'] = skins_df['Player'].astype(str).str.strip().str.title()
                     if earnings_col in skins_df.columns:
-                        skins_summary = skins_df.groupby('Player')[earnings_col].sum().sort_values(ascending=False)
-                        if not skins_summary.empty:
-                            skins_writeup += f"<h5>{skin_type}</h5><ul>"
-                            for i in range(len(skins_summary)):
-                                if skins_summary.iloc[i] > 0:
-                                    skins_writeup += f"<li>{skins_summary.index[i]} - ${skins_summary.iloc[i]:.2f}</li>"
-                            skins_writeup += "</ul>"
+                        totals = skins_df.groupby('Player')[earnings_col].sum().sort_values(ascending=False)
+                        totals = totals[totals > 0]
+                        
+                        if not totals.empty:
+                            title = "Gross Skins" if skin_type == 'GrossSkins' else "Net Skins"
+                            skins_html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
+                            for player, amount in totals.items():
+                                skins_html += f"<li class='m-0'>{player} - ${amount:.2f}</li>"
+                            skins_html += "</ul></div>"
         
-        if skins_writeup:
-            writeup += "<h5>Skins Game</h5>" + skins_writeup
+        writeup += skins_html
+        writeup += "</div></div>" # End Right Col, End Grid
 
-        writeup += "<p>That's all the time we have! Until next time, Holla!</p>"
+        writeup += "<p class='text-xs text-gray-400 mt-6 mb-0 italic'>Run Date: " + datetime.now().strftime('%Y-%m-%d') + "</p>"
         
         return writeup
 
@@ -144,8 +156,15 @@ def update_index_html(writeup_html):
     html = re.sub(r'<h2 class="text-2xl font-bold text-gray-900">Welcome to the 2026 Season</h2>', 
                   r'<h2 class="text-2xl font-bold text-gray-900">Latest Results</h2>', html)
 
-    # Replace content with a non-greedy match
-    html = re.sub(r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(</div>)',
+    # Replace content with a non-greedy match targeting the prose div inside the announcements id
+    # Note: We now look for the prose div relative to "Latest Results" header if identifiers shifted,
+    # but based on the manual edit, the structure is still a div with id="announcements" > div > div with class="prose..."
+    # Simpler regex to just find the prose div following "Latest Results"
+    
+    # Locate the "Latest Results" h2, then find the next prose div
+    # Or just target the specific prose class if unique enough. It is unique "prose-green".
+    
+    html = re.sub(r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(</div>\s*</div>)',
                   r'\1' + writeup_html + r'\2', html, flags=re.DOTALL)
 
     with open(filepath, 'w') as f:
