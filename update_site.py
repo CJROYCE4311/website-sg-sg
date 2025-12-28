@@ -64,6 +64,7 @@ def generate_writeup_html(file_path):
         # Quota Game (Team)
         if 'Quota' in xls:
             quota_df = xls['Quota'].copy()
+            quota_df = to_numeric_safe(quota_df, ['Team_earnings'])
             quota_df['Player'] = quota_df['Player'].astype(str).str.strip().str.title()
             
             teams = {}
@@ -82,13 +83,14 @@ def generate_writeup_html(file_path):
                 
                 for team_name, data in sorted_teams:
                     if data['Earnings'] > 0:
-                        writeup += f"<li><strong>{data['Placement']}(st/nd/rd) Place:</strong> {team_name} - ${data['Earnings']:.2f}</li>"
+                        writeup += f"<li><strong>{data['Placement']} Place:</strong> {team_name} - ${data['Earnings']:.2f}</li>"
                 writeup += "</ul>"
 
 
         # Net Medal (Individual)
         if 'NetMedal' in xls:
             net_medal_df = xls['NetMedal'].copy()
+            net_medal_df = to_numeric_safe(net_medal_df, ['net_medal_earnings'])
             net_medal_df['Player'] = net_medal_df['Player'].astype(str).str.strip().str.title()
             
             writeup += "<h5>Individual Net Medal</h5><p>Players were going mano a mano!</p><ul>"
@@ -97,7 +99,7 @@ def generate_writeup_html(file_path):
                 if group['net_medal_earnings'].sum() > 0:
                     names = ", ".join(group['Player'].tolist())
                     earnings = group['net_medal_earnings'].sum()
-                    writeup += f"<li><strong>{placement}(st/nd/rd) Place:</strong> {names} - ${earnings:.2f}</li>"
+                    writeup += f"<li><strong>{placement} Place:</strong> {names} - ${earnings:.2f}</li>"
             writeup += "</ul>"
 
 
@@ -106,9 +108,10 @@ def generate_writeup_html(file_path):
         for skin_type in ['GrossSkins', 'NetSkins']:
             if skin_type in xls:
                 skins_df = xls[skin_type].copy()
+                earnings_col = 'Gskins_earnings' if skin_type == 'GrossSkins' else 'Nskins_earnings'
+                skins_df = to_numeric_safe(skins_df, [earnings_col])
                 if not skins_df.empty:
                     skins_df['Player'] = skins_df['Player'].astype(str).str.strip().str.title()
-                    earnings_col = 'Gskins_earnings' if skin_type == 'GrossSkins' else 'Nskins_earnings'
                     if earnings_col in skins_df.columns:
                         skins_summary = skins_df.groupby('Player')[earnings_col].sum().sort_values(ascending=False)
                         if not skins_summary.empty:
@@ -138,11 +141,11 @@ def update_index_html(writeup_html):
         html = f.read()
 
     # Replace title
-    html = re.sub(r'<h2 class="text-2xl font-bold text-gray-900">.*</h2>', 
+    html = re.sub(r'<h2 class="text-2xl font-bold text-gray-900">Welcome to the 2026 Season</h2>', 
                   r'<h2 class="text-2xl font-bold text-gray-900">Latest Results</h2>', html)
 
-    # Replace content
-    html = re.sub(r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*(</div>)',
+    # Replace content with a non-greedy match
+    html = re.sub(r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(</div>)',
                   r'\1' + writeup_html + r'\2', html, flags=re.DOTALL)
 
     with open(filepath, 'w') as f:
@@ -236,9 +239,10 @@ def run_pipeline():
 def sync():
     print("🚀 Pushing Updates...")
     subprocess.run(["git", "add", "."], cwd=BASE_PATH)
-    subprocess.run(["git", "commit", "-m", "Final Master Sync: Corrected casing and removed redundant healing logic"], cwd=BASE_PATH)
+    commit_message = f"Automated Site Update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    subprocess.run(["git", "commit", "-m", commit_message], cwd=BASE_PATH)
     subprocess.run(["git", "push"], cwd=BASE_PATH)
-    print("🎉 Done! All 7 dashboards are corrected and live.")
+    print("🎉 Done! All dashboards are corrected and live.")
 
 if __name__ == "__main__":
     run_pipeline()
