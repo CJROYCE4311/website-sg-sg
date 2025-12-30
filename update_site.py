@@ -272,16 +272,80 @@ def run_pipeline():
     base['Differential'] = (base['Gross_Score'] - COURSE_RATING) * 113 / SLOPE_RATING
     base['Differential'] = base['Differential'].round(1)
 
-    analysis_data = []
+    analysis_data_best3 = []
+    analysis_data_best6 = []
+
     for player, group in base.groupby('Player'):
-        diffs = group.sort_values('date', ascending=False)['Differential'].dropna().tolist()
-        if len(diffs) >= 1:
-            best3 = sum(sorted(diffs)[:3]) / min(len(diffs), 3)
-            best6 = sum(sorted(diffs)[:6]) / min(len(diffs), 6)
-            analysis_data.append({'name': player, 'best3': round(best3, 1), 'best6': round(best6, 1)})
+        rounds = len(group)
+        if rounds < 1: continue
+
+        # Get latest handicap
+        latest_row = group.sort_values('date', ascending=False).iloc[0]
+        current_hcp = float(latest_row['Handicap']) if 'Handicap' in latest_row and pd.notnull(latest_row['Handicap']) else 0.0
+        
+        diffs = group['Differential'].dropna().tolist()
+        gross_scores = group['Gross_Score'].tolist()
+        
+        avg_gross = sum(gross_scores) / len(gross_scores)
+        avg_net = avg_gross - current_hcp 
+
+        # Best 3 Logic
+        best3_diffs = sorted(diffs)[:3]
+        implied_3 = sum(best3_diffs) / len(best3_diffs) if best3_diffs else 0
+        adj_3 = implied_3 - current_hcp
+
+        # Best 6 Logic
+        best6_diffs = sorted(diffs)[:6]
+        implied_6 = sum(best6_diffs) / len(best6_diffs) if best6_diffs else 0
+        adj_6 = implied_6 - current_hcp
+
+        common_stats = {
+            'name': player,
+            'current': round(current_hcp, 1),
+            'avgGross': round(avg_gross, 1),
+            'avgNet': round(avg_net, 1),
+            'rounds': rounds,
+            'notes': '' 
+        }
+
+        analysis_data_best3.append({
+            **common_stats,
+            'implied': round(implied_3, 1),
+            'adjustment': round(adj_3, 1)
+        })
+
+        analysis_data_best6.append({
+            **common_stats,
+            'implied': round(implied_6, 1),
+            'adjustment': round(adj_6, 1)
+        })
             
-    inject_to_html("HandicapAnalysis.html", "dataBest3", [{'x': d['name'], 'y': d['best3']} for d in analysis_data], is_json=True)
-    inject_to_html("HandicapAnalysis.html", "dataBest6", [{'x': d['name'], 'y': d['best6']} for d in analysis_data], is_json=True)
+    inject_to_html("HandicapAnalysis.html", "dataBest3", analysis_data_best3, is_json=True)
+    inject_to_html("HandicapAnalysis.html", "dataBest6", analysis_data_best6, is_json=True)
+
+    # --- Handicap Detail Injection ---
+    detail_lines = ["Player\tDate\tGross Score\tHCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
+    rounds_map = base.groupby('Player').size().to_dict()
+    
+    for _, row in base.sort_values(['Player', 'date'], ascending=[True, False]).iterrows():
+        date_str = row['date'].strftime('%Y-%m-%d')
+        hcp = float(row['Handicap']) if pd.notnull(row['Handicap']) else 0.0
+        gross = int(row['Gross_Score']) if pd.notnull(row['Gross_Score']) else 0
+        net = gross - hcp
+        diff = float(row['Differential']) if pd.notnull(row['Differential']) else 0.0
+        rounds = rounds_map.get(row['Player'], 0)
+        
+        line = f"{row['Player']}\t{date_str}\t{gross}\t{hcp:.1f}\t{net:.1f}\t{diff:.1f}\t{rounds}\t"
+        detail_lines.append(line)
+        
+    detail_path = os.path.join(BASE_PATH, "Handicap_Detail.html")
+    if os.path.exists(detail_path):
+        with open(detail_path, 'r') as f: html = f.read()
+        new_content = "\n".join(detail_lines)
+        pattern = r'(<script id="rawData" type="text/plain">)(.*?)(</script>)'
+        new_html = re.sub(pattern, r'\1\n' + new_content + r'\n\3', html, flags=re.DOTALL)
+        with open(detail_path, 'w') as f: f.write(new_html)
+        print("✅ Updated Handicap_Detail.html with new data")
 
     # 4. Injections
     # Money Lists
