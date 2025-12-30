@@ -41,7 +41,8 @@ python3 update_site.py
 *   **Column Normalization:** Automatically maps `HI`, `Handicap Index` -> `Handicap` for consistency.
 *   **Calculations:**
     *   **Differentials:** `(Gross - 70.5) * 113 / 124`
-    *   **Gap:** `Handicap Used - Differential`
+    *   **Gap:** `Differential - Handicap Index`
+        *   *Interpretation:* **Negative (Red)** = Beat Index (Audit Alert). **Positive (Grey)** = Played to/above Index.
     *   **Implied Index:** Average of Best 3 / Best 6 differentials.
 *   **Updates Dashboards:**
     *   `index.html` (Latest Results Writeup)

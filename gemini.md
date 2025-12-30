@@ -17,7 +17,8 @@
 - [x] Standardized `update_site.py` to handle `HI`/`Handicap` columns.
 - [x] Implemented 13-month lookback filter.
 - [x] Implemented "Handicap Analysis" logic (Best 3/6 Implied Index).
-- [x] Implemented "Handicap Detail" Gap calculation (`HCP - Diff`).
+- [x] **Refined "Handicap Detail":** Gap = `Diff - Index`. Red/Bold = Beat Index (Audit Alert).
+- [x] **Fixed:** `index.html` regex logic to prevent duplicate "Latest Results" blocks.
 - [x] Updated SOP to reflect Image-based workflow.
 
 ## 📋 To-Do / Backlog
