@@ -160,7 +160,7 @@ handicap_data = [
     ["Mark Lewis", 10.4],
     ["Matt Neimeier", 12.2],
     ["Mike Muller", 7.0],
-    ["Neil Harris", 1.7], # Was +1.7, assuming normal numeric for consistency
+    ["Neil Harris", -1.7], # Was +1.7, now negative for formula
     ["Patrick Schueppert", 16.8],
     ["Paul Benga", 4.2],
     ["Rich McKeon", 11.0],
@@ -172,7 +172,7 @@ handicap_data = [
     ["Shane Bolosan", 7.9],
     ["Steve McCormick", 9.2],
     ["Steve Rosenbluth", 8.4],
-    ["Todd Densley", 0.8], # Was +0.8
+    ["Todd Densley", -0.8], # Was +0.8, now negative for formula
     ["Travis Ingram", 6.6],
     ["Win Doolittle", 8.0]
 ]
