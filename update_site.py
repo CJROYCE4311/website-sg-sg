@@ -70,29 +70,50 @@ def generate_writeup_html(file_path):
             <div class="space-y-4">
         """
 
-        # LEFT COLUMN: Quota & Net Medal
-        # Quota Game
-        if 'Quota' in xls:
-            quota_df = xls['Quota'].copy()
-            quota_df = to_numeric_safe(quota_df, ['Team_earnings'])
-            quota_df['Player'] = quota_df['Player'].astype(str).str.strip().str.title()
-            
-            teams = {}
-            for placement, group in quota_df.groupby('Placement'):
-                players = group['Player'].tolist()
-                earnings = group['Team_earnings'].sum()
-                team_name = " & ".join(players)
-                if team_name not in teams:
-                    teams[team_name] = {'Placement': placement, 'Earnings': earnings}
+        # LEFT COLUMN: Team Games (Quota or Best Ball) & Net Medal
+        # Team Game Logic (Handles both Quota and BB)
+        team_game_html = ""
+        for sheet_name, title in [('Quota', 'Team Quota'), ('BB', 'Best Ball')]:
+            if sheet_name in xls and not xls[sheet_name].empty:
+                df = xls[sheet_name].copy()
+                earnings_col = 'Team_earnings' if 'Team_earnings' in df.columns else 'BB_earnings'
+                df = to_numeric_safe(df, [earnings_col])
+                df['Player'] = df['Player'].astype(str).str.strip().str.title()
+                
+                teams = {}
+                # Determine grouping: Use Team_ID if present to separate tied teams
+                group_cols = ['Placement']
+                if 'Team_ID' in df.columns:
+                    group_cols.append('Team_ID')
 
-            sorted_teams = sorted(teams.items(), key=lambda item: item[1]['Placement'])
+                for keys, group in df.groupby(group_cols):
+                    # Unpack placement (it's the first key)
+                    placement = keys[0] if isinstance(keys, tuple) else keys
+                    
+                    players = group['Player'].tolist()
+                    earnings = group[earnings_col].iloc[0] # Take first row's earnings (assumed per-team total) or sum if per-player
+                    # If earnings in sheet are per-player, sum them. If per-team, take one. 
+                    # Convention: Usually input as Total Team Earnings per row. 
+                    # If duplicate rows per player have same total, don't sum. 
+                    # SAFEST: Sum and divide by player count? No.
+                    # LET'S ASSUME: Sheet contains "Team Earnings" repeated for each player.
+                    # So we take the max (or mean) of the group.
+                    earnings = group[earnings_col].max() 
 
-            if sorted_teams:
-                writeup += "<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Team Quota</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-                for team_name, data in sorted_teams:
-                    if data['Earnings'] > 0:
-                        writeup += f"<li class='m-0'><span class='font-semibold'>{data['Placement']} Place:</span> {team_name} - ${data['Earnings']:.0f}</li>"
-                writeup += "</ul></div>"
+                    team_name = " & ".join(players)
+                    unique_key = f"{placement}_{team_name}" # ensure uniqueness in dict
+                    teams[unique_key] = {'Placement': placement, 'Earnings': earnings, 'Names': team_name}
+
+                sorted_teams = sorted(teams.values(), key=lambda x: str(x['Placement']))
+
+                if sorted_teams:
+                    team_game_html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
+                    for data in sorted_teams:
+                        if data['Earnings'] > 0:
+                            team_game_html += f"<li class='m-0'><span class='font-semibold'>{data['Placement']} Place:</span> {data['Names']} - ${data['Earnings']:.0f}</li>"
+                    team_game_html += "</ul></div>"
+        
+        writeup += team_game_html
 
         # Net Medal
         if 'NetMedal' in xls:
@@ -205,8 +226,16 @@ def run_pipeline():
     net_medal = to_numeric_safe(master['NetMedal'].copy(), ['net_medal_earnings'])
     gross_skins = to_numeric_safe(master['GrossSkins'].copy(), ['Gskins_earnings'])
     net_skins = to_numeric_safe(master['NetSkins'].copy(), ['Nskins_earnings'])
+    
+    # Handle BB earnings column naming (Team_earnings vs BB_earnings)
+    bb_data = master['BB'].copy()
+    if 'Team_earnings' in bb_data.columns:
+        bb_data = bb_data.rename(columns={'Team_earnings': 'BB_Earn'})
+    if 'BB_earnings' in bb_data.columns:
+        bb_data = bb_data.rename(columns={'BB_earnings': 'BB_Earn'})
+
     bb_df = to_numeric_safe(pd.concat([master['Team'].rename(columns={'Team_earnings': 'BB_Earn'}), 
-                                      master['BB'].rename(columns={'BB_earnings': 'BB_Earn'})], ignore_index=True), ['BB_Earn'])
+                                      bb_data], ignore_index=True), ['BB_Earn'])
     quota_df = to_numeric_safe(master['Quota'].copy(), ['Team_earnings', 'Quota_earnings'])
     quota_df['Quota_Earn'] = quota_df.filter(regex='earnings|Earn').sum(axis=1)
 
