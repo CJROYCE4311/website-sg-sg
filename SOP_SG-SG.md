@@ -1,72 +1,61 @@
-# SOP: Manual Tournament Data Entry (TSV Copy-Paste)
+# Standard Operating Procedure (SOP): SG@SG Dashboard Update Process
 
-> **☀️ MORNING CHECKLIST:**
-> 1. **Modify Template:** Ensure Google Sheet `Quota` and `BB` tabs have `Team_ID` in Column B.
-> 2. **Test Dec 20 Data:** Run the Prompts below against the Dec 20 Squabbit results.
-> 3. **Verify Write-up:** Run the python script and confirm tied teams are separated correctly in `index.html`.
+## 1. Data Collection (The "Screenshot" Method)
 
-**Objective:** Use an LLM to extract data from Squabbit results...
+Instead of fighting with Squabbit's locked data, we use a visual extraction workflow.
 
----
+### Required Screenshots
+Take clear, scrolling screenshots of the following tabs in Squabbit and save them to a new folder (e.g., `YYYY-MM-DD_Results`):
 
-## **Step 1: The Prompts**
-Navigate to the specific results page on Squabbit for each game, then use the corresponding prompt below.
+1.  **Gross Scores:** Capture the entire leaderboard (names + hole-by-hole scores).
+    *   *Filenames:* `gross1.png`, `gross2.png`, etc.
+2.  **Handicaps:** Capture the player list showing Handicap Indexes (HI).
+    *   *Filenames:* `handicap1.png`, etc.
+3.  **Net Medal:** Capture the winners/payouts.
+    *   *Filename:* `netmedal.png`
+4.  **Skins (Gross & Net):** Capture the skin winners and payouts.
+    *   *Filenames:* `grossskins.png`, `netskins.png`
+5.  **Team Game (Quota/BB):** Capture the team results/payouts.
+    *   *Filenames:* `quota1.png`, etc.
 
-### **Prompt 1: Team Games (Quota or Best Ball)**
-> "IMMEDIATELY analyze the active browser tab to extract team results from the SG@SG tournament page. Take over the current Squabbit leaderboard page and compile all team results into a TSV. Scroll through the entire list from top to bottom so every team is captured. For each team, output a row per player with columns: Date (YYYY-MM-DD), Team_ID (assigned in page order), Player, Placement (remove ‘T’ if present), Net_Total from the ‘TOT’ column (treat ‘E’ as 0), and Earnings as a plain number without the dollar sign. Include all players even if their earnings are zero. Omit the header row."
+## 2. AI Processing (The "Agent" Method)
 
-### **Prompt 2: Raw Scores (Hole-by-Hole)**
-> "IMMEDIATELY analyze the active browser tab to extract the full hole-by-hole leaderboard from the SG@SG tournament page. Take over the current Squabbit page and compile all results into a TSV. Scroll through the entire list from top to bottom so every player is captured. For each player, output a row with columns: Date (YYYY-MM-DD), Name (copy EXACTLY as shown), H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11, H12, H13, H14, H15, H16, H17, H18, and Gross_Score. Ensure every hole contains a numeric value. Omit the header row."
+1.  **Upload:** Provide the folder of screenshots to the AI Agent.
+2.  **Command:** Instruct the Agent: *"Extract data from these screenshots and generate the Excel file for the [Date] tournament."*
+3.  **Verification:** The Agent will:
+    *   OCR the player names and scores.
+    *   Extract handicaps (converting "+" handicaps to negative numbers, e.g., +1.7 -> -1.7).
+    *   Extract payouts and team assignments.
+    *   Generate a standard Excel file: `YYYY-MM-DD_SG-SG_Data.xlsx`.
 
-### **Prompt 3: Net Medal**
-> "Access the Net leaderboard. Compile into TSV format with these columns: date, Player, Placement, net_tot, net_medal_earnings. Drop the 'T' from placement. Omit header row."
+## 3. Automated Pipeline Execution
 
-### **Prompt 4: Skins (Gross & Net)**
-> "Access the Skins results. Compile into TSV format with these columns: date, Player, Skins_count, Skins_earnings. Create two separate TSV blocks: one for Gross Skins and one for Net Skins. Omit header rows."
+Once the Excel file is generated, the AI Agent (or you) runs the pipeline script.
 
----
+```bash
+python3 update_site.py
+```
 
-## **Step 2: Google Sheet Layout (Column Check)**
-Ensure your Google Sheet tabs match these columns exactly before pasting:
+### What the Script Does:
+*   **13-Month Lookback:** automatically filters historical data to the last 13 months for relevant analysis.
+*   **Column Normalization:** Automatically maps `HI`, `Handicap Index` -> `Handicap` for consistency.
+*   **Calculations:**
+    *   **Differentials:** `(Gross - 70.5) * 113 / 124`
+    *   **Gap:** `Handicap Used - Differential`
+    *   **Implied Index:** Average of Best 3 / Best 6 differentials.
+*   **Updates Dashboards:**
+    *   `index.html` (Latest Results Writeup)
+    *   `MoneyList2025/2026.html`
+    *   `HandicapAnalysis.html` (Scatter plots & Tables)
+    *   `Handicap_Detail.html` (Round-by-round detail)
+    *   `AverageScore.html` (Hole difficulty)
 
-| Tab | Col A | Col B | Col C | Col D | Col E | ... |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **RawScores** | Date | Name | H1 | H2 | ... | Gross_Score (Col U) |
-| **Handicaps** | Date | Player | HI | Course_Handicap | | |
-| **NetMedal** | date | Player | Placement | net_tot | net_medal_earnings | | 
-| **Quota** | date | Team_ID | Player | Placement | Team_net | Team_earnings |
-| **BB** | date | Team_ID | Player | Placement | Team_net | Team_earnings |
-| **GrossSkins**| date | Player | Gskins_count| Gskins_earnings| | |
-| **NetSkins** | date | Player | Nskins_count| Nskins_earnings| | |
+## 4. Deployment
 
----
+The script automatically commits and pushes changes to GitHub. Netlify detects the push and deploys the site live within seconds.
 
-## **Step 3: Finalization**
-1.  **Paste:** Paste the TSV data into the corresponding Google Sheet tabs.
-2.  **Download:** **File > Download > Microsoft Excel (.xlsx)**.
-3.  **Rename:** `YYYY-MM-DD_SG-SG_Data.xlsx`.
-3.  **Run Pipeline:** 
-    ```bash
-    python3 update_site.py
-    ```
+## Troubleshooting
 
----
-
-## **aText Macros (Shortcuts)**
-Use these abbreviations in **aText** to instantly paste long prompts or commands. 
-*Naming Logic:* `/` for LLM Prompts, `;` for Terminal Commands, `.` for General Text.
-
-### **✅ Completed Shortcuts**
-| Abbreviation | Purpose | Expanded Text / Command |
-| :--- | :--- | :--- |
-| `;sgpy` | **Terminal** | `cd ~/Developer/Personal_Projects/website-sg-sg && python3 update_site.py` |
-| `;sgge` | **Terminal** | `sggem` (Opens Gemini CLI in project folder) |
-| `/team` | **LLM Prompt** | Team Games (Quota/Best Ball) extraction. |
-| `/raw` | **LLM Prompt** | Raw Scores (Hole-by-Hole) extraction. |
-
-### **⏳ To Be Done (Pending Verification)**
-| Abbreviation | Purpose | Status |
-| :--- | :--- | :--- |
-| `/sgp3` | Net Medal Prompt | Pending Atlas Test |
-| `/sgp4` | Skins Prompt | Pending Atlas Test |
-| `;sggit` | Git Check Command | Pending Verification |
+*   **"Blank" Analysis Page:** Ensure `Handicaps` tab exists in the Excel file and column is named `HI` or `Handicap`.
+*   **New Players:** If a new player appears, ensure their name spelling matches exactly across all screenshots.
+*   **Plus Handicaps:** Ensure they are stored as NEGATIVE numbers in the Excel file (e.g., -2.0) for the math to work (Net = Gross - Hcp).

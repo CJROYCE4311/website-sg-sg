@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handicap Top 5 Detail | SG@SG</title>
+    <title>Handicap Rounds Detail | SG@SG</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h2 class="font-bold text-lg text-slate-800">Top 5 Rounds Detail</h2>
+                <h2 class="font-bold text-lg text-slate-800">Rounds Detail</h2>
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
                     <input type="text" id="searchInput" placeholder="Search players..."
@@ -555,7 +555,7 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                     hcp: parseNumber(cols[3]),
                     net: parseNumber(cols[4]),
                     diff: parseNumber(cols[5]),
-                    gap: (parseNumber(cols[3]) - parseNumber(cols[5])).toFixed(1),
+                    gap: (parseNumber(cols[4]) - 72).toFixed(1),
                     rounds: parseNumber(cols[6]),
                     notes: cols[7] || '',
                     // Keep original strings for display if needed, but we render from these values
@@ -616,10 +616,10 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
                 
-                // Colorize Gap
+                // Colorize Gap: Positive (Over 72) is Red, Negative (Under 72) is Green
                 let gapClass = "text-slate-600";
-                if (parseFloat(row.gap) > 0) gapClass = "text-emerald-600 font-semibold"; // Beat handicap
-                if (parseFloat(row.gap) < 0) gapClass = "text-red-500"; // Missed handicap
+                if (parseFloat(row.gap) < 0) gapClass = "text-emerald-600 font-semibold"; // Beat par
+                if (parseFloat(row.gap) > 0) gapClass = "text-red-500"; // Over par
 
                 tr.innerHTML = `
                     <td class="p-4 font-medium text-slate-800">${row.player}</td>
