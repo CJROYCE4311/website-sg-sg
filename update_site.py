@@ -19,6 +19,11 @@ def clean_player_data(df):
     """Normalizes names and dates for consistent merging."""
     if df.empty: return df
     df.columns = [c.strip() for c in df.columns]
+    
+    # Standardize Handicap
+    if 'HI' in df.columns: df = df.rename(columns={'HI': 'Handicap'})
+    if 'Handicap Index' in df.columns: df = df.rename(columns={'Handicap Index': 'Handicap'})
+
     p_col = next((c for c in df.columns if c.lower() in ['player', 'name']), None)
     if p_col:
         df = df.rename(columns={p_col: 'Player'})
@@ -194,7 +199,20 @@ def update_index_html(writeup_html):
 
 def run_pipeline():
     print("--- ⛳ Starting Site Refresh ---")
-    excel_files = glob.glob(os.path.join(BASE_PATH, "2*.xlsx"))
+    all_excel_files = glob.glob(os.path.join(BASE_PATH, "2*.xlsx"))
+    excel_files = []
+    
+    # Filter 13 Months
+    cutoff_date = datetime.now() - pd.DateOffset(months=MONTHS_LOOKBACK)
+    for f in all_excel_files:
+        basename = os.path.basename(f)
+        try:
+            date_part = basename[:10]
+            file_date = datetime.strptime(date_part, '%Y-%m-%d')
+            if file_date >= cutoff_date:
+                excel_files.append(f)
+        except:
+            excel_files.append(f) # Include if date parse fails
     
     # Find the latest excel file
     latest_file = max(excel_files, key=os.path.getctime) if excel_files else None
@@ -256,11 +274,8 @@ def run_pipeline():
     # --- HANDICAP ANALYSIS ---
     handicaps = master['Handicaps'].copy() if 'Handicaps' in master else pd.DataFrame()
     if not handicaps.empty:
-        # Normalize Handicap column names
-        hcp_map = {c: 'Handicap' for c in handicaps.columns if c.lower() in ['hi', 'handicap index', 'hcp', 'index']}
-        handicaps = handicaps.rename(columns=hcp_map)
-        
-        # Remove duplicate columns (keep last) to avoid DataFrame return on series lookup
+        # Columns already normalized in clean_player_data
+        # Remove duplicate columns (keep last) just in case
         handicaps = handicaps.loc[:, ~handicaps.columns.duplicated(keep='last')]
 
         handicaps = to_numeric_safe(handicaps, ['Handicap'])

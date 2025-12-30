@@ -176,7 +176,7 @@ handicap_data = [
     ["Travis Ingram", 6.6],
     ["Win Doolittle", 8.0]
 ]
-df_handicaps = pd.DataFrame(handicap_data, columns=["Player", "Handicap"])
+df_handicaps = pd.DataFrame(handicap_data, columns=["Player", "HI"])
 df_handicaps['date'] = '2025-12-20'
 
 # --- 7. Save to Excel ---
