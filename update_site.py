@@ -256,6 +256,13 @@ def run_pipeline():
     # --- HANDICAP ANALYSIS ---
     handicaps = master['Handicaps'].copy() if 'Handicaps' in master else pd.DataFrame()
     if not handicaps.empty:
+        # Normalize Handicap column names
+        hcp_map = {c: 'Handicap' for c in handicaps.columns if c.lower() in ['hi', 'handicap index', 'hcp', 'index']}
+        handicaps = handicaps.rename(columns=hcp_map)
+        
+        # Remove duplicate columns (keep last) to avoid DataFrame return on series lookup
+        handicaps = handicaps.loc[:, ~handicaps.columns.duplicated(keep='last')]
+
         handicaps = to_numeric_safe(handicaps, ['Handicap'])
         if 'date' in handicaps.columns:
             base = base.merge(handicaps[['date', 'Player', 'Handicap']], on=['date', 'Player'], how='left')
