@@ -555,7 +555,7 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                     hcp: parseNumber(cols[3]),
                     net: parseNumber(cols[4]),
                     diff: parseNumber(cols[5]),
-                    gap: (parseNumber(cols[4]) - 72).toFixed(1),
+                    gap: (parseNumber(cols[5]) - parseNumber(cols[3])).toFixed(1),
                     rounds: parseNumber(cols[6]),
                     notes: cols[7] || '',
                     // Keep original strings for display if needed, but we render from these values
@@ -616,10 +616,9 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
                 
-                // Colorize Gap: Positive (Over 72) is Red, Negative (Under 72) is Green
-                let gapClass = "text-slate-600";
-                if (parseFloat(row.gap) < 0) gapClass = "text-emerald-600 font-semibold"; // Beat par
-                if (parseFloat(row.gap) > 0) gapClass = "text-red-500"; // Over par
+                // Colorize Gap: Negative (Beat Index) is Red (Sandbagger Alert), Positive is Neutral
+                let gapClass = "text-slate-500";
+                if (parseFloat(row.gap) < 0) gapClass = "text-red-600 font-bold"; // Beat Index (Alert)
 
                 tr.innerHTML = `
                     <td class="p-4 font-medium text-slate-800">${row.player}</td>
