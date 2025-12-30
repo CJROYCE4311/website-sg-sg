@@ -210,7 +210,7 @@ def run_pipeline():
         scorecard = scorecard[['hole', 'par']].dropna()
 
     # 2. Load All Data
-    dfs = {k: [] for k in ['RawScores', 'NetMedal', 'BB', 'Team', 'Quota', 'GrossSkins', 'NetSkins']}
+    dfs = {k: [] for k in ['RawScores', 'NetMedal', 'BB', 'Team', 'Quota', 'GrossSkins', 'NetSkins', 'Handicaps']}
     for f in excel_files:
         xls = pd.read_excel(f, sheet_name=None)
         for key in dfs.keys():
@@ -252,6 +252,36 @@ def run_pipeline():
         if col not in base.columns: base[col] = 0.0
     base = base.fillna(0)
     base['Total_Earnings'] = base[money_cols].sum(axis=1)
+
+    # --- HANDICAP ANALYSIS ---
+    handicaps = master['Handicaps'].copy() if 'Handicaps' in master else pd.DataFrame()
+    if not handicaps.empty:
+        handicaps = to_numeric_safe(handicaps, ['Handicap'])
+        if 'date' in handicaps.columns:
+            base = base.merge(handicaps[['date', 'Player', 'Handicap']], on=['date', 'Player'], how='left')
+        else:
+            base = base.merge(handicaps[['Player', 'Handicap']], on=['Player'], how='left')
+    
+    score_cols = [f'H{i}' for i in range(1, 19)]
+    if 'Gross_Score' not in base.columns:
+         base['Gross_Score'] = base[score_cols].sum(axis=1)
+    else:
+         mask = base['Gross_Score'] == 0
+         base.loc[mask, 'Gross_Score'] = base.loc[mask, score_cols].sum(axis=1)
+
+    base['Differential'] = (base['Gross_Score'] - COURSE_RATING) * 113 / SLOPE_RATING
+    base['Differential'] = base['Differential'].round(1)
+
+    analysis_data = []
+    for player, group in base.groupby('Player'):
+        diffs = group.sort_values('date', ascending=False)['Differential'].dropna().tolist()
+        if len(diffs) >= 1:
+            best3 = sum(sorted(diffs)[:3]) / min(len(diffs), 3)
+            best6 = sum(sorted(diffs)[:6]) / min(len(diffs), 6)
+            analysis_data.append({'name': player, 'best3': round(best3, 1), 'best6': round(best6, 1)})
+            
+    inject_to_html("HandicapAnalysis.html", "dataBest3", [{'x': d['name'], 'y': d['best3']} for d in analysis_data], is_json=True)
+    inject_to_html("HandicapAnalysis.html", "dataBest6", [{'x': d['name'], 'y': d['best6']} for d in analysis_data], is_json=True)
 
     # 4. Injections
     # Money Lists
