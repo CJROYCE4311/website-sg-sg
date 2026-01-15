@@ -134,7 +134,7 @@ def generate_writeup_html(file_path):
                 if group['net_medal_earnings'].sum() > 0:
                     valid_entries = True
                     names = ", ".join(group['Player'].tolist())
-                    earnings = group['net_medal_earnings'].sum()
+                    earnings = group['net_medal_earnings'].iloc[0]
                     writeup += f"<li class='m-0'><span class='font-semibold'>{placement} Place:</span> {names} - ${earnings:.0f}</li>"
             writeup += "</ul></div>"
 

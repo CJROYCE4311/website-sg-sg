@@ -7,15 +7,13 @@ Instead of fighting with Squabbit's locked data, we use a visual extraction work
 ### Required Screenshots
 Take clear, scrolling screenshots of the following tabs in Squabbit and save them to a new folder (e.g., `YYYY-MM-DD_Results`):
 
-1.  **Gross Scores:** Capture the entire leaderboard (names + hole-by-hole scores).
+1.  **Gross Scores (Master List):** Capture the entire leaderboard (names + hole-by-hole scores). **Crucial:** Ensure the view includes the Handicap Index displayed next to the player name (e.g., `Jeff (0.5)`). This serves as the master list for both Scores and Handicaps.
     *   *Filenames:* `gross1.png`, `gross2.png`, etc.
-2.  **Handicaps:** Capture the player list showing Handicap Indexes (HI).
-    *   *Filenames:* `handicap1.png`, etc.
-3.  **Net Medal:** Capture the winners/payouts.
+2.  **Net Medal:** Capture the winners/payouts.
     *   *Filename:* `netmedal.png`
-4.  **Skins (Gross & Net):** Capture the skin winners and payouts.
+3.  **Skins (Gross & Net):** Capture the skin winners and payouts.
     *   *Filenames:* `grossskins.png`, `netskins.png`
-5.  **Team Game (Quota/BB):** Capture the team results/payouts.
+4.  **Team Game (Quota/BB):** Capture the team results/payouts.
     *   *Filenames:* `quota1.png`, etc.
 
 ## 2. AI Processing (The "Agent" Method)
