@@ -267,11 +267,20 @@ def run_pipeline():
     
     # Handle BB earnings column naming (Team_earnings vs BB_earnings)
     bb_data = master['BB'].copy()
-    if 'Team_earnings' in bb_data.columns:
+    
+    # Coalesce Team_earnings and BB_earnings into BB_Earn
+    cols = bb_data.columns
+    if 'Team_earnings' in cols and 'BB_earnings' in cols:
+        # Fill NaN with 0 before adding
+        bb_data['BB_Earn'] = pd.to_numeric(bb_data['Team_earnings'], errors='coerce').fillna(0) + \
+                             pd.to_numeric(bb_data['BB_earnings'], errors='coerce').fillna(0)
+        bb_data = bb_data.drop(columns=['Team_earnings', 'BB_earnings'])
+    elif 'Team_earnings' in cols:
         bb_data = bb_data.rename(columns={'Team_earnings': 'BB_Earn'})
-    if 'BB_earnings' in bb_data.columns:
+    elif 'BB_earnings' in cols:
         bb_data = bb_data.rename(columns={'BB_earnings': 'BB_Earn'})
-    # Remove duplicates in bb_data columns
+        
+    # Remove any duplicate columns that might remain (e.g., duplicate dates/players)
     bb_data = bb_data.loc[:, ~bb_data.columns.duplicated()]
 
     team_data = master['Team'].copy()
@@ -281,6 +290,7 @@ def run_pipeline():
     team_data = team_data.loc[:, ~team_data.columns.duplicated()]
 
     bb_df = to_numeric_safe(pd.concat([team_data, bb_data], ignore_index=True), ['BB_Earn'])
+    
     quota_df = to_numeric_safe(master['Quota'].copy(), ['Team_earnings', 'Quota_earnings'])
     quota_df['Quota_Earn'] = quota_df.filter(regex='earnings|Earn').sum(axis=1)
 
@@ -289,8 +299,11 @@ def run_pipeline():
     for df_to_merge, col_name in [(net_medal, 'net_medal_earnings'), (bb_df, 'BB_Earn'), 
                                  (quota_df, 'Quota_Earn'), (gross_skins, 'Gskins_earnings'), (net_skins, 'Nskins_earnings')]:
         if not df_to_merge.empty:
-            df_agg = df_to_merge.groupby(['date', 'Player'])[col_name].sum().reset_index()
-            base = base.merge(df_agg, on=['date', 'Player'], how='left')
+            # Ensure date and Player are consistent for merge
+            if 'date' in df_to_merge.columns and 'Player' in df_to_merge.columns:
+                 # Group by key to avoid duplicates causing merge explosion (sum earnings if multiple entries)
+                 df_agg = df_to_merge.groupby(['date', 'Player'])[col_name].sum().reset_index()
+                 base = base.merge(df_agg, on=['date', 'Player'], how='left')
     
     money_cols = ['net_medal_earnings', 'BB_Earn', 'Quota_Earn', 'Gskins_earnings', 'Nskins_earnings']
     for col in money_cols:
@@ -420,6 +433,31 @@ def run_pipeline():
         hole_avg = hole_avg.merge(scorecard, on='hole', how='left')
     hole_avg['par'] = hole_avg['par'].fillna(4).astype(int)
     inject_to_html("AverageScore.html", "holeData", hole_avg[['hole', 'score', 'par']].to_dict('records'), is_json=True)
+
+    # --- Hole Index Calculation (SG@SG vs Sterling Grove) ---
+    # Standard Sterling Grove Indices (Hardcoded map)
+    sg_index_map = {1: 5, 2: 15, 3: 13, 4: 7, 5: 1, 6: 17, 7: 9, 8: 3, 9: 11, 
+                    10: 12, 11: 14, 12: 2, 13: 16, 14: 10, 15: 6, 16: 18, 17: 8, 18: 4}
+    
+    # Calculate SG@SG difficulty ranking
+    # Difficulty = Average Score - Par
+    hole_index_df = hole_avg.copy()
+    hole_index_df['diff'] = hole_index_df['score'] - hole_index_df['par']
+    # Rank descending (Higher diff = Harder = Rank 1)
+    hole_index_df = hole_index_df.sort_values('diff', ascending=False)
+    hole_index_df['rank'] = range(1, 19)
+    
+    # Construct JSON data for HoleIndex.html
+    hole_index_data = []
+    for _, row in hole_index_df.iterrows():
+        h = int(row['hole'])
+        hole_index_data.append({
+            "hole": h,
+            "x": sg_index_map.get(h, 0),
+            "y": int(row['rank'])
+        })
+    # Inject into HoleIndex.html
+    inject_to_html("HoleIndex.html", "rawData", hole_index_data, is_json=True)
     
     # --- Player Stats Injection ---
     # Calculate stats: Average Gross, Average Net, Average Net to Par
