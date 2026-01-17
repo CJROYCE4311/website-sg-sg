@@ -56,19 +56,49 @@
         
         <!-- Intro Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
-            <h2 class="text-2xl font-bold text-slate-900 mb-4">Handicap Performance Probabilities</h2>
-            <p class="text-slate-600 leading-relaxed max-w-4xl">
-                The following table depicts the odds of a player shooting a <strong>net Score Differential</strong> or better based on their Handicap Index. 
-                A net Score Differential is calculated as: <span class="bg-slate-100 px-2 py-1 rounded font-mono text-sm">Score Differential - Handicap Index</span>.
-            </p>
-            <div class="mt-6 flex flex-wrap gap-4">
-                <div class="flex items-center gap-2 text-sm text-slate-500">
-                    <span class="w-3 h-3 rounded-full bg-red-100 border border-red-200"></span>
-                    <span>Negative Net Diff (Beating Index)</span>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Handicap Performance Probabilities</h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        The following table depicts the odds of a player shooting a <strong>net Score Differential</strong> or better based on their Handicap Index. 
+                        This data helps committees identify rounds that are statistically exceptional compared to a player's established ability.
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <div class="flex items-center gap-2 text-sm text-slate-500">
+                            <span class="w-3 h-3 rounded-full bg-red-100 border border-red-200"></span>
+                            <span>Negative Net Diff (Beating Index)</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-slate-500">
+                            <span class="w-3 h-3 rounded-full bg-green-100 border border-green-200"></span>
+                            <span>Positive Net Diff (Playing to Index)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-slate-500">
-                    <span class="w-3 h-3 rounded-full bg-green-100 border border-green-200"></span>
-                    <span>Positive Net Diff (Playing to Index)</span>
+                
+                <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-emerald-600"></i>
+                        Calculation Guide
+                    </h3>
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <p class="font-semibold text-slate-700">The Formula:</p>
+                            <code class="block bg-white p-2 rounded border border-slate-200 mt-1 text-emerald-700 font-mono">
+                                Score Differential - Handicap Index = Net Score Differential
+                            </code>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-700">Differential vs. Net to Par:</p>
+                            <p class="text-slate-600 mt-1">
+                                While "Net to Par" is common for tournament scoring, it does not account for course difficulty. 
+                                <strong>Score Differential</strong> measures performance relative to the <strong>Course Rating</strong> (the score a scratch golfer is expected to shoot), 
+                                not the course Par. 
+                            </p>
+                            <p class="text-slate-600 mt-2">
+                                Because Course Ratings often differ from Par, the Score Differential provides the only statistically consistent baseline for calculating scoring probability across different courses.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
