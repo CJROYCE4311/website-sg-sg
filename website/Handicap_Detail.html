@@ -83,6 +83,10 @@
                                 Gap <i id="icon-gap" class="fa-solid fa-sort text-slate-300 ml-1"></i>
                             </th>
                             <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                onclick="sortTable('odds')">
+                                Odds (1 in...) <i id="icon-odds" class="fa-solid fa-sort text-slate-300 ml-1"></i>
+                            </th>
+                            <th class="p-4 font-semibold text-center cursor-pointer hover:bg-slate-100 transition-colors"
                                 onclick="sortTable('rounds')">
                                 Rounds Avail <i id="icon-rounds" class="fa-solid fa-sort text-slate-300 ml-1"></i>
                             </th>
@@ -538,6 +542,64 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
 </script>
 
     <script>
+        // USGA Probability Table (Net Differential vs Handicap Index)
+        // Rows: Net Differential (Gap), Cols: Handicap Ranges
+        const probabilityTable = {
+            3: [1.8, 1.8, 1.9, 2.0, 2.1, 2.1, 2.2, 2.3, 2.4],
+            2: [2.4, 2.5, 2.5, 2.5, 2.6, 2.7, 2.8, 2.9, 2.9],
+            1: [3.6, 3.6, 3.6, 3.6, 3.5, 3.5, 3.5, 3.5, 3.5],
+            0: [5.9, 5.5, 5.3, 5.2, 5.1, 5.0, 5.0, 4.8, 4.6],
+            "-1": [11.1, 9.7, 8.9, 8.2, 7.7, 7.4, 7.1, 6.6, 6.0],
+            "-2": [23.0, 18.5, 16.1, 13.8, 12.4, 11.3, 10.5, 9.4, 8.2],
+            "-3": [53.5, 38.5, 31.2, 24.7, 21.1, 18.0, 16.0, 13.7, 11.3],
+            "-4": [139.8, 87.1, 64.7, 46.9, 37.3, 29.8, 25.1, 20.4, 16.1],
+            "-5": [376.5, 210.9, 140.1, 93.3, 68.6, 51.2, 40.4, 31.0, 23.1],
+            "-6": [986.8, 535.7, 317.4, 191.5, 130.5, 89.9, 66.5, 47.9, 33.6],
+            "-7": [2247.9, 1282.2, 704.6, 391.4, 251.2, 161.8, 110.5, 74.5, 48.8],
+            "-8": [6362.8, 3361.9, 1580.6, 743.0, 451.2, 265.7, 170.1, 109.3, 67.1],
+            "-9": [13861.8, 8202.6, 3609.9, 1362.7, 828.0, 449.0, 264.2, 159.8, 94.0],
+            "-10": [22831.3, 15812.0, 7186.6, 2204.6, 1431.9, 715.9, 398.0, 226.6, 127.7],
+            "-11": [32344.3, 28561.4, 13166.4, 3153.5, 2202.2, 1061.6, 559.8, 299.6, 164.5],
+            "-12": [58219.8, 44968.9, 21133.7, 4085.7, 3157.2, 1476.7, 748.1, 380.5, 205.1]
+        };
+
+        const hcpRanges = [
+            { max: 0.0, idx: 0 }, // Less than 0.0
+            { max: 4.9, idx: 1 },
+            { max: 9.9, idx: 2 },
+            { max: 14.9, idx: 3 },
+            { max: 19.9, idx: 4 },
+            { max: 24.9, idx: 5 },
+            { max: 29.9, idx: 6 },
+            { max: 34.9, idx: 7 },
+            { max: 39.9, idx: 8 }
+        ];
+
+        function getOdds(gap, hcp) {
+            // Determine handicap column index
+            let colIdx = 8; // Default to highest bucket
+            for (let r of hcpRanges) {
+                if (hcp <= r.max) {
+                    colIdx = r.idx;
+                    break;
+                }
+            }
+
+            // Determine gap row key
+            // Table goes from +3 down to -12. 
+            // If gap > 3, it's very likely. If gap < -12, it's extremely unlikely.
+            const roundedGap = Math.round(gap);
+            let rowKey = roundedGap.toString();
+
+            if (roundedGap > 3) return "-"; // High probability, not in table
+            if (roundedGap < -12) return "> 58,000"; // Extremely low
+
+            if (probabilityTable[rowKey]) {
+                return probabilityTable[rowKey][colIdx];
+            }
+            return "-";
+        }
+
         let allData = [];
         let currentSort = { column: null, direction: 'asc' };
         let searchTerm = '';
@@ -553,18 +615,23 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
 
                 const cols = line.split(/\t/).map(c => c.trim());
 
+                const gapVal = (parseNumber(cols[5]) - parseNumber(cols[3])).toFixed(1);
+                const hcpVal = parseNumber(cols[3]);
+                const oddsVal = getOdds(parseFloat(gapVal), hcpVal);
+
                 // Parse row data
                 const row = {
                     player: cols[0] || '',
                     date: cols[1] || '',
                     gross: parseNumber(cols[2]),
-                    hcp: parseNumber(cols[3]),
+                    hcp: hcpVal,
                     net: parseNumber(cols[4]),
                     diff: parseNumber(cols[5]),
-                    gap: (parseNumber(cols[5]) - parseNumber(cols[3])).toFixed(1),
+                    gap: gapVal,
+                    odds: oddsVal,
                     rounds: parseNumber(cols[6]),
                     notes: cols[7] || '',
-                    // Keep original strings for display if needed, but we render from these values
+                    // Keep original strings for display if needed
                     grossDisplay: cols[2] || '',
                     hcpDisplay: cols[3] || '',
                     netDisplay: cols[4] || '',
@@ -606,6 +673,12 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                     let valA = a[currentSort.column];
                     let valB = b[currentSort.column];
 
+                    if (currentSort.column === 'odds') {
+                        // Handle numeric sort for odds, treating ">" or "-" specially
+                        valA = (valA === '-' || valA === '> 58,000') ? 0 : parseFloat(valA); 
+                        valB = (valB === '-' || valB === '> 58,000') ? 0 : parseFloat(valB);
+                    }
+
                     if (typeof valA === 'string') {
                         valA = valA.toLowerCase();
                         valB = valB.toLowerCase();
@@ -622,9 +695,15 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
                 
-                // Colorize Gap: Negative (Beat Index) is Red (Sandbagger Alert), Positive is Neutral
+                // Colorize Gap
                 let gapClass = "text-slate-500";
-                if (parseFloat(row.gap) < 0) gapClass = "text-red-600 font-bold"; // Beat Index (Alert)
+                if (parseFloat(row.gap) < 0) gapClass = "text-red-600 font-bold";
+
+                // Colorize Odds (High probability = neutral, Low probability = warning)
+                let oddsClass = "text-slate-500 text-xs";
+                const oddsNum = parseFloat(row.odds);
+                if (oddsNum > 50) oddsClass = "text-orange-500 font-bold text-xs";
+                if (oddsNum > 200) oddsClass = "text-red-600 font-bold text-xs";
 
                 tr.innerHTML = `
                     <td class="p-4 font-medium text-slate-800">${row.player}</td>
@@ -634,6 +713,7 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
                     <td class="p-4 text-center font-bold text-emerald-700 bg-emerald-50 rounded-lg">${row.netDisplay}</td>
                     <td class="p-4 text-center text-slate-600">${row.diffDisplay}</td>
                     <td class="p-4 text-center ${gapClass}">${row.gap}</td>
+                    <td class="p-4 text-center ${oddsClass}">${row.odds}</td>
                     <td class="p-4 text-center text-slate-600">${row.roundsDisplay}</td>
                     <td class="p-4 text-xs italic text-slate-400">${row.notes}</td>
                 `;
