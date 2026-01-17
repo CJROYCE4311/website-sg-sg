@@ -24,6 +24,8 @@ def clean_player_data(df):
     """Normalizes names and dates for consistent merging."""
     if df.empty: return df
     df.columns = [c.strip() for c in df.columns]
+    # Remove duplicate columns after stripping (keeps first occurrence)
+    df = df.loc[:, ~df.columns.duplicated()]
     
     # Standardize Handicap
     if 'HI' in df.columns: df = df.rename(columns={'HI': 'Handicap'})
@@ -269,9 +271,16 @@ def run_pipeline():
         bb_data = bb_data.rename(columns={'Team_earnings': 'BB_Earn'})
     if 'BB_earnings' in bb_data.columns:
         bb_data = bb_data.rename(columns={'BB_earnings': 'BB_Earn'})
+    # Remove duplicates in bb_data columns
+    bb_data = bb_data.loc[:, ~bb_data.columns.duplicated()]
 
-    bb_df = to_numeric_safe(pd.concat([master['Team'].rename(columns={'Team_earnings': 'BB_Earn'}), 
-                                      bb_data], ignore_index=True), ['BB_Earn'])
+    team_data = master['Team'].copy()
+    if 'Team_earnings' in team_data.columns:
+        team_data = team_data.rename(columns={'Team_earnings': 'BB_Earn'})
+    # Remove duplicates in team_data columns
+    team_data = team_data.loc[:, ~team_data.columns.duplicated()]
+
+    bb_df = to_numeric_safe(pd.concat([team_data, bb_data], ignore_index=True), ['BB_Earn'])
     quota_df = to_numeric_safe(master['Quota'].copy(), ['Team_earnings', 'Quota_earnings'])
     quota_df['Quota_Earn'] = quota_df.filter(regex='earnings|Earn').sum(axis=1)
 

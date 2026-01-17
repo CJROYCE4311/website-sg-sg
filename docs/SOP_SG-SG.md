@@ -1,11 +1,22 @@
 # Standard Operating Procedure (SOP): SG@SG Dashboard Update Process
 
-## 1. Data Collection (The "Screenshot" Method)
+## 1. Project Structure
 
-Instead of fighting with Squabbit's locked data, we use a visual extraction workflow.
+The project is organized to separate data, code, and content:
 
-### Required Screenshots
-Take clear, scrolling screenshots of the following tabs in Squabbit and save them to a new folder (e.g., `YYYY-MM-DD_Results`):
+*   **`data/`**: Stores all Excel history (`YYYY-MM-DD_SG-SG_Data.xlsx`) and the Scorecard CSV.
+*   **`website/`**: Contains the live HTML site.
+    *   **`assets/`**: Stores images (logos, course photos).
+*   **`scripts/`**: Stores the automation logic (`update_site.py`).
+*   **`input/`**: The Agent's workspace.
+    *   **`screenshots/`**: **DROP ZONE.** Place new tournament screenshots here.
+    *   **`processed/`**: Archive for processed screenshots.
+*   **`docs/`**: Documentation and SOPs.
+
+## 2. The "Conductor" Workflow (Monthly Update)
+
+### Step 1: Data Collection (User)
+Take clear, scrolling screenshots of the results in Squabbit:
 
 1.  **Gross Scores (Master List):** Capture the entire leaderboard (names + hole-by-hole scores). **Crucial:** Ensure the view includes the Handicap Index displayed next to the player name (e.g., `Jeff (0.5)`). This serves as the master list for both Scores and Handicaps.
     *   *Filenames:* `gross1.png`, `gross2.png`, etc.
@@ -13,48 +24,43 @@ Take clear, scrolling screenshots of the following tabs in Squabbit and save the
     *   *Filename:* `netmedal.png`
 3.  **Skins (Gross & Net):** Capture the skin winners and payouts.
     *   *Filenames:* `grossskins.png`, `netskins.png`
-4.  **Team Game (Quota/BB):** Capture the team results/payouts.
-    *   *Filenames:* `quota1.png`, etc.
+4.  **Team Game (Quota/BB/Stableford):** Capture the team results/payouts.
+    *   *Filenames:* `quota1.png`, `team1.png`, etc.
 
-## 2. AI Processing (The "Agent" Method)
+**Action:** Drag and drop these files into the `input/screenshots/` folder.
 
-1.  **Upload:** Provide the folder of screenshots to the AI Agent.
-2.  **Command:** Instruct the Agent: *"Extract data from these screenshots and generate the Excel file for the [Date] tournament."*
-3.  **Verification:** The Agent will:
-    *   OCR the player names and scores.
-    *   Extract handicaps (converting "+" handicaps to negative numbers, e.g., +1.7 -> -1.7).
-    *   Extract payouts and team assignments.
-    *   Generate a standard Excel file: `YYYY-MM-DD_SG-SG_Data.xlsx`.
+### Step 2: Agent Execution (AI)
+Instruct the Agent: *"I have dropped the screenshots in input/screenshots. Please update the site."*
 
-## 3. Automated Pipeline Execution
+The Agent will perform the following "Conductor" Track:
 
-Once the Excel file is generated, the AI Agent (or you) runs the pipeline script.
+1.  **Vision Extraction:** Read the screenshots in `input/screenshots/`.
+2.  **Data Entry:** Extract scores, handicaps (converting `+` to negative numbers), and payouts to create a new Excel file: `data/YYYY-MM-DD_SG-SG_Data.xlsx`.
+3.  **Execution:** Run the update script:
+    ```bash
+    python3 scripts/update_site.py
+    ```
+4.  **Cleanup:** Move used screenshots to `input/processed/YYYY-MM-DD/`.
+5.  **Deployment:** Commit and push changes to GitHub.
 
-```bash
-python3 update_site.py
-```
+### Step 3: Verification (User)
+*   Check the live site (Netlify) to ensure the "Latest Results" writeup is accurate.
+*   Verify the "Handicap Analysis" page shows the new round data.
 
-### What the Script Does:
-*   **13-Month Lookback:** automatically filters historical data to the last 13 months for relevant analysis.
-*   **Column Normalization:** Automatically maps `HI`, `Handicap Index` -> `Handicap` for consistency.
+## 3. Script Logic (`update_site.py`)
+
+*   **Auto-Detection:** Automatically finds the latest Excel file in `data/` and uses the last 13 months of data.
 *   **Calculations:**
     *   **Differentials:** `(Gross - 70.5) * 113 / 124`
-    *   **Gap:** `Differential - Handicap Index`
-        *   *Interpretation:* **Negative (Red)** = Beat Index (Audit Alert). **Positive (Grey)** = Played to/above Index.
+    *   **Gap:** `Differential - Handicap Index` (Negative = Beat Index/Sandbagger Alert).
     *   **Implied Index:** Average of Best 3 / Best 6 differentials.
-*   **Updates Dashboards:**
-    *   `index.html` (Latest Results Writeup)
-    *   `MoneyList2025/2026.html`
-    *   `HandicapAnalysis.html` (Scatter plots & Tables)
-    *   `Handicap_Detail.html` (Round-by-round detail)
-    *   `AverageScore.html` (Hole difficulty)
+*   **Earnings Display:**
+    *   **Team Games & Net Medal:** Displays **per-player** earnings (e.g., "Player A & Player B - $50" means $50 each).
+    *   **Skins:** Displays individual skin totals.
+*   **Deployment:** Automatically commits and pushes to `main`.
 
-## 4. Deployment
+## 4. Troubleshooting
 
-The script automatically commits and pushes changes to GitHub. Netlify detects the push and deploys the site live within seconds.
-
-## Troubleshooting
-
-*   **"Blank" Analysis Page:** Ensure `Handicaps` tab exists in the Excel file and column is named `HI` or `Handicap`.
-*   **New Players:** If a new player appears, ensure their name spelling matches exactly across all screenshots.
-*   **Plus Handicaps:** Ensure they are stored as NEGATIVE numbers in the Excel file (e.g., -2.0) for the math to work (Net = Gross - Hcp).
+*   **"Blank" Analysis Page:** Ensure the `Handicaps` tab exists in the Excel file (or handicaps were extracted from Gross Scores) and the column is named `Handicap`.
+*   **Plus Handicaps:** Ensure `+1.5` is stored as `-1.5` in the Excel file.
+*   **Missing Images:** Ensure all images are in `website/assets/` and HTML links point to `assets/ImageName.png`.
