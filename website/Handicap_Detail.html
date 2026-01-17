@@ -586,18 +586,18 @@ Zane Eisenbarth	2025-02-08	78	6.5	71.5	6.8	6
             }
 
             // Determine gap row key
-            // Table goes from +3 down to -12. 
-            // If gap > 3, it's very likely. If gap < -12, it's extremely unlikely.
-            const roundedGap = Math.round(gap);
-            let rowKey = roundedGap.toString();
+            // USGA table uses "Net Score Differential or better"
+            // If someone shoots -1.5, they have shot "-1 or better" rarity.
+            const ceilGap = Math.ceil(gap);
+            let rowKey = ceilGap.toString();
 
-            if (roundedGap > 3) return "-"; // High probability, not in table
-            if (roundedGap < -12) return "> 58,000"; // Extremely low
+            if (ceilGap > 3) return "1"; // Common round
+            if (ceilGap < -12) return "> 58,000"; // Exceptional rarity
 
             if (probabilityTable[rowKey]) {
                 return probabilityTable[rowKey][colIdx];
             }
-            return "-";
+            return "1";
         }
 
         let allData = [];
