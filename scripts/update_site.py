@@ -421,6 +421,28 @@ def run_pipeline():
     hole_avg['par'] = hole_avg['par'].fillna(4).astype(int)
     inject_to_html("AverageScore.html", "holeData", hole_avg[['hole', 'score', 'par']].to_dict('records'), is_json=True)
     
+    # --- Player Stats Injection ---
+    # Calculate stats: Average Gross, Average Net, Average Net to Par
+    if not base.empty:
+        stats_df = base.copy()
+        # Ensure Net Score exists (Gross - Handicap)
+        stats_df['Net_Score'] = stats_df['Gross_Score'] - stats_df['Handicap']
+        stats_df['Net_to_Par'] = stats_df['Net_Score'] - 72
+
+        # Aggregate by Player
+        player_stats = stats_df.groupby('Player').agg({
+            'Gross_Score': 'mean',
+            'Net_Score': 'mean',
+            'Net_to_Par': 'mean'
+        }).reset_index()
+
+        player_stats = player_stats.round(2)
+        
+        # Rename columns to match JS expectations in PlayerStats.html: Player,Gross_Score,net_score,Net_to_Par
+        player_stats.columns = ['Player', 'Gross_Score', 'net_score', 'Net_to_Par']
+        
+        inject_to_html("PlayerStats.html", "playerStatsData", player_stats.to_csv(index=False))
+
     # Generate and inject writeup
     if latest_file:
         writeup = generate_writeup_html(latest_file)
