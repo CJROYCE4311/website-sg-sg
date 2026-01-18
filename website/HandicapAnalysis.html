@@ -2884,7 +2884,10 @@ const dataLast2 = [
 
         function applyFilters() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-            const sourceData = currentMode === 'best3' ? dataBest3 : dataBest6;
+            let sourceData;
+            if (currentMode === 'best3') sourceData = dataBest3;
+            else if (currentMode === 'best6') sourceData = dataBest6;
+            else sourceData = dataLast2;
 
             currentData = sourceData.filter(player => {
                 const matchesSearch = player.name.toLowerCase().includes(term);
