@@ -3,6 +3,7 @@ import os
 import json
 import re
 import subprocess
+import random
 from datetime import datetime
 import warnings
 
@@ -24,6 +25,53 @@ COURSE_FILE = os.path.join(DATA_DIR, "course_info.csv")
 COURSE_RATING, SLOPE_RATING = 70.5, 124
 MONTHS_LOOKBACK = 13
 
+# --- BARSTOOL TEMPLATES ---
+OPENERS = [
+    "Alright folks, buckle up. Another Saturday at the Grove, another absolute electric factory of golf.",
+    "What a day. What. A. Day. The boys were buzzing, the drinks were flowing (probably), and the scores? Well, let's talk about the scores.",
+    "Pure chaos. That's the only way to describe the scene at Sterling Grove this weekend.",
+    "Another classic SG@SG tilt is in the books. Legends were made, egos were bruised, and wallets were either fattened or decimated.",
+    "If you weren't at the Grove this Saturday, you missed a generational display of grit, grind, and glory."
+]
+
+MIDDLERS = [
+    "It was a bloodbath out there.",
+    "Absolutely disgusting behavior from the leaderboard.",
+    "You hate to see it, but you love to see it.",
+    "Just guys being dudes, hitting fairways (occasionally) and draining putts.",
+    "The golf gods were smiling down on a chosen few today."
+]
+
+CLOSERS = [
+    "Go Green. Go White. See you on the next one.",
+    "Stay dangerous.",
+    "Kiss the ring.",
+    "Don't let the door hit you on the way out.",
+    "Viva la Stool... I mean, Viva la SG@SG."
+]
+
+def get_barstool_writeup(date_str, format_name, winners_html):
+    opener = random.choice(OPENERS)
+    middler = random.choice(MIDDLERS)
+    closer = random.choice(CLOSERS)
+    
+    return f"""
+    <div class="prose prose-lg text-gray-700 mx-auto">
+        <p class="font-bold text-xl mb-4">{opener}</p>
+        <p class="mb-4">We had ourselves a classic <strong>{format_name}</strong> showdown on {date_str}. {middler}</p>
+        
+        <div class="my-8 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+            <h3 class="text-2xl font-black text-gray-900 mb-4 border-b pb-2">THE WINNERS CIRCLE</h3>
+            <div class="space-y-6">
+                {winners_html}
+            </div>
+        </div>
+
+        <p class="mb-6">To the victors go the spoils. To the losers? Better luck next time, pal. Hit the range.</p>
+        <p class="font-bold italic text-right">{closer}</p>
+    </div>
+    """
+
 def inject_to_html(filename, var_name, content, is_json=False):
     """Replaces data variables in HTML files."""
     filepath = os.path.join(WEBSITE_DIR, filename)
@@ -37,21 +85,22 @@ def inject_to_html(filename, var_name, content, is_json=False):
         replacement = f"const {var_name} = {json.dumps(content, indent=4)};"
         pattern = rf"const {var_name}\s*=\s*\[.*?\];"
     else:
-        replacement = f"const {var_name} = `{content.strip()}`";
+        # Using a safer replacement strategy that avoids swallowing subsequent code
+        replacement = f"const {var_name} = `{content.strip()}`;";
         pattern = rf"const {var_name}\s*=\s*[`].*?[`];"
     
-    new_html = re.sub(pattern, replacement, html, flags=re.DOTALL)
-    with open(filepath, 'w') as f: f.write(new_html)
-    print(f"✅ Updated {filename}")
+    # Check if pattern exists before sub to avoid errors or silent failures
+    if re.search(pattern, html, flags=re.DOTALL):
+        new_html = re.sub(pattern, replacement, html, flags=re.DOTALL)
+        with open(filepath, 'w') as f: f.write(new_html)
+        print(f"✅ Updated {filename}")
+    else:
+        print(f"⚠️ Pattern for {var_name} not found in {filename}")
 
 def get_latest_results_writeup(financials_df):
-    """Generates the 'BOO-YAH' writeup from the latest date in financials."""
     if financials_df.empty: return ""
-    
-    # 1. Find latest date
     latest_date = financials_df['Date'].max()
     day_df = financials_df[financials_df['Date'] == latest_date].copy()
-    
     date_str = latest_date.strftime('%Y-%m-%d')
     
     html = f"""
@@ -63,47 +112,167 @@ def get_latest_results_writeup(financials_df):
         <div class="space-y-4">
     """
     
-    # Left Col: Team Games (Quota, BestBall, NetMedal)
-    # Note: The CSV structure flattened everything into 'Category'.
-    # We'll try to reconstruct the groupings.
-    
-    # Order: BestBall -> Quota -> NetMedal
     cat_map = {'BestBall': 'Best Ball', 'Quota': 'Team Quota', 'NetMedal': 'Net Medal'}
-    
     for cat_key, cat_title in cat_map.items():
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-            
-            # Group by Amount to find teams/ties
-            # Since we lost 'Team ID' in the flatten (unless we add it back), we group by amount implies a team or tie
-            # This is a slight approximation but works for 95% of cases
             grouped_results = []
             for amount, group in cat_df.groupby('Amount'):
                 names = " & ".join(sorted(group['Player'].tolist()))
                 grouped_results.append({'names': names, 'amount': amount})
-            
-            # Sort descending by amount (winners first)
             grouped_results.sort(key=lambda x: x['amount'], reverse=True)
-            
             for res in grouped_results:
                 html += f"<li class='m-0'>{res['names']} - ${res['amount']:.0f}</li>"
             html += "</ul></div>"
 
-    html += "</div><div class='space-y-4'>" # Split Cols
-    
-    # Right Col: Skins
+    html += "</div><div class='space-y-4'>" 
     for cat_key, cat_title in [('GrossSkins', 'Gross Skins'), ('NetSkins', 'Net Skins')]:
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-            for _, row in cat_df.sort_values('Amount', ascending=False).iterrows():
-                html += f"<li class='m-0'>{row['Player']} - ${row['Amount']:.0f}</li>"
+            # Skins usually individual, but group by amount just in case of ties/weirdness
+            grouped_results = []
+            for amount, group in cat_df.groupby('Amount'):
+                for player in group['Player']:
+                    grouped_results.append({'name': player, 'amount': amount})
+            grouped_results.sort(key=lambda x: x['amount'], reverse=True)
+            for res in grouped_results:
+                html += f"<li class='m-0'>{res['name']} - ${res['amount']:.0f}</li>"
             html += "</ul></div>"
             
     html += "</div></div>"
     html += f"<p class='text-xs text-gray-400 mt-6 mb-0 italic'>Run Date: {datetime.now().strftime('%Y-%m-%d')}</p>"
     return html
+
+def generate_tournament_pages(financials_df):
+    """Generates individual HTML pages for each 2026 tournament."""
+    if financials_df.empty: return []
+    
+    # Filter for 2026 dates only
+    # Assuming Tournament Year logic: Nov/Dec of previous year counts. 
+    # But user said "2026 results log" and "each of the 2026 tournaments".
+    # We'll use the 'Tournament_Year' logic.
+    financials_df['Tournament_Year'] = financials_df['Date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
+    df_2026 = financials_df[financials_df['Tournament_Year'] == 2026]
+    
+    generated_links = []
+    
+    unique_dates = sorted(df_2026['Date'].unique(), reverse=True)
+    
+    for date_val in unique_dates:
+        date_str = pd.to_datetime(date_val).strftime('%Y-%m-%d')
+        day_df = df_2026[df_2026['Date'] == date_val]
+        
+        # Determine Format
+        cats = day_df['Category'].unique()
+        format_name = "Tournament"
+        if 'Quota' in cats: format_name = "Team Quota"
+        elif 'BestBall' in cats: format_name = "Best Ball"
+        elif 'NetMedal' in cats: format_name = "Net Medal"
+        
+        # Build Winners HTML
+        winners_html = ""
+        cat_map = {'BestBall': 'Best Ball', 'Quota': 'Team Quota', 'NetMedal': 'Net Medal', 'GrossSkins': 'Gross Skins', 'NetSkins': 'Net Skins'}
+        
+        # Order categories
+        ordered_cats = [c for c in ['BestBall', 'Quota', 'NetMedal', 'GrossSkins', 'NetSkins'] if c in cats]
+        
+        for cat in ordered_cats:
+            cat_df = day_df[day_df['Category'] == cat]
+            if cat_df.empty: continue
+            
+            winners_html += f"<div class='mb-6'><h4 class='font-bold text-gray-800 uppercase text-sm tracking-wide mb-2'>{cat_map.get(cat, cat)}</h4><ul class='space-y-2'>"
+            
+            # Group winners
+            grouped = []
+            for amt, grp in cat_df.groupby('Amount'):
+                names = " & ".join(sorted(grp['Player'].tolist()))
+                grouped.append({'names': names, 'amount': amt})
+            
+            grouped.sort(key=lambda x: x['amount'], reverse=True)
+            
+            for g in grouped:
+                winners_html += f"<li class='flex justify-between items-center text-gray-700 bg-white p-3 rounded-lg border border-gray-100'><span class='font-medium'>{g['names']}</span><span class='font-bold text-green-600'>${g['amount']:.0f}</span></li>"
+            winners_html += "</ul></div>"
+
+        # Generate Content
+        content = get_barstool_writeup(date_str, format_name, winners_html)
+        
+        # Create HTML File
+        filename = f"results_{date_str}.html"
+        full_path = os.path.join(WEBSITE_DIR, filename)
+        
+        page_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results: {date_str}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-900">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-gray-500 hover:text-green-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Home
+            </a>
+            <div class="font-black text-xl tracking-tight">SG@SG RESULTS</div>
+        </div>
+    </header>
+    <main class="container mx-auto px-6 py-12 max-w-3xl">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-black mb-4">{format_name} Recap</h1>
+            <p class="text-gray-500 font-medium">{date_str}</p>
+        </div>
+        {content}
+    </main>
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8 text-center text-gray-400 text-sm">
+        &copy; 2026 SG@SG.
+    </footer>
+</body>
+</html>"""
+        
+        with open(full_path, 'w') as f:
+            f.write(page_html)
+            
+        generated_links.append({'date': date_str, 'file': filename, 'format': format_name})
+        print(f"✅ Generated {filename}")
+        
+    return generated_links
+
+def inject_results_log(links):
+    """Injects the list of links into index.html."""
+    filepath = os.path.join(WEBSITE_DIR, 'index.html')
+    if not os.path.exists(filepath): return
+    
+    with open(filepath, 'r') as f: html = f.read()
+    
+    # Generate HTML list
+    list_html = ""
+    for link in links:
+        list_html += f"""
+        <a href="{link['file']}" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
+            <div class="flex items-center">
+                <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
+                <span class="font-medium">{link['date']}</span>
+            </div>
+            <span class="text-xs text-gray-400 group-hover:text-purple-500">{link['format']}</span>
+        </a>
+        """
+        
+    # Regex to find the container
+    # Looking for <div id="results-log-container" ...> ... </div>
+    pattern = r'(<div id="results-log-container"[^>]*>)(.*?)(</div>)'
+    
+    if re.search(pattern, html, flags=re.DOTALL):
+        html = re.sub(pattern, r'\1' + list_html + r'\3', html, flags=re.DOTALL)
+        with open(filepath, 'w') as f: f.write(html)
+        print("✅ Updated Results Log in index.html")
+    else:
+        print("⚠️ Could not find #results-log-container in index.html")
 
 def update_index_html(writeup_html):
     filepath = os.path.join(WEBSITE_DIR, 'index.html')
@@ -116,7 +285,7 @@ def update_index_html(writeup_html):
         html = re.sub(pattern, r'\1' + writeup_html, html, flags=re.DOTALL)
     
     with open(filepath, 'w') as f: f.write(html)
-    print("✅ Updated index.html")
+    print("✅ Updated Latest Results in index.html")
 
 def run_pipeline():
     print("--- ⛳ Starting CSV-Based Site Refresh ---")
@@ -137,11 +306,8 @@ def run_pipeline():
     
     # Filter 13 Months for Handicap Analysis
     cutoff_date = datetime.now() - pd.DateOffset(months=MONTHS_LOOKBACK)
-    recent_scores = scores[scores['Date'] >= cutoff_date].copy()
     
     # 2. Prepare Base Dataframe (Scores + Financials Aggregated)
-    # We need a master 'base' for the money lists and player stats
-    # Group financials by Date/Player
     fin_agg = pd.DataFrame()
     if not financials.empty:
         fin_pivot = financials.pivot_table(index=['Date', 'Player'], columns='Category', values='Amount', aggfunc='sum').reset_index().fillna(0)
@@ -155,7 +321,6 @@ def run_pipeline():
         fin_agg = fin_pivot
     
     # Merge Scores with Financials
-    # Note: scores has H1..H18, Gross_Score, Round_Handicap
     base = scores.copy()
     if not fin_agg.empty:
         base = base.merge(fin_agg, on=['Date', 'Player'], how='left')
@@ -170,18 +335,11 @@ def run_pipeline():
     base['Tournament_Year'] = base['Date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
 
     # 3. Handicap Analysis (Best 3/6)
-    # Calculate differentials
     base['Differential'] = (base['Gross_Score'] - COURSE_RATING) * 113 / SLOPE_RATING
     base['Differential'] = base['Differential'].round(1)
     
     analysis_data_best3 = []
     analysis_data_best6 = []
-
-    # Use recent_scores for the analysis to respect the lookback, 
-    # BUT we need to make sure we have the diffs calculated. 
-    # Let's just use 'base' but filter inside the loop or pre-filter.
-    # Actually, the requirement was "13 month lookback".
-    
     analysis_base = base[base['Date'] >= cutoff_date].copy()
 
     for player, group in analysis_base.groupby('Player'):
@@ -190,7 +348,6 @@ def run_pipeline():
 
         # Latest Handicap
         latest_row = group.sort_values('Date', ascending=False).iloc[0]
-        # Prefer Round_Handicap from scores.csv
         current_hcp = float(latest_row['Round_Handicap']) if 'Round_Handicap' in latest_row else 0.0
         
         diffs = group['Differential'].dropna().tolist()
@@ -224,7 +381,6 @@ def run_pipeline():
     detail_lines = ["Player\tDate\tGross Score\tHCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
     rounds_map = base.groupby('Player').size().to_dict()
     
-    # Sort entire history for detail view
     for _, row in base.sort_values(['Player', 'Date'], ascending=[True, False]).iterrows():
         d_str = row['Date'].strftime('%Y-%m-%d')
         hcp = row.get('Round_Handicap', 0.0)
@@ -248,14 +404,10 @@ def run_pipeline():
         df_year = base[base['Tournament_Year'] == year].groupby('Player')[money_cols + ['Total_Earnings']].sum().reset_index()
         df_year = df_year.sort_values('Total_Earnings', ascending=False)
         
-        # Rename for JS
         cols_out = ['Player', 'BB_Earn', 'Quota_Earn', 'Nskins_earnings', 'Gskins_earnings', 'net_medal_earnings', 'Total_Earnings']
         headers = ['Name', 'Best_Ball_Earnings', 'Quota_Earnings', 'Net_Skins_Earnings', 'Gross_Skins_Earnings', 'Net_Earnings', 'Total Earnings']
         
-        # 2025 didn't have Quota? Legacy script checked year. 
-        # We'll just output all columns, the JS handles 0s fine usually, or we match legacy.
         if year == 2025:
-             # Legacy excluded Quota for 2025
              df_out = df_year[['Player', 'BB_Earn', 'Nskins_earnings', 'Gskins_earnings', 'net_medal_earnings', 'Total_Earnings']]
              df_out.columns = ['Name', 'Best_Ball_Earnings', 'Net_Skins_Earnings', 'Gross_Skins_Earnings', 'Net_Earnings', 'Total Earnings']
         else:
@@ -266,7 +418,6 @@ def run_pipeline():
 
     # 6. Hole Averages
     score_cols = [f'H{i}' for i in range(1, 19)]
-    # Use ALL scores for averages, not just recent? Legacy used 'raw' which was all loaded files.
     melted = scores.melt(id_vars=['Player', 'Date'], value_vars=score_cols, var_name='hole', value_name='score')
     melted['hole'] = pd.to_numeric(melted['hole'].str.replace('H', ''), errors='coerce')
     
@@ -277,7 +428,7 @@ def run_pipeline():
     
     inject_to_html("AverageScore.html", "holeData", hole_avg[['hole', 'score', 'par']].to_dict('records'), is_json=True)
 
-    # 7. Hole Index (Calculated)
+    # 7. Hole Index
     sg_index_map = {1: 5, 2: 15, 3: 13, 4: 7, 5: 1, 6: 17, 7: 9, 8: 3, 9: 11, 
                     10: 12, 11: 14, 12: 2, 13: 16, 14: 10, 15: 6, 16: 18, 17: 8, 18: 4}
     
@@ -290,7 +441,6 @@ def run_pipeline():
     inject_to_html("HoleIndex.html", "rawData", hole_index_data, is_json=True)
 
     # 8. Player Stats
-    # All time stats
     stats_df = base.copy()
     stats_df['Net_Score'] = stats_df['Gross_Score'] - stats_df['Round_Handicap']
     stats_df['Net_to_Par'] = stats_df['Net_Score'] - 72
@@ -305,6 +455,11 @@ def run_pipeline():
     writeup = get_latest_results_writeup(financials)
     if writeup:
         update_index_html(writeup)
+
+    # 10. Generate Tournament Pages & Update Log
+    links = generate_tournament_pages(financials)
+    if links:
+        inject_results_log(links)
 
 def sync():
     print("🚀 Pushing Updates...")
