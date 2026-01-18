@@ -144,33 +144,35 @@
         // Paste your plain text CSV data here. Each line should be:
         // Player Name,Best Ball,Net Skins,Gross Skins,Net Earnings,Total Earnings
         const csvData = `Name,Best_Ball_Earnings,Net_Skins_Earnings,Gross_Skins_Earnings,Net_Earnings,Total Earnings
-Shane Bolosan,437.5,127.5,0.0,168.0,733.0
+Shane Bolosan,542.5,210.0,0.0,168.0,920.5
 Korey Jerome,295.0,180.0,37.5,156.0,668.5
 Matt Neimeier,240.0,125.36,80.0,177.0,622.36
+Ron Marino,422.0,150.0,0.0,0.0,572.0
 Chris Beck,567.0,0.0,0.0,0.0,567.0
 Ben Magnone,191.0,136.19,0.0,228.0,555.19
 Ron Amstutz,192.0,42.86,0.0,240.0,474.86
 Mark Albedyll,197.5,210.0,0.0,66.0,473.5
 Scott Lucas,218.0,150.0,0.0,90.0,458.0
+Derek Becko,183.0,0.0,18.75,192.0,393.75
 Hans Anderson,258.0,0.0,0.0,114.0,372.0
 Larry Caplan,168.0,50.0,33.33,114.0,365.33
 Dusty Wasmund,210.0,82.5,57.5,14.0,364.0
 Eric Weiss,219.0,0.0,66.67,78.0,363.67
+Greg Funk,160.0,0.0,99.58,84.0,343.58
 Justin Deuker,339.0,0.0,0.0,0.0,339.0
 Mike Muller,162.0,92.86,33.33,26.0,314.19
-Greg Funk,125.0,0.0,99.58,84.0,308.58
 Chris Husong,282.0,0.0,0.0,0.0,282.0
 Joe Sepessy,26.0,0.0,160.82999999999998,93.0,279.83
-Ron Marino,212.0,67.5,0.0,0.0,279.5
 Jeff Avery,105.0,82.5,0.0,84.0,271.5
 Todd Densley,192.0,0.0,42.0,28.0,262.0
 Buddy Goldstone,139.0,42.86,0.0,78.0,259.86
+Kiernan Mattson,210.0,0.0,0.0,28.0,238.0
 Eric Lamb,0.0,67.5,0.0,168.0,235.5
+Chris Ryan,122.5,90.0,21.0,0.0,233.5
 Paul Benga,156.0,67.5,0.0,0.0,223.5
 Jamey Davis,32.0,0.0,0.0,180.0,212.0
 Steve Mccormick,204.0,0.0,0.0,0.0,204.0
 Jeff Cloepfil,0.0,93.33,80.0,30.0,203.32999999999998
-Derek Becko,183.0,0.0,18.75,0.0,201.75
 Frank Angeloro,30.0,0.0,0.0,168.0,198.0
 Travis Ingram,90.0,93.33,0.0,0.0,183.32999999999998
 Mark James,180.0,0.0,0.0,0.0,180.0
@@ -179,11 +181,10 @@ Neil Harris,0.0,0.0,165.75,0.0,165.75
 Rob Oliver,81.0,75.0,0.0,0.0,156.0
 Scott Bracken,96.0,50.0,0.0,0.0,146.0
 Jared Strathe,0.0,45.0,84.0,0.0,129.0
-Chris Ryan,17.5,90.0,21.0,0.0,128.5
 Robert Hill,0.0,115.0,0.0,0.0,115.0
 Rich Fagan,43.0,70.0,0.0,0.0,113.0
-Christopher Royce,0.0,112.86,0.0,0.0,112.86
 Clark Koch,32.0,42.86,0.0,38.0,112.86
+Christopher Royce,0.0,112.86,0.0,0.0,112.86
 Brad Ackley,0.0,75.0,28.75,0.0,103.75
 Zach Coe,102.0,0.0,0.0,0.0,102.0
 Jon Vrolyks,96.0,0.0,0.0,0.0,96.0
@@ -191,13 +192,12 @@ Mark Lewis,90.0,0.0,0.0,0.0,90.0
 Kevin Barber,81.0,0.0,0.0,0.0,81.0
 Trent Dana,0.0,70.0,0.0,0.0,70.0
 Rick Meewes,0.0,67.5,0.0,0.0,67.5
+Andy Meach,34.0,0.0,0.0,32.0,66.0
 Patrick Schueppert,0.0,45.0,0.0,0.0,45.0
 Jim Restivo,35.0,0.0,0.0,0.0,35.0
-Andy Meach,34.0,0.0,0.0,0.0,34.0
-Kiernan Mattson,0.0,0.0,0.0,28.0,28.0
+Jim Brown,35.0,0.0,0.0,0.0,35.0
 James Feutz,0.0,0.0,21.0,0.0,21.0
 Brian Howell,17.5,0.0,0.0,0.0,17.5
-Rich Mckeon,0.0,0.0,0.0,0.0,0.0
 Dean Fisk,0.0,0.0,0.0,0.0,0.0
 Zach Mattson,0.0,0.0,0.0,0.0,0.0
 Zach Fleishman,0.0,0.0,0.0,0.0,0.0
@@ -208,17 +208,17 @@ Tracy Copenhaver,0.0,0.0,0.0,0.0,0.0
 Darrin Harn,0.0,0.0,0.0,0.0,0.0
 David Edwards,0.0,0.0,0.0,0.0,0.0
 Steve Rosenbluth,0.0,0.0,0.0,0.0,0.0
-Stephen Cherepy,0.0,0.0,0.0,0.0,0.0
-Richard Lederman,0.0,0.0,0.0,0.0,0.0
 Shawn Warner,0.0,0.0,0.0,0.0,0.0
+Stephen Cherepy,0.0,0.0,0.0,0.0,0.0
+Rich Mckeon,0.0,0.0,0.0,0.0,0.0
 Jeff De Laveaga,0.0,0.0,0.0,0.0,0.0
-Jim Brown,0.0,0.0,0.0,0.0,0.0
 Scott Benton,0.0,0.0,0.0,0.0,0.0
 Kevin Mueller,0.0,0.0,0.0,0.0,0.0
 Michael Falagrady,0.0,0.0,0.0,0.0,0.0
 Mike Wilkins,0.0,0.0,0.0,0.0,0.0
 Pat Feutz,0.0,0.0,0.0,0.0,0.0
 Rick Deloney,0.0,0.0,0.0,0.0,0.0
+Richard Lederman,0.0,0.0,0.0,0.0,0.0
 Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0`;
 
         // Parse and Render CSV Data
