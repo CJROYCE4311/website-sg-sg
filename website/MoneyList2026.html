@@ -226,6 +226,40 @@ Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0,0.0`
             });
         }
 
+        // Parse and Render CSV Data
+        document.addEventListener('DOMContentLoaded', () => {
+             const rows = csvData.trim().split('\n').slice(1); // Skip header
+             const tbody = document.getElementById('tableBody');
+             if(tbody) tbody.innerHTML = ''; // Clear loading message
+             
+             rows.forEach((row, rowIndex) => {
+                 const cols = row.split(',');
+                 if (cols.length < 2) return;
+                 
+                 const tr = document.createElement('tr');
+                 tr.className = rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'; // Zebra striping
+                 
+                 cols.forEach((col, idx) => {
+                     const td = document.createElement('td');
+                     // Player Name (Left), Money (Right)
+                     td.className = idx === 0 
+                        ? "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left" 
+                        : "px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right";
+                     
+                     if (idx > 0) {
+                        const val = parseFloat(col);
+                        td.textContent = isNaN(val) ? '$0.00' : '$' + val.toFixed(2);
+                        // Highlight Total Column (Last one)
+                        if (idx === cols.length - 1) td.classList.add('font-bold', 'text-green-700', 'bg-gray-100');
+                     } else {
+                        td.textContent = col;
+                     }
+                     tr.appendChild(td);
+                 });
+                 if(tbody) tbody.appendChild(tr);
+             });
+        });
+
         const sortDirections = {};
 
         function sortTable(columnIndex) {
