@@ -1,0 +1,20 @@
+{
+  "update_batch": [
+    {
+      "date": "2026-01-17",
+      "scores": [
+        {"Player": "Scott Lucas", "Individual_Rank": "1"},
+        {"Player": "Rich Fagan", "Individual_Rank": "T2"},
+        {"Player": "Scott Bracken", "Individual_Rank": "T2"},
+        {"Player": "Rick Meewes", "Individual_Rank": "4"},
+        {"Player": "Eric Weiss", "Individual_Rank": "T5"},
+        {"Player": "James Feutz", "Individual_Rank": "T5"},
+        {"Player": "Jamey Davis", "Individual_Rank": "T5"},
+        {"Player": "Kiernan Mattson", "Individual_Rank": "T5"},
+        {"Player": "Korey Jerome", "Individual_Rank": "T5"},
+        {"Player": "Patrick Schueppert", "Individual_Rank": "T5"},
+        {"Player": "Shawn Warner", "Individual_Rank": "T5"}
+      ]
+    }
+  ]
+}
