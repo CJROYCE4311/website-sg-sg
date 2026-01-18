@@ -87,7 +87,7 @@ def inject_to_html(filename, var_name, content, is_json=False):
     else:
         # Using a safer replacement strategy that avoids swallowing subsequent code
         replacement = f"const {var_name} = `{content.strip()}`;";
-        pattern = rf"const {var_name}\s*=\s*[`].*?[`];"
+        pattern = rf"const {var_name}\s*=\s*[`].*?[`];?"
     
     # Check if pattern exists before sub to avoid errors or silent failures
     if re.search(pattern, html, flags=re.DOTALL):
