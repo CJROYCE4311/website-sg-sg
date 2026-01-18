@@ -97,15 +97,23 @@ def inject_to_html(filename, var_name, content, is_json=False):
     else:
         print(f"⚠️ Pattern for {var_name} not found in {filename}")
 
-def get_latest_results_writeup(financials_df):
+def get_latest_results_writeup(financials_df, scores_df):
     if financials_df.empty: return ""
     latest_date = financials_df['Date'].max()
     day_df = financials_df[financials_df['Date'] == latest_date].copy()
     date_str = latest_date.strftime('%Y-%m-%d')
     
+    # Merge with scores to get Partner and Ranks
+    rank_cols = ['Date', 'Player', 'Partner', 'Team_Rank', 'Individual_Rank']
+    # Ensure Date is comparable
+    scores_copy = scores_df.copy()
+    scores_copy['Date'] = pd.to_datetime(scores_copy['Date'])
+    day_scores = scores_copy[scores_copy['Date'] == latest_date][rank_cols]
+    day_df = day_df.merge(day_scores, on=['Date', 'Player'], how='left')
+    
     html = f"""
     <div class="mb-4 space-y-1">
-        <h4 class="font-bold text-gray-900 text-lg m-0">BOO-YAH!</h4>
+        <h4 class="font-bold text-gray-900 text-lg m-0">Latest Tournament Recap</h4>
         <p class="text-sm m-0">Results for {date_str}.</p>
     </div>
     <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
@@ -117,13 +125,27 @@ def get_latest_results_writeup(financials_df):
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-            grouped_results = []
-            for amount, group in cat_df.groupby('Amount'):
-                names = " & ".join(sorted(group['Player'].tolist()))
-                grouped_results.append({'names': names, 'amount': amount})
-            grouped_results.sort(key=lambda x: x['amount'], reverse=True)
-            for res in grouped_results:
-                html += f"<li class='m-0'>{res['names']} - ${res['amount']:.0f}</li>"
+            
+            results = []
+            if cat_key in ['BestBall', 'Quota']:
+                seen_teams = set()
+                for _, row in cat_df.iterrows():
+                    # Handle Team grouping
+                    p1 = str(row['Player'])
+                    p2 = str(row['Partner']) if pd.notna(row['Partner']) and row['Partner'] else ""
+                    team_key = tuple(sorted([p1, p2]))
+                    if team_key not in seen_teams:
+                        seen_teams.add(team_key)
+                        names = f"{p1} & {p2}" if p2 else p1
+                        results.append({'rank': row['Team_Rank'], 'names': names, 'amount': row['Amount']})
+            else:
+                for _, row in cat_df.iterrows():
+                    results.append({'rank': row['Individual_Rank'], 'names': row['Player'], 'amount': row['Amount']})
+            
+            results.sort(key=lambda x: x['amount'], reverse=True)
+            for res in results:
+                rank_str = f"{res['rank']}: " if pd.notna(res['rank']) and res['rank'] else ""
+                html += f"<li class='m-0'>{rank_str}{res['names']} - ${res['amount']:.0f}</li>"
             html += "</ul></div>"
 
     html += "</div><div class='space-y-4'>" 
@@ -131,11 +153,9 @@ def get_latest_results_writeup(financials_df):
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-            # Skins usually individual, but group by amount just in case of ties/weirdness
             grouped_results = []
-            for amount, group in cat_df.groupby('Amount'):
-                for player in group['Player']:
-                    grouped_results.append({'name': player, 'amount': amount})
+            for _, row in cat_df.iterrows():
+                grouped_results.append({'name': row['Player'], 'amount': row['Amount']})
             grouped_results.sort(key=lambda x: x['amount'], reverse=True)
             for res in grouped_results:
                 html += f"<li class='m-0'>{res['name']} - ${res['amount']:.0f}</li>"
@@ -453,7 +473,7 @@ def run_pipeline():
     inject_to_html("PlayerStats.html", "playerStatsData", p_stats.to_csv(index=False))
 
     # 9. Latest Results Writeup
-    writeup = get_latest_results_writeup(financials)
+    writeup = get_latest_results_writeup(financials, scores)
     if writeup:
         update_index_html(writeup)
 
