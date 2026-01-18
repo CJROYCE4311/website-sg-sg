@@ -263,11 +263,12 @@ def inject_results_log(links):
         </a>
         """
         
-    # Regex to find the container
-    # Looking for <div id="results-log-container" ...> ... </div>
+    # Regex to replace INNER content of the container
+    # <div id="results-log-container"...>  CONTENT  </div>
     pattern = r'(<div id="results-log-container"[^>]*>)(.*?)(</div>)'
     
     if re.search(pattern, html, flags=re.DOTALL):
+        # \1 is the opening tag, \3 is the closing tag. We replace \2 (content) with list_html
         html = re.sub(pattern, r'\1' + list_html + r'\3', html, flags=re.DOTALL)
         with open(filepath, 'w') as f: f.write(html)
         print("✅ Updated Results Log in index.html")
