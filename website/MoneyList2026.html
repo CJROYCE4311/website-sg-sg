@@ -221,26 +221,6 @@ Mike Muller,0.0,0.0,0.0,0.0,0.0,0.0
 Neil Harris,0.0,0.0,0.0,0.0,0.0,0.0
 Rick Deloney,0.0,0.0,0.0,0.0,0.0,0.0
 Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0,0.0`
-
-        let playersData = [];
-
-        // Parse CSV String
-        function parseCSV(data) {
-            const lines = data.trim().split(/\r?\n/);
-            const rows = lines.map(line => line.split(',').map(item => item.trim()));
-            if (rows.length) {
-                const headerCell = rows[0][0].toLowerCase();
-                if (headerCell === 'name' || headerCell === 'player' || headerCell.includes('name')) {
-                    return rows.slice(1);
-                }
-            }
-            return rows;
-        }
-
-        function formatAmount(amt) {
-            if (!amt) return '$0.00';
-            const num = parseFloat(amt.toString().replace('$', '').replace(',', '')) || 0;
-            return `$${num.toFixed(2)}`;
         }
 
         function loadData() {

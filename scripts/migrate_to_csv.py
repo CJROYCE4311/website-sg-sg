@@ -7,7 +7,7 @@ from datetime import datetime
 # Setup paths
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
-DB_DIR = os.path.join(DATA_DIR, "db")
+DB_DIR = os.path.join(DATA_DIR)
 
 def clean_df(df, default_date=None):
     if df.empty: return df

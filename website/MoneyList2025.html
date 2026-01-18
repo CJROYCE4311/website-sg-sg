@@ -220,60 +220,6 @@ Mike Wilkins,0.0,0.0,0.0,0.0,0.0
 Pat Feutz,0.0,0.0,0.0,0.0,0.0
 Rick Deloney,0.0,0.0,0.0,0.0,0.0
 Zane Eisenbarth,0.0,0.0,0.0,0.0,0.0`
-
-
-        // Parse CSV Data
-        function parseCSV(csvText) {
-            const lines = csvText.trim().split('\n');
-            const result = [];
-            // Skip header (i=1)
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    const parts = line.split(',');
-                    // Clean up any extra whitespace from splitting
-                    const cleanedParts = parts.map(part => part.trim());
-                    result.push(cleanedParts);
-                }
-            }
-            return result;
-        }
-
-        // Format Currency
-        function formatAmount(value) {
-            const num = parseFloat(value);
-            if (isNaN(num)) return '$0.00';
-            return '$' + num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        }
-
-        // Populate table on page load
-        window.onload = function () {
-            playersData = parseCSV(csvData);
-            populateTable();
-            // Pre-set total earnings sort so initial call renders descending order
-            sortDirections[5] = 'asc';
-            sortTable(5);
-        };
-
-        // Populate table with data
-        function populateTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            playersData.forEach((player, index) => {
-                const row = tbody.insertRow();
-                row.className = index % 2 === 0 ? 'border-b' : 'bg-gray-50 border-b';
-
-                // Ensure player array has enough columns to avoid errors
-                if (player.length >= 6) {
-                    row.innerHTML = `
-                        <td class="text-left py-3 px-4">${player[0]}</td>
-                        <td class="text-center py-3 px-4">${formatAmount(player[1])}</td>
-                        <td class="text-center py-3 px-4">${formatAmount(player[2])}</td>
-                        <td class="text-center py-3 px-4">${formatAmount(player[3])}</td>
-                        <td class="text-center py-3 px-4">${formatAmount(player[4])}</td>
-                        <td class="text-center py-3 px-4">${formatAmount(player[5])}</td>
-                    `;
                 }
             });
         }
