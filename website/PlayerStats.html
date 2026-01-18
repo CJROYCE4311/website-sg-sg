@@ -242,69 +242,7 @@ Win Doolittle,90.0,82.0,10.0
 Zach Coe,73.0,71.88,-0.12
 Zach Fleishman,87.0,74.07,2.07
 Zach Mattson,84.0,76.75,4.75
-            Zane Eisenbarth,82.0,76.31,4.31`
-
-        function loadData() {
-
-            const grid = document.getElementById('player-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-
-            const rows = playerStatsData.trim().split('\n').slice(1); // Skip header
-
-            rows.forEach(row => {
-                const cols = row.split(',');
-                if (cols.length < 4) return;
-
-                const player = cols[0];
-                const netToPar = parseFloat(cols[3]);
-                
-                // Determine status color
-                let statusColor = '#22c55e'; // Green
-                if (netToPar > 5) statusColor = '#ef4444'; // Red
-                else if (netToPar > 0) statusColor = '#eab308'; // Yellow
-
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center";
-                
-                card.innerHTML = `
-                    <h3 class="font-bold text-gray-900 text-lg mb-4 truncate w-full text-center" title="${player}">${player}</h3>
-                    
-                    <div class="gauge-container w-full max-w-[180px]">
-                        <svg class="gauge-svg" viewBox="0 0 200 110">
-                            <!-- Gauge Background Arc -->
-                            <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="#e5e7eb" stroke-width="20" stroke-linecap="round" />
-                            
-                            <!-- Colored Arc Sections (Simplified) -->
-                            <!-- Green (Left) -->
-                            <path d="M 20 90 A 80 80 0 0 1 70 26" fill="none" stroke="#22c55e" stroke-width="20" stroke-linecap="round" />
-                            <!-- Yellow (Top) -->
-                            <path d="M 73 24 A 80 80 0 0 1 127 24" fill="none" stroke="#eab308" stroke-width="20" stroke-linecap="round" />
-                            <!-- Red (Right) -->
-                            <path d="M 130 26 A 80 80 0 0 1 180 90" fill="none" stroke="#ef4444" stroke-width="20" stroke-linecap="round" />
-                            
-                            <!-- Needle -->
-                            <g class="needle" style="transform: rotate(${calculateRotation(netToPar)}deg);">
-                                <path d="M 95 90 L 100 10 L 105 90 Z" fill="#374151" />
-                                <circle cx="100" cy="90" r="5" fill="#374151" />
-                            </g>
-                            
-                            <!-- Value Label -->
-                            <text x="100" y="70" class="needle-label text-xl">${netToPar > 0 ? '+' : ''}${netToPar.toFixed(1)}</text>
-                        </svg>
-                    </div>
-                    
-                    <div class="mt-4 grid grid-cols-2 gap-4 w-full text-center text-xs text-gray-500">
-                        <div>
-                            <p class="font-semibold text-gray-900">${parseFloat(cols[1]).toFixed(1)}</p>
-                            <p>Avg Gross</p>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">${parseFloat(cols[2]).toFixed(1)}</p>
-                            <p>Avg Net</p>
-                        </div>
-                    </div>
-                `;
+Zane Eisenbarth,82.0,76.31,4.31`
                 grid.appendChild(card);
             });
         }

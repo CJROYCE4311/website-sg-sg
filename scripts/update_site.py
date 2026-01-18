@@ -74,12 +74,20 @@ def get_latest_results_writeup(financials_df):
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
+            
             # Group by Amount to find teams/ties
             # Since we lost 'Team ID' in the flatten (unless we add it back), we group by amount implies a team or tie
             # This is a slight approximation but works for 95% of cases
+            grouped_results = []
             for amount, group in cat_df.groupby('Amount'):
                 names = " & ".join(sorted(group['Player'].tolist()))
-                html += f"<li class='m-0'>{names} - ${amount:.0f}</li>"
+                grouped_results.append({'names': names, 'amount': amount})
+            
+            # Sort descending by amount (winners first)
+            grouped_results.sort(key=lambda x: x['amount'], reverse=True)
+            
+            for res in grouped_results:
+                html += f"<li class='m-0'>{res['names']} - ${res['amount']:.0f}</li>"
             html += "</ul></div>"
 
     html += "</div><div class='space-y-4'>" # Split Cols

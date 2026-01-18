@@ -1,0 +1,105 @@
+
+    <!DOCTYPE html>
+    <html>
+    <body>
+        <h1>Debug Money List</h1>
+        <table border="1" id="moneyTable">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Total Earnings</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <script>
+            const csvData = `Player,Total_Earnings
+Andrew Burnheimer,165.0
+Andy Meach,34.29
+Ben Magnone,162.0
+Bud Scott,0.0
+Buddy Goldstone,0.0
+Chris Beck,51.43
+Chris Husong,240.0
+Chris Ryan,282.0
+Christopher Royce,312.6
+Clark Koch,51.43
+Dan Denham,98.43
+Dana Beckley,0.0
+David Adams,26.67
+David Pearson,40.0
+Derek Becko,180.0
+Dusty Wasmund,150.0
+Eric Weiss,79.43
+Frank Angeloro,73.67
+Glenn Brand,0.0
+Greg Funk,0.0
+James Feutz,36.93
+Jamey Davis,71.81
+Jared Strathe,34.29
+Jeff Avery,154.5
+Jeff Cloepfil,0.0
+Jeff De Laveaga,96.67
+Jim Restivo,0.0
+Joe Sepessy,0.0
+Jon Vrolyks,0.0
+Justin Deuker,0.0
+Ken Vonwald,42.5
+Kevin Barber,260.43
+Kiernan Mattson,29.310000000000002
+Korey Jerome,71.81
+Larry Caplan,0.0
+Mark Albedyll,51.43
+Mark Lewis,334.5
+Matt Neimeier,0.0
+Matt Pullen,34.29
+Michael Falagrady,282.0
+Mike Muller,0.0
+Nate Adams,26.67
+Neil Harris,0.0
+Patrick Schueppert,29.310000000000002
+Paul Benga,338.07
+Rich Fagan,143.17000000000002
+Rich Mckeon,180.0
+Richard Lederman,26.67
+Rick Deloney,0.0
+Rick Meewes,345.0
+Rob Oliver,0.0
+Robert Hill,0.0
+Ron Amstutz,26.67
+Ron Marino,359.5
+Scott Benton,0.0
+Scott Bracken,74.0
+Scott Lucas,406.5
+Shane Bolosan,0.0
+Shawn Warner,2.64
+Steve Mccormick,47.0
+Steve Rosenbluth,0.0
+Stewart Polakov,40.0
+Thomas Earl,0.0
+Todd Densley,0.0
+Tracy Copenhaver,0.0
+Travis Ingram,167.43
+Trent Dana,0.0
+Win Doolittle,0.0
+Zane Eisenbarth,0.0
+`;
+            console.log("Raw CSV:", csvData);
+            
+            const rows = csvData.trim().split('\n').slice(1);
+            const tbody = document.getElementById('tableBody');
+            
+            rows.forEach(row => {
+                const cols = row.split(',');
+                const tr = document.createElement('tr');
+                cols.forEach(col => {
+                    const td = document.createElement('td');
+                    td.textContent = col;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        </script>
+    </body>
+    </html>
+    
