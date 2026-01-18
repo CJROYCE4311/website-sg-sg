@@ -56,19 +56,31 @@ def ingest(json_file):
         df_new = pd.DataFrame(new_scores)
         df_new['Date'] = date_str
         
-        # Check for duplicates
         if not current_scores.empty:
-            # Create a composite key for checking
-            existing_keys = set(zip(current_scores['Date'], current_scores['Player']))
-            new_keys = set(zip(df_new['Date'], df_new['Player']))
-            
-            duplicates = existing_keys.intersection(new_keys)
-            if duplicates:
-                print(f"⚠️ Warning: {len(duplicates)} duplicate score entries found. Skipping them.")
-                df_new = df_new[~df_new.apply(lambda x: (x['Date'], x['Player']) in duplicates, axis=1)]
-        
-        if not df_new.empty:
-            current_scores = pd.concat([current_scores, df_new], ignore_index=True)
+            # Ensure index columns exist
+            if 'Date' in current_scores.columns and 'Player' in current_scores.columns:
+                # Upsert Logic: Update existing rows, append new ones
+                current_scores = current_scores.set_index(['Date', 'Player'])
+                df_new = df_new.set_index(['Date', 'Player'])
+                
+                # Update existing entries
+                current_scores.update(df_new)
+                
+                # Find new entries
+                new_indices = df_new.index.difference(current_scores.index)
+                df_new_entries = df_new.loc[new_indices]
+                
+                # Combine
+                current_scores = pd.concat([current_scores, df_new_entries])
+                current_scores.reset_index(inplace=True)
+                
+                print(f"✅ Processed scores: Updated existing records, added {len(df_new_entries)} new.")
+            else:
+                # Fallback if columns missing (shouldn't happen with valid DB)
+                current_scores = pd.concat([current_scores, df_new], ignore_index=True)
+                print(f"✅ Added {len(df_new)} new scores (fallback).")
+        else:
+            current_scores = df_new
             print(f"✅ Added {len(df_new)} new scores.")
     
     # 2. Process Financials

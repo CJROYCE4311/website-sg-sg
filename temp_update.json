@@ -1,0 +1,16 @@
+{
+  "date": "2025-11-15",
+  "scores": [
+    {"Player": "Chris Ryan", "Partner": "Michael Falagrady", "Team_Rank": "1"},
+    {"Player": "Michael Falagrady", "Partner": "Chris Ryan", "Team_Rank": "1"},
+    {"Player": "Paul Benga", "Partner": "Steve McCormick", "Team_Rank": "T2", "Individual_Rank": "T1"},
+    {"Player": "Steve McCormick", "Partner": "Paul Benga", "Team_Rank": "T2"},
+    {"Player": "Dan Denham", "Partner": "Mark Lewis", "Team_Rank": "T2"},
+    {"Player": "Mark Lewis", "Partner": "Dan Denham", "Team_Rank": "T2", "Individual_Rank": "T1"},
+    {"Player": "Jeff Avery", "Partner": "Ron Marino", "Team_Rank": "T2"},
+    {"Player": "Ron Marino", "Partner": "Jeff Avery", "Team_Rank": "T2"},
+    {"Player": "Frank Angeloro", "Partner": "Kevin Barber", "Team_Rank": "T2"},
+    {"Player": "Kevin Barber", "Partner": "Frank Angeloro", "Team_Rank": "T2"},
+    {"Player": "Stewart Polakov", "Individual_Rank": "3"}
+  ]
+}
