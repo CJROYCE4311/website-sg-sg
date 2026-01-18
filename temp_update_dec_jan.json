@@ -1,0 +1,40 @@
+{
+  "update_batch": [
+    {
+      "date": "2025-12-20",
+      "scores": [
+        {"Player": "Derek Becko", "Partner": "Rick Meewes", "Team_Rank": "T1"},
+        {"Player": "Rick Meewes", "Partner": "Derek Becko", "Team_Rank": "T1"},
+        {"Player": "Christopher Royce", "Partner": "Rich McKeon", "Team_Rank": "T1"},
+        {"Player": "Rich McKeon", "Partner": "Christopher Royce", "Team_Rank": "T1"},
+        {"Player": "David Pearson", "Partner": "Ron Marino", "Team_Rank": "3"},
+        {"Player": "Ron Marino", "Partner": "David Pearson", "Team_Rank": "3"},
+        {"Player": "Jeff De Laveaga", "Individual_Rank": "1"},
+        {"Player": "Neil Harris", "Individual_Rank": "2"},
+        {"Player": "Eric Weiss", "Individual_Rank": "T3"},
+        {"Player": "Todd Densley", "Individual_Rank": "T3"}
+      ]
+    },
+    {
+      "date": "2026-01-17",
+      "scores": [
+        {"Player": "Chris Husong", "Partner": "Scott Lucas", "Team_Rank": "1"},
+        {"Player": "Scott Lucas", "Partner": "Chris Husong", "Team_Rank": "1"},
+        {"Player": "Jamey Davis", "Partner": "Kiernan Mattson", "Team_Rank": "T2"},
+        {"Player": "Kiernan Mattson", "Partner": "Jamey Davis", "Team_Rank": "T2"},
+        {"Player": "Nate Adams", "Partner": "Rich Fagan", "Team_Rank": "T2", "Individual_Rank": "3"},
+        {"Player": "Rich Fagan", "Partner": "Nate Adams", "Team_Rank": "T2"},
+        {"Player": "David Adams", "Partner": "Patrick Schueppert", "Team_Rank": "T2"},
+        {"Player": "Patrick Schueppert", "Partner": "David Adams", "Team_Rank": "T2"},
+        {"Player": "Jeff De Laveaga", "Partner": "Ron Amstutz", "Team_Rank": "T2"},
+        {"Player": "Ron Amstutz", "Partner": "Jeff De Laveaga", "Team_Rank": "T2"},
+        {"Player": "Frank Angeloro", "Partner": "Richard Lederman", "Team_Rank": "T2"},
+        {"Player": "Richard Lederman", "Partner": "Frank Angeloro", "Team_Rank": "T2"},
+        {"Player": "Christopher Royce", "Partner": "Korey Jerome", "Team_Rank": "T2"},
+        {"Player": "Korey Jerome", "Partner": "Christopher Royce", "Team_Rank": "T2"},
+        {"Player": "Jared Strathe", "Individual_Rank": "1"},
+        {"Player": "James Feutz", "Individual_Rank": "2"}
+      ]
+    }
+  ]
+}

@@ -27,28 +27,13 @@ def save_db(scores, financials, handicaps):
     handicaps.to_csv(HANDICAPS_FILE, index=False)
     print("✅ Database saved successfully.")
 
-def ingest(json_file):
-    print(f"📥 Ingesting {json_file}...")
-    
-    with open(json_file, 'r') as f:
-        data = json.load(f)
-    
-    # Expected JSON structure:
-    # {
-    #   "date": "YYYY-MM-DD",
-    #   "scores": [ {"Player": "Name", "H1": 4, ... "H18": 5, "Gross_Score": 72, "Round_Handicap": 5} ],
-    #   "financials": [ {"Player": "Name", "Category": "NetSkins", "Amount": 50} ],
-    #   "handicaps": [ {"Player": "Name", "Handicap_Index": 5.4} ]
-    # }
-
+def process_entry(data, current_scores, current_financials, current_handicaps):
     date_str = data.get('date')
     if not date_str:
-        print("❌ Error: JSON must contain a 'date' field (YYYY-MM-DD).")
-        sys.exit(1)
+        print("❌ Error: Entry missing 'date' field.")
+        return current_scores, current_financials, current_handicaps
         
-    print(f"📅 Date: {date_str}")
-    
-    current_scores, current_financials, current_handicaps = load_db()
+    print(f"📅 Processing Date: {date_str}")
     
     # 1. Process Scores
     new_scores = data.get('scores', [])
@@ -60,6 +45,9 @@ def ingest(json_file):
             # Ensure index columns exist
             if 'Date' in current_scores.columns and 'Player' in current_scores.columns:
                 # Upsert Logic: Update existing rows, append new ones
+                # Convert Date column to string to ensure matching
+                current_scores['Date'] = current_scores['Date'].astype(str)
+                
                 current_scores = current_scores.set_index(['Date', 'Player'])
                 df_new = df_new.set_index(['Date', 'Player'])
                 
@@ -74,25 +62,21 @@ def ingest(json_file):
                 current_scores = pd.concat([current_scores, df_new_entries])
                 current_scores.reset_index(inplace=True)
                 
-                print(f"✅ Processed scores: Updated existing records, added {len(df_new_entries)} new.")
+                print(f"   ✅ Scores: Updated existing, added {len(df_new_entries)} new.")
             else:
-                # Fallback if columns missing (shouldn't happen with valid DB)
                 current_scores = pd.concat([current_scores, df_new], ignore_index=True)
-                print(f"✅ Added {len(df_new)} new scores (fallback).")
+                print(f"   ✅ Added {len(df_new)} new scores (fallback).")
         else:
             current_scores = df_new
-            print(f"✅ Added {len(df_new)} new scores.")
-    
+            print(f"   ✅ Added {len(df_new)} new scores.")
+
     # 2. Process Financials
     new_fin = data.get('financials', [])
     if new_fin:
         df_fin = pd.DataFrame(new_fin)
         df_fin['Date'] = date_str
-        
-        # Simple append for financials (allowing multiple entries per player per cat is okay, but usually unique)
-        # We'll just append for now.
         current_financials = pd.concat([current_financials, df_fin], ignore_index=True)
-        print(f"✅ Added {len(df_fin)} financial records.")
+        print(f"   ✅ Added {len(df_fin)} financial records.")
 
     # 3. Process Handicaps
     new_hcp = data.get('handicaps', [])
@@ -101,6 +85,7 @@ def ingest(json_file):
         df_hcp['Date'] = date_str
         
         if not current_handicaps.empty:
+            current_handicaps['Date'] = current_handicaps['Date'].astype(str)
             existing_keys = set(zip(current_handicaps['Date'], current_handicaps['Player']))
             duplicates = set(zip(df_hcp['Date'], df_hcp['Player'])).intersection(existing_keys)
              
@@ -109,7 +94,28 @@ def ingest(json_file):
         
         if not df_hcp.empty:
             current_handicaps = pd.concat([current_handicaps, df_hcp], ignore_index=True)
-            print(f"✅ Added {len(df_hcp)} handicap records.")
+            print(f"   ✅ Added {len(df_hcp)} handicap records.")
+            
+    return current_scores, current_financials, current_handicaps
+
+def ingest(json_file):
+    print(f"📥 Ingesting {json_file}...")
+    
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    
+    current_scores, current_financials, current_handicaps = load_db()
+    
+    if 'update_batch' in data:
+        print(f"📦 Batch Update Detected: {len(data['update_batch'])} entries.")
+        for entry in data['update_batch']:
+            current_scores, current_financials, current_handicaps = process_entry(
+                entry, current_scores, current_financials, current_handicaps
+            )
+    else:
+        current_scores, current_financials, current_handicaps = process_entry(
+            data, current_scores, current_financials, current_handicaps
+        )
 
     save_db(current_scores, current_financials, current_handicaps)
     
