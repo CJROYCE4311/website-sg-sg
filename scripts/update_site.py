@@ -361,6 +361,7 @@ def run_pipeline():
     
     analysis_data_best3 = []
     analysis_data_best6 = []
+    analysis_data_last2 = []
     analysis_base = base[base['Date'] >= cutoff_date].copy()
 
     for player, group in analysis_base.groupby('Player'):
@@ -374,6 +375,10 @@ def run_pipeline():
         diffs = group['Differential'].dropna().tolist()
         gross_scores = group['Gross_Score'].tolist()
         
+        # Sort by Date descending for Last 2
+        group_sorted = group.sort_values('Date', ascending=False)
+        last2_diffs = group_sorted['Differential'].head(2).tolist()
+        
         avg_gross = sum(gross_scores) / len(gross_scores)
         avg_net = avg_gross - current_hcp
 
@@ -386,6 +391,10 @@ def run_pipeline():
         best6_diffs = sorted(diffs)[:6]
         implied_6 = sum(best6_diffs) / len(best6_diffs) if best6_diffs else 0
         adj_6 = implied_6 - current_hcp
+        
+        # Last 2 (Trend)
+        implied_2 = sum(last2_diffs) / len(last2_diffs) if last2_diffs else 0
+        adj_2 = implied_2 - current_hcp
 
         common = {
             'name': player, 'current': round(current_hcp, 1),
@@ -394,9 +403,11 @@ def run_pipeline():
         }
         analysis_data_best3.append({**common, 'implied': round(implied_3, 1), 'adjustment': round(adj_3, 1)})
         analysis_data_best6.append({**common, 'implied': round(implied_6, 1), 'adjustment': round(adj_6, 1)})
+        analysis_data_last2.append({**common, 'implied': round(implied_2, 1), 'adjustment': round(adj_2, 1)})
     
     inject_to_html("HandicapAnalysis.html", "dataBest3", analysis_data_best3, is_json=True)
     inject_to_html("HandicapAnalysis.html", "dataBest6", analysis_data_best6, is_json=True)
+    inject_to_html("HandicapAnalysis.html", "dataLast2", analysis_data_last2, is_json=True)
 
     # 4. Handicap Detail (Drilldown)
     detail_lines = ["Player\tDate\tGross Score\tHCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]

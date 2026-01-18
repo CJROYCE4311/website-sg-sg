@@ -243,6 +243,66 @@ Zach Coe,73.0,71.88,-0.12
 Zach Fleishman,87.0,74.07,2.07
 Zach Mattson,84.0,76.75,4.75
 Zane Eisenbarth,82.0,76.31,4.31`;
+
+        function loadData() {
+            const grid = document.getElementById('player-grid');
+            const lines = playerStatsData.trim().split('\n');
+            const headers = lines[0].split(',');
+
+            // Skip header
+            lines.slice(1).forEach(line => {
+                const [player, gross, net, netToPar] = line.split(',');
+                if (!player) return;
+
+                const rotation = calculateRotation(parseFloat(netToPar));
+                
+                // Color Logic
+                let gaugeColor = "#22c55e"; // Green
+                if (parseFloat(netToPar) > 0) gaugeColor = "#eab308"; // Yellow
+                if (parseFloat(netToPar) > 5) gaugeColor = "#ef4444"; // Red
+
+                const card = document.createElement('div');
+                card.className = "bg-gray-50 rounded-xl p-4 border border-gray-200 shadow-sm flex flex-col items-center hover:shadow-md transition";
+                card.innerHTML = `
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 truncate w-full text-center" title="${player}">${player}</h3>
+                    
+                    <div class="gauge-container mb-2 w-32">
+                        <svg class="gauge-svg" viewBox="0 0 200 120">
+                            <!-- Gauge Background Arc (3 segments) -->
+                            <!-- Green Segment (-90 to -30 deg) -->
+                            <path d="M 30 90 A 70 70 0 0 1 65 29" fill="none" stroke="#22c55e" stroke-width="15" stroke-linecap="butt" />
+                            <!-- Yellow Segment (-30 to 30 deg) -->
+                            <path d="M 65 29 A 70 70 0 0 1 135 29" fill="none" stroke="#eab308" stroke-width="15" stroke-linecap="butt" />
+                            <!-- Red Segment (30 to 90 deg) -->
+                            <path d="M 135 29 A 70 70 0 0 1 170 90" fill="none" stroke="#ef4444" stroke-width="15" stroke-linecap="butt" />
+                            
+                            <!-- Needle -->
+                            <g class="needle" style="transform: rotate(${rotation}deg);">
+                                <path d="M 100 90 L 100 25" stroke="#1f2937" stroke-width="4" stroke-linecap="round" />
+                                <circle cx="100" cy="90" r="6" fill="#1f2937" />
+                            </g>
+                            
+                            <!-- Text overlay -->
+                            <text x="100" y="105" class="needle-label" font-size="22" font-weight="900" fill="#111827">
+                                ${parseFloat(netToPar) > 0 ? '+' : ''}${netToPar}
+                            </text>
+                            <text x="100" y="118" class="needle-label" font-size="10" font-weight="bold" fill="#6b7280" style="text-transform: uppercase; letter-spacing: 0.05em;">
+                                Vs Par
+                            </text>
+                        </svg>
+                    </div>
+
+                    <div class="w-full grid grid-cols-2 gap-2 text-center text-sm">
+                        <div class="bg-white p-2 rounded border border-gray-100">
+                            <p class="text-gray-400 text-[10px] uppercase font-bold leading-none mb-1">Gross</p>
+                            <p class="font-black text-gray-900 leading-none">${gross}</p>
+                        </div>
+                        <div class="bg-white p-2 rounded border border-gray-100">
+                            <p class="text-gray-400 text-[10px] uppercase font-bold leading-none mb-1">Net</p>
+                            <p class="font-black text-gray-900 leading-none">${net}</p>
+                        </div>
+                    </div>
+                `;
                 grid.appendChild(card);
             });
         }
