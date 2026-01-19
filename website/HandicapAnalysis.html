@@ -40,6 +40,53 @@
 
 <body class="bg-slate-50 text-slate-800">
 
+    <!-- Password Overlay -->
+    <div id="passwordOverlay" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-lock text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Restricted Access</h2>
+                <p class="text-slate-500 mt-2">Enter access code to view report.</p>
+            </div>
+            <form onsubmit="checkPassword(event)" class="space-y-4">
+                <input type="password" id="accessCode" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-center text-lg tracking-widest" placeholder="Enter Code" required>
+                <div id="errorMsg" class="text-red-500 text-sm text-center hidden">Incorrect code.</div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-colors">Unlock</button>
+            </form>
+            <div class="mt-6 text-center">
+                <a href="index.html" class="text-sm text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function checkPassword(e) {
+            e.preventDefault();
+            const input = document.getElementById('accessCode');
+            const error = document.getElementById('errorMsg');
+            const overlay = document.getElementById('passwordOverlay');
+            
+            if (input.value === '1234') {
+                sessionStorage.setItem('audit_access', 'true');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            } else {
+                error.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+                input.classList.add('border-red-500');
+            }
+        }
+        
+        // Check session
+        if (sessionStorage.getItem('audit_access') === 'true') {
+            document.getElementById('passwordOverlay').style.display = 'none';
+        }
+    </script>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- Header -->
