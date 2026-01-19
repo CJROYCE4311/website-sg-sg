@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG@SG Methodology Report</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="assets/SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
+                <a href="index.html"
+                    class="text-xl font-bold tracking-tight text-gray-900 hover:text-green-700 transition">SG@SG </a>
+                <img src="assets/Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
+            </div>
+
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="index.html" class="text-gray-500 hover:text-green-700 transition">Home</a>
+                <a href="AdminPortal.html" class="text-green-700 font-bold transition">Admin Portal</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-6 py-12">
+        <div class="max-w-5xl mx-auto space-y-12">
+            
+            <!-- Intro / Methodology Section -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">Golf Performance Analysis Methodology</h1>
+                <div class="prose prose-green max-w-none text-gray-600 space-y-4">
+                    <p class="font-medium text-lg text-gray-800">Purpose: To evaluate player performance relative to their handicap on a hole-by-hole basis.</p>
+                    
+                    <h3 class="text-xl font-semibold text-gray-800 mt-6">The Algorithm</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mt-4">
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-900 mb-2">1. Calculate Course Handicap (CH)</h4>
+                            <p class="text-sm">Determine strokes received based on tees.</p>
+                            <code class="block bg-gray-200 p-2 rounded mt-2 text-xs">CH = (HI * (Slope / 113)) + (Rating - Par)</code>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-900 mb-2">2. Allocate Strokes (Net Score)</h4>
+                            <p class="text-sm">Distribute CH strokes based on Stroke Index (SI).</p>
+                            <ul class="list-disc list-inside text-sm mt-2 pl-2">
+                                <li>Base: CH // 18 strokes per hole.</li>
+                                <li>Extra: Remaining strokes go to hardest holes (lowest SI).</li>
+                                <li><strong>Net Score = Gross - Strokes Received</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100 mt-6">
+                        <h4 class="font-bold text-green-900 mb-2">3. Performance Metrics (Net Differential)</h4>
+                        <p class="text-sm text-green-800 mb-2">We compare Avg Net Score to Par.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <span class="block text-green-600 font-bold text-lg">< -0.5</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Major Strength</span>
+                            </div>
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <span class="block text-gray-500 font-bold text-lg">-0.5 to +0.5</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Neutral / Expected</span>
+                            </div>
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <span class="block text-red-600 font-bold text-lg">> +0.5</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Weakness / Leak</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Report Section -->
+            <section class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                <div class="p-8 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Player Analysis Report</h2>
+                        <p class="text-gray-500 text-sm">Select a player to view their hole-by-hole performance breakdown.</p>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <select id="playerSelect" class="w-full md:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none shadow-sm">
+                            <option value="">Select Player...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="reportContent" class="hidden p-8 animate-fade-in">
+                    <!-- Player Summary -->
+                    <div class="flex items-center justify-between mb-8 p-4 bg-green-50 rounded-lg border border-green-100">
+                        <div>
+                            <span class="text-sm text-green-800 uppercase tracking-wider font-semibold">Rounds Analyzed</span>
+                            <div id="roundsAnalyzed" class="text-2xl font-bold text-green-900">0</div>
+                        </div>
+                         <div>
+                            <span class="text-sm text-green-800 uppercase tracking-wider font-semibold">Current Index (Ref)</span>
+                            <div id="latestHI" class="text-2xl font-bold text-green-900">0.0</div>
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-3 font-medium text-center">Hole</th>
+                                    <th class="px-6 py-3 font-medium text-center">Par</th>
+                                    <th class="px-6 py-3 font-medium text-center">SI</th>
+                                    <th class="px-6 py-3 font-medium text-center bg-gray-100">Avg Gross</th>
+                                    <th class="px-6 py-3 font-medium text-center bg-gray-100">Avg Net</th>
+                                    <th class="px-6 py-3 font-medium text-center">Net +/-</th>
+                                    <th class="px-6 py-3 font-medium text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statsTableBody" class="divide-y divide-gray-100">
+                                <!-- Rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="emptyState" class="p-12 text-center text-gray-400">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="text-lg font-medium">Please select a player above.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
+            &copy; 2026 SG@SG. Golf Performance Analytics.
+        </div>
+    </footer>
+
+    <!-- Load Data -->
+    <script src="data/methodology_data.js"></script>
+
+    <script>
+        // methodologyData is loaded from data/methodology_data.js
+
+        function init() {
+            try {
+                // Remove fetch logic, data is already in global scope
+                if (typeof methodologyData === 'undefined') {
+                    console.error("methodologyData is not loaded");
+                    return;
+                }
+                
+                const select = document.getElementById('playerSelect');
+                const players = Object.keys(methodologyData).sort();
+                
+                players.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player;
+                    option.textContent = player;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', (e) => loadPlayer(e.target.value));
+            } catch (error) {
+                console.error("Failed to initialize:", error);
+            }
+        }
+
+        function loadPlayer(playerName) {
+            const content = document.getElementById('reportContent');
+            const empty = document.getElementById('emptyState');
+            
+            if (!playerName) {
+                content.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            const data = methodologyData[playerName];
+            if (!data) return;
+
+            // Populate Summary
+            document.getElementById('roundsAnalyzed').textContent = data.rounds_analyzed;
+            document.getElementById('latestHI').textContent = data.latest_hi;
+
+            // Populate Table
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+
+            data.holes.forEach(hole => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-center font-medium text-gray-900">${hole.hole}</td>
+                    <td class="px-6 py-4 text-center text-gray-500">${hole.par}</td>
+                    <td class="px-6 py-4 text-center text-gray-500">${hole.si}</td>
+                    <td class="px-6 py-4 text-center font-medium text-gray-900 bg-gray-50/50">${hole.avg_gross.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center font-medium text-gray-900 bg-gray-50/50">${hole.avg_net.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center font-bold ${getDiffColor(hole.net_diff)}">${hole.net_diff > 0 ? '+' : ''}${hole.net_diff.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-left ${hole.status_class}">${hole.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            content.classList.remove('hidden');
+            empty.classList.add('hidden');
+        }
+
+        function getDiffColor(val) {
+            if (val < -0.5) return 'text-green-600';
+            if (val > 0.5) return 'text-red-600';
+            return 'text-gray-400';
+        }
+
+        // Run
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -130,6 +130,28 @@
             </div>
         </div>
 
+        <!-- Transparency / Writeup -->
+        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 mb-8 text-sm text-slate-700 leading-relaxed shadow-sm">
+            <h3 class="font-bold text-indigo-900 text-lg mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info"></i>
+                About This Audit
+            </h3>
+            <p class="mb-3">
+                The Handicap Committee provides this report to ensure fair play and transparency for all members.
+                By comparing your <strong>Current Index</strong> against an <strong>Implied Index</strong> (calculated from your recent tournament scores),
+                we can identify potential discrepancies.
+            </p>
+            <p>
+                <strong>The "Probability" Column:</strong> This new metric estimates the statistical odds of a player shooting their recent scores given their current index.
+                For example, consistently shooting "1 in 1,000" odds scores may suggest the Current Index is higher than the player's potential ability.
+            </p>
+            <div class="mt-4 flex items-center gap-3 p-3 bg-white rounded-lg border border-indigo-100">
+                <i class="fa-solid fa-bell text-indigo-500"></i>
+                <span class="font-medium text-indigo-800">Reminder:</span>
+                <span>Please post <strong>all</strong> eligible scores to GHIN immediately to maintain an accurate handicap.</span>
+            </div>
+        </div>
+
         <!-- Filters & Search -->
         <div
             class="bg-white rounded-t-xl border border-slate-200 p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -166,6 +188,9 @@
                                 onclick="sortTable('current')">Current Index <i class="fa-solid fa-sort ml-1"></i></th>
                             <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
                                 onclick="sortTable('adjustment')">Suggested Adj <i class="fa-solid fa-sort ml-1"></i>
+                            </th>
+                            <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
+                                onclick="sortTable('adjustment')">Probability <i class="fa-solid fa-sort ml-1"></i>
                             </th>
                             <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
                                 onclick="sortTable('avgGross')">Avg Gross <i class="fa-solid fa-sort ml-1"></i></th>
@@ -2815,6 +2840,23 @@ const dataLast2 = [
             }
         }
 
+        function getProbability(adj) {
+            // Using approximate odds for 10.0-14.9 index range from USGA table
+            const val = Math.round(adj);
+            if (val >= 0) return "-";
+            if (val === -1) return "1 in 8";
+            if (val === -2) return "1 in 14";
+            if (val === -3) return "1 in 25";
+            if (val === -4) return "1 in 47";
+            if (val === -5) return "1 in 93";
+            if (val === -6) return "1 in 191";
+            if (val === -7) return "1 in 391";
+            if (val === -8) return "1 in 743";
+            if (val === -9) return "1 in 1,362";
+            if (val <= -10) return "1 in 2,200+";
+            return "-";
+        }
+
         function renderTable(data) {
             const tbody = document.getElementById('statsTableBody');
             tbody.innerHTML = '';
@@ -2831,11 +2873,18 @@ const dataLast2 = [
                 // Rounds Warning
                 const roundsWarning = player.rounds < 3 ? `<i class="fa-solid fa-triangle-exclamation text-yellow-500 ml-1" title="Low Round Count"></i>` : '';
 
+                // Probability
+                const prob = getProbability(player.adjustment);
+                let probClass = "text-slate-400";
+                if (player.adjustment <= -3) probClass = "text-red-600 font-bold";
+                else if (player.adjustment <= -2) probClass = "text-orange-600 font-medium";
+
                 tr.innerHTML = `
                     <td class="p-4 font-medium text-slate-900 border-b border-slate-100">${player.name}</td>
                     <td class="p-4 text-center border-b border-slate-100">${player.implied}</td>
                     <td class="p-4 text-center border-b border-slate-100">${player.current}</td>
                     <td class="p-4 text-center border-b border-slate-100 ${adjClass}">${player.adjustment}</td>
+                    <td class="p-4 text-center border-b border-slate-100 ${probClass}">${prob}</td>
                     <td class="p-4 text-center border-b border-slate-100">${player.avgGross}</td>
                     <td class="p-4 text-center border-b border-slate-100">${player.avgNet}</td>
                     <td class="p-4 text-center border-b border-slate-100">${player.rounds} ${roundsWarning}</td>
