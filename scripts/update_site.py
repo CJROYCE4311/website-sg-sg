@@ -264,36 +264,33 @@ def generate_tournament_pages(financials_df):
     return generated_links
 
 def inject_results_log(links):
-    """Injects the list of links into index.html."""
+    """Injects the list of links into index.html using marker comments."""
     filepath = os.path.join(WEBSITE_DIR, 'index.html')
     if not os.path.exists(filepath): return
-    
+
     with open(filepath, 'r') as f: html = f.read()
-    
+
     # Generate HTML list
-    list_html = ""
+    list_html = "\n"
     for link in links:
-        list_html += f"""
-        <a href="{link['file']}" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-            <div class="flex items-center">
-                <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                <span class="font-medium">{link['date']}</span>
-            </div>
-            <span class="text-xs text-gray-400 group-hover:text-purple-500">{link['format']}</span>
-        </a>
-        """
-        
-    # Regex to replace INNER content of the container
-    # <div id="results-log-container"...>  CONTENT  </div>
-    pattern = r'(<div id="results-log-container"[^>]*>)(.*?)(</div>)'
-    
+        list_html += f"""                    <a href="{link['file']}" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
+                            <span class="font-medium">{link['date']}</span>
+                        </div>
+                        <span class="text-xs text-gray-400 group-hover:text-purple-500">{link['format']}</span>
+                    </a>
+"""
+
+    # Use marker comments for reliable replacement (immune to nested HTML)
+    pattern = r'(<!-- RESULTS-LOG-START -->)(.*?)(<!-- RESULTS-LOG-END -->)'
+
     if re.search(pattern, html, flags=re.DOTALL):
-        # \1 is the opening tag, \3 is the closing tag. We replace \2 (content) with list_html
-        html = re.sub(pattern, r'\1' + list_html + r'\3', html, flags=re.DOTALL)
+        html = re.sub(pattern, r'\1' + list_html + r'                    \3', html, flags=re.DOTALL)
         with open(filepath, 'w') as f: f.write(html)
         print("✅ Updated Results Log in index.html")
     else:
-        print("⚠️ Could not find #results-log-container in index.html")
+        print("⚠️ Could not find RESULTS-LOG markers in index.html")
 
 def update_index_html(writeup_html):
     filepath = os.path.join(WEBSITE_DIR, 'index.html')
