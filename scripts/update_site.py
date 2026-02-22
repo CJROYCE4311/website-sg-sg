@@ -102,7 +102,7 @@ def get_latest_results_writeup(financials_df, scores_df):
     latest_date = financials_df['Date'].max()
     day_df = financials_df[financials_df['Date'] == latest_date].copy()
     date_str = latest_date.strftime('%Y-%m-%d')
-    
+
     # Merge with scores to get Partner and Ranks
     rank_cols = ['Date', 'Player', 'Partner', 'Team_Rank', 'Individual_Rank']
     # Ensure Date is comparable
@@ -110,7 +110,7 @@ def get_latest_results_writeup(financials_df, scores_df):
     scores_copy['Date'] = pd.to_datetime(scores_copy['Date'])
     day_scores = scores_copy[scores_copy['Date'] == latest_date][rank_cols]
     day_df = day_df.merge(day_scores, on=['Date', 'Player'], how='left')
-    
+
     html = f"""
     <div class="mb-4 space-y-1">
         <h4 class="font-bold text-gray-900 text-lg m-0">Latest Tournament Recap</h4>
@@ -119,13 +119,13 @@ def get_latest_results_writeup(financials_df, scores_df):
     <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
         <div class="space-y-4">
     """
-    
+
     cat_map = {'BestBall': 'Best Ball', 'Quota': 'Team Quota', 'NetMedal': 'Net Medal'}
     for cat_key, cat_title in cat_map.items():
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
-            
+
             results = []
             if cat_key in ['BestBall', 'Quota']:
                 seen_teams = set()
@@ -139,12 +139,30 @@ def get_latest_results_writeup(financials_df, scores_df):
                         names = f"{p1} & {p2}" if p2 else p1
                         results.append({'rank': row['Team_Rank'], 'names': names, 'amount': row['Amount']})
             else:
-                for _, row in cat_df.iterrows():
-                    results.append({'rank': row['Individual_Rank'], 'names': row['Player'], 'amount': row['Amount']})
-            
+                # For individual games (NetMedal), rank by payout amount
+                sorted_cat = cat_df.sort_values('Amount', ascending=False)
+                current_rank = 1
+                prev_amount = None
+                rank_counter = 0
+
+                for _, row in sorted_cat.iterrows():
+                    rank_counter += 1
+                    if prev_amount is not None and row['Amount'] < prev_amount:
+                        current_rank = rank_counter
+
+                    # Determine rank label
+                    same_amount_count = (sorted_cat['Amount'] == row['Amount']).sum()
+                    if same_amount_count > 1:
+                        rank_label = f"T{current_rank}"
+                    else:
+                        rank_label = str(current_rank)
+
+                    results.append({'rank': rank_label, 'names': row['Player'], 'amount': row['Amount']})
+                    prev_amount = row['Amount']
+
             results.sort(key=lambda x: x['amount'], reverse=True)
             for res in results:
-                rank_str = f"{res['rank']}: " if pd.notna(res['rank']) and res['rank'] else ""
+                rank_str = f"{res['rank']}: " if res['rank'] else ""
                 html += f"<li class='m-0'>{rank_str}{res['names']} - ${res['amount']:.0f}</li>"
             html += "</ul></div>"
 
@@ -165,53 +183,72 @@ def get_latest_results_writeup(financials_df, scores_df):
     html += f"<p class='text-xs text-gray-400 mt-6 mb-0 italic'>Run Date: {datetime.now().strftime('%Y-%m-%d')}</p>"
     return html
 
-def generate_tournament_pages(financials_df):
+def generate_tournament_pages(financials_df, scores_df):
     """Generates individual HTML pages for each 2026 tournament."""
     if financials_df.empty: return []
-    
+
     # Filter for 2026 dates only
-    # Assuming Tournament Year logic: Nov/Dec of previous year counts. 
+    # Assuming Tournament Year logic: Nov/Dec of previous year counts.
     # But user said "2026 results log" and "each of the 2026 tournaments".
     # We'll use the 'Tournament_Year' logic.
     financials_df['Tournament_Year'] = financials_df['Date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
     df_2026 = financials_df[financials_df['Tournament_Year'] == 2026]
-    
+
     generated_links = []
-    
+
     unique_dates = sorted(df_2026['Date'].unique(), reverse=True)
-    
+
     for date_val in unique_dates:
         date_str = pd.to_datetime(date_val).strftime('%Y-%m-%d')
-        day_df = df_2026[df_2026['Date'] == date_val]
-        
+        day_df = df_2026[df_2026['Date'] == date_val].copy()
+
+        # Merge with scores to get Partner info
+        scores_copy = scores_df.copy()
+        scores_copy['Date'] = pd.to_datetime(scores_copy['Date'])
+        day_scores = scores_copy[scores_copy['Date'] == date_val][['Date', 'Player', 'Partner']]
+        day_df = day_df.merge(day_scores, on=['Date', 'Player'], how='left')
+
         # Determine Format
         cats = day_df['Category'].unique()
         format_name = "Tournament"
         if 'Quota' in cats: format_name = "Team Quota"
         elif 'BestBall' in cats: format_name = "Best Ball"
         elif 'NetMedal' in cats: format_name = "Net Medal"
-        
+
         # Build Winners HTML
         winners_html = ""
         cat_map = {'BestBall': 'Best Ball', 'Quota': 'Team Quota', 'NetMedal': 'Net Medal', 'GrossSkins': 'Gross Skins', 'NetSkins': 'Net Skins'}
-        
+
         # Order categories
         ordered_cats = [c for c in ['BestBall', 'Quota', 'NetMedal', 'GrossSkins', 'NetSkins'] if c in cats]
-        
+
         for cat in ordered_cats:
             cat_df = day_df[day_df['Category'] == cat]
             if cat_df.empty: continue
-            
+
             winners_html += f"<div class='mb-6'><h4 class='font-bold text-gray-800 uppercase text-sm tracking-wide mb-2'>{cat_map.get(cat, cat)}</h4><ul class='space-y-2'>"
-            
-            # Group winners
+
+            # Group winners - keep teams together for team games
             grouped = []
-            for amt, grp in cat_df.groupby('Amount'):
-                names = " & ".join(sorted(grp['Player'].tolist()))
-                grouped.append({'names': names, 'amount': amt})
-            
+            if cat in ['BestBall', 'Quota']:
+                # For team games, group by team (using Partner field)
+                seen_teams = set()
+                for _, row in cat_df.iterrows():
+                    p1 = str(row['Player'])
+                    p2 = str(row['Partner']) if pd.notna(row['Partner']) and row['Partner'] else ""
+                    team_key = tuple(sorted([p1, p2]))
+                    if team_key not in seen_teams:
+                        seen_teams.add(team_key)
+                        names = f"{p1} & {p2}" if p2 else p1
+                        grouped.append({'names': names, 'amount': row['Amount']})
+            else:
+                # For individual games, group players with same amount
+                for amt, grp in cat_df.groupby('Amount'):
+                    names = " & ".join(sorted(grp['Player'].tolist()))
+                    grouped.append({'names': names, 'amount': amt})
+
             grouped.sort(key=lambda x: x['amount'], reverse=True)
-            
+
             for g in grouped:
                 winners_html += f"<li class='flex justify-between items-center text-gray-700 bg-white p-3 rounded-lg border border-gray-100'><span class='font-medium'>{g['names']}</span><span class='font-bold text-green-600'>${g['amount']:.0f}</span></li>"
             winners_html += "</ul></div>"
@@ -486,7 +523,7 @@ def run_pipeline():
         update_index_html(writeup)
 
     # 10. Generate Tournament Pages & Update Log
-    links = generate_tournament_pages(financials)
+    links = generate_tournament_pages(financials, scores)
     if links:
         inject_results_log(links)
 
