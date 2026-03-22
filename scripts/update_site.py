@@ -5,6 +5,7 @@ import re
 import subprocess
 import random
 import argparse
+import sys
 from datetime import datetime
 import warnings
 
@@ -15,6 +16,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 WEBSITE_DIR = os.path.join(PROJECT_ROOT, "website")
+PUBLISH_PATHS = ["data", "website"]
 
 # CSV Paths
 SCORES_FILE = os.path.join(DATA_DIR, "scores.csv")
@@ -212,7 +214,7 @@ def get_latest_results_writeup(financials_df, scores_df):
             html += "</ul></div>"
             
     html += "</div></div>"
-    html += f"<p class='text-xs text-gray-400 mt-6 mb-0 italic'>Run Date: {datetime.now().strftime('%Y-%m-%d')}</p>"
+    html += f"<p class='text-xs text-gray-400 mt-6 mb-0 italic'>Latest Tournament: {date_str}</p>"
     return html
 
 def generate_tournament_pages(financials_df, scores_df):
@@ -365,7 +367,7 @@ def update_index_html(writeup_html):
     with open(filepath, 'r') as f: html = f.read()
 
     # Regex replace the prose div content
-    pattern = r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(<p class=\'text-xs text-gray-400 mt-6 mb-0 italic\'>Run Date: .*?</p>)'
+    pattern = r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(<p class=\'text-xs text-gray-400 mt-6 mb-0 italic\'>.*?</p>)'
     if re.search(pattern, html, flags=re.DOTALL):
         html = re.sub(pattern, r'\1' + writeup_html, html, flags=re.DOTALL)
     
@@ -557,12 +559,54 @@ def run_pipeline():
     if links:
         inject_results_log(links)
 
+def get_repo_changes():
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    changes = []
+    for line in result.stdout.splitlines():
+        if not line:
+            continue
+        status = line[:2]
+        path = line[3:]
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        changes.append((status, path))
+    return changes
+
+
+def enforce_publish_scope():
+    changes = get_repo_changes()
+    unexpected = [
+        path for _, path in changes
+        if not any(path == allowed or path.startswith(f"{allowed}/") for allowed in PUBLISH_PATHS)
+    ]
+    if unexpected:
+        print("❌ Refusing to publish with unrelated repo changes present:")
+        for path in unexpected:
+            print(f"   - {path}")
+        print("\nClean, ignore, or commit those files separately and retry publish.")
+        return False
+    return True
+
+
 def sync():
     print("🚀 Pushing Updates...")
-    subprocess.run(["git", "add", "."], cwd=PROJECT_ROOT)
-    subprocess.run(["git", "commit", "-m", f"Automated Update {datetime.now().strftime('%Y-%m-%d')}"], cwd=PROJECT_ROOT)
-    subprocess.run(["git", "push"], cwd=PROJECT_ROOT)
+    if not enforce_publish_scope():
+        return False
+    subprocess.run(["git", "add", "--", *PUBLISH_PATHS], cwd=PROJECT_ROOT, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", f"Automated Update {datetime.now().strftime('%Y-%m-%d')}"],
+        cwd=PROJECT_ROOT,
+        check=True,
+    )
+    subprocess.run(["git", "push"], cwd=PROJECT_ROOT, check=True)
     print("🎉 Done.")
+    return True
 
 def main():
     parser = argparse.ArgumentParser(description="Regenerate website pages from CSV data.")
@@ -575,7 +619,8 @@ def main():
 
     run_pipeline()
     if args.publish:
-        sync()
+        if not sync():
+            sys.exit(1)
     else:
         print("ℹ️ Local build complete. Publish skipped.")
 

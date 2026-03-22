@@ -58,6 +58,9 @@ Working area:
 - `scripts/process_tournament.py` only commits or pushes when explicitly asked.
 - `scripts/ingest_data.py --dry-run` validates and simulates without mutating CSVs.
 - Re-running the same tournament payload no longer duplicates payout rows in `data/financials.csv`.
+- Corrected reruns update existing financial and handicap rows for the same canonical key instead of silently appending or skipping them.
+- Post-ingest validation aborts before any write if duplicate canonical keys are detected in scores, financials, or handicaps.
+- Publish commands stage only `data/` and `website/`, and they abort if unrelated repo files are dirty.
 
 ## Recommended Commands
 

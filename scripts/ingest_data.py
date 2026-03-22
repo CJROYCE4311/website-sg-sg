@@ -25,6 +25,18 @@ MIN_GROSS_SCORE = 50
 MAX_GROSS_SCORE = 150
 
 
+def build_archive_label(data):
+    """Return a stable archive label for single-date or batch payloads."""
+    if 'update_batch' in data:
+        dates = sorted({entry.get('date') for entry in data['update_batch'] if entry.get('date')})
+        if not dates:
+            return None
+        if len(dates) == 1:
+            return dates[0]
+        return f"{dates[0]}_to_{dates[-1]}"
+    return data.get('date')
+
+
 def validate_data(data):
     """Validate tournament data before ingestion. Returns (is_valid, errors)."""
     errors = []
@@ -134,11 +146,51 @@ def load_db():
     handicaps = pd.read_csv(HANDICAPS_FILE) if os.path.exists(HANDICAPS_FILE) else pd.DataFrame()
     return scores, financials, handicaps
 
+def sort_canonical_tables(scores, financials, handicaps):
+    if not scores.empty:
+        scores = scores.sort_values(['Date', 'Player']).reset_index(drop=True)
+    if not financials.empty:
+        financials = financials.sort_values(['Date', 'Player', 'Category']).reset_index(drop=True)
+    if not handicaps.empty:
+        handicaps = handicaps.sort_values(['Date', 'Player']).reset_index(drop=True)
+    return scores, financials, handicaps
+
+
 def save_db(scores, financials, handicaps):
+    scores, financials, handicaps = sort_canonical_tables(scores, financials, handicaps)
     scores.to_csv(SCORES_FILE, index=False)
     financials.to_csv(FINANCIALS_FILE, index=False)
     handicaps.to_csv(HANDICAPS_FILE, index=False)
     print("✅ Database saved successfully.")
+
+
+def duplicate_key_issues(df, key_cols, label):
+    if df.empty:
+        return []
+
+    missing_cols = [col for col in key_cols if col not in df.columns]
+    if missing_cols:
+        return [f"{label}: missing key columns {missing_cols}"]
+
+    duplicate_rows = df[df.duplicated(subset=key_cols, keep=False)]
+    if duplicate_rows.empty:
+        return []
+
+    sample_keys = (
+        duplicate_rows[key_cols]
+        .drop_duplicates()
+        .head(5)
+        .to_dict('records')
+    )
+    return [f"{label}: duplicate keys detected for {sample_keys}"]
+
+
+def validate_canonical_state(scores, financials, handicaps):
+    issues = []
+    issues.extend(duplicate_key_issues(scores, ['Date', 'Player'], 'scores'))
+    issues.extend(duplicate_key_issues(financials, ['Date', 'Player', 'Category'], 'financials'))
+    issues.extend(duplicate_key_issues(handicaps, ['Date', 'Player'], 'handicaps'))
+    return issues
 
 def get_handicap_review_flags(data, current_handicaps):
     review_flags = []
@@ -183,24 +235,64 @@ def get_handicap_review_flags(data, current_handicaps):
 
 def upsert_financials(current_financials, df_fin):
     if df_fin.empty:
-        return current_financials, 0, 0
+        return current_financials, 0, 0, 0
 
-    key_cols = ['Date', 'Player', 'Category', 'Amount']
+    key_cols = ['Date', 'Player', 'Category']
+    incoming = df_fin.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+    payload_duplicates = len(df_fin) - len(incoming)
 
     if current_financials.empty:
-        deduped = df_fin.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
-        return deduped, len(deduped), len(df_fin) - len(deduped)
+        return incoming, len(incoming), 0, payload_duplicates
 
-    missing_cols = [col for col in key_cols if col not in current_financials.columns]
-    for col in missing_cols:
-        current_financials[col] = None
+    current_financials = current_financials.copy()
+    all_columns = list(current_financials.columns)
+    for col in incoming.columns:
+        if col not in all_columns:
+            all_columns.append(col)
 
-    combined = pd.concat([current_financials, df_fin], ignore_index=True)
-    before = len(combined)
+    current_financials = current_financials.reindex(columns=all_columns)
+    incoming = incoming.reindex(columns=all_columns)
+
+    current_keys = set(map(tuple, current_financials[key_cols].astype(str).itertuples(index=False, name=None)))
+    incoming_keys = set(map(tuple, incoming[key_cols].astype(str).itertuples(index=False, name=None)))
+
+    added = len(incoming_keys - current_keys)
+    updated = len(incoming_keys & current_keys)
+
+    combined = pd.concat([current_financials, incoming], ignore_index=True)
     combined = combined.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
-    added = len(combined) - len(current_financials)
-    skipped = before - len(combined)
-    return combined, max(added, 0), skipped
+    return combined, added, updated, payload_duplicates
+
+
+def upsert_handicaps(current_handicaps, df_hcp):
+    if df_hcp.empty:
+        return current_handicaps, 0, 0, 0
+
+    key_cols = ['Date', 'Player']
+    incoming = df_hcp.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+    payload_duplicates = len(df_hcp) - len(incoming)
+
+    if current_handicaps.empty:
+        return incoming, len(incoming), 0, payload_duplicates
+
+    current_handicaps = current_handicaps.copy()
+    all_columns = list(current_handicaps.columns)
+    for col in incoming.columns:
+        if col not in all_columns:
+            all_columns.append(col)
+
+    current_handicaps = current_handicaps.reindex(columns=all_columns)
+    incoming = incoming.reindex(columns=all_columns)
+
+    current_keys = set(map(tuple, current_handicaps[key_cols].astype(str).itertuples(index=False, name=None)))
+    incoming_keys = set(map(tuple, incoming[key_cols].astype(str).itertuples(index=False, name=None)))
+
+    added = len(incoming_keys - current_keys)
+    updated = len(incoming_keys & current_keys)
+
+    combined = pd.concat([current_handicaps, incoming], ignore_index=True)
+    combined = combined.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+    return combined, added, updated, payload_duplicates
 
 def process_entry(data, current_scores, current_financials, current_handicaps):
     date_str = data.get('date')
@@ -250,26 +342,28 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
     if new_fin:
         df_fin = pd.DataFrame(new_fin)
         df_fin['Date'] = date_str
-        current_financials, added_financials, skipped_duplicates = upsert_financials(current_financials, df_fin)
-        print(f"   ✅ Financials: Added {added_financials} new, skipped {skipped_duplicates} duplicate rows.")
+        current_financials, added_financials, updated_financials, payload_duplicates = upsert_financials(current_financials, df_fin)
+        print(
+            "   ✅ Financials: Added {added} new, updated {updated} existing, collapsed {collapsed} duplicate payload rows.".format(
+                added=added_financials,
+                updated=updated_financials,
+                collapsed=payload_duplicates,
+            )
+        )
 
     # 3. Process Handicaps
     new_hcp = data.get('handicaps', [])
     if new_hcp:
         df_hcp = pd.DataFrame(new_hcp)
         df_hcp['Date'] = date_str
-        
-        if not current_handicaps.empty:
-            current_handicaps['Date'] = current_handicaps['Date'].astype(str)
-            existing_keys = set(zip(current_handicaps['Date'], current_handicaps['Player']))
-            duplicates = set(zip(df_hcp['Date'], df_hcp['Player'])).intersection(existing_keys)
-             
-            if duplicates:
-                 df_hcp = df_hcp[~df_hcp.apply(lambda x: (x['Date'], x['Player']) in duplicates, axis=1)]
-        
-        if not df_hcp.empty:
-            current_handicaps = pd.concat([current_handicaps, df_hcp], ignore_index=True)
-            print(f"   ✅ Added {len(df_hcp)} handicap records.")
+        current_handicaps, added_hcp, updated_hcp, payload_duplicates = upsert_handicaps(current_handicaps, df_hcp)
+        print(
+            "   ✅ Handicaps: Added {added} new, updated {updated} existing, collapsed {collapsed} duplicate payload rows.".format(
+                added=added_hcp,
+                updated=updated_hcp,
+                collapsed=payload_duplicates,
+            )
+        )
             
     return current_scores, current_financials, current_handicaps, True
 
@@ -322,8 +416,7 @@ def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_updat
                 )
             )
 
-    # Track date for archiving
-    archive_date = None
+    archive_label = build_archive_label(data)
 
     if 'update_batch' in data:
         print(f"📦 Batch Update Detected: {len(data['update_batch'])} entries.")
@@ -333,14 +426,20 @@ def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_updat
             )
             if not processed:
                 return False
-            archive_date = entry.get('date', archive_date)
     else:
         current_scores, current_financials, current_handicaps, processed = process_entry(
             data, current_scores, current_financials, current_handicaps
         )
         if not processed:
             return False
-        archive_date = data.get('date')
+
+    canonical_issues = validate_canonical_state(current_scores, current_financials, current_handicaps)
+    if canonical_issues:
+        print("❌ Post-ingest validation failed:")
+        for issue in canonical_issues:
+            print(f"   - {issue}")
+        print("\n❌ Aborting before writing canonical files.")
+        return False
 
     if dry_run:
         print("🧪 Dry run complete. No CSVs, archives, or website files were modified.")
@@ -349,8 +448,8 @@ def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_updat
     save_db(current_scores, current_financials, current_handicaps)
 
     # Archive JSON
-    if not skip_archive and archive_date:
-        archive_json(json_file, archive_date)
+    if not skip_archive and archive_label:
+        archive_json(json_file, archive_label)
 
     # Trigger Site Update
     if not skip_site_update:

@@ -22,23 +22,27 @@ import json
 import shutil
 import argparse
 import subprocess
-from datetime import datetime
 from glob import glob
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 SCREENSHOTS_DIR = os.path.join(PROJECT_ROOT, "input", "screenshots")
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, "input", "processed")
+PUBLISH_PATHS = ["data", "website"]
 
 
-def get_tournament_date(json_file):
-    """Extract the tournament date from JSON file."""
+def get_tournament_label(json_file):
+    """Extract a stable label from the JSON file for display and archiving."""
     with open(json_file, 'r') as f:
         data = json.load(f)
 
     if 'update_batch' in data:
-        # Use the first date in batch
-        return data['update_batch'][0].get('date')
+        dates = sorted({entry.get('date') for entry in data['update_batch'] if entry.get('date')})
+        if not dates:
+            return None
+        if len(dates) == 1:
+            return dates[0]
+        return f"{dates[0]}_to_{dates[-1]}"
     return data.get('date')
 
 
@@ -78,12 +82,53 @@ def archive_screenshots(date_str):
     print(f"📷 Archived {len(screenshots)} screenshot(s) to input/processed/{date_str}/")
 
 
+def get_repo_changes():
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    changes = []
+    for line in result.stdout.splitlines():
+        if not line:
+            continue
+        status = line[:2]
+        path = line[3:]
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        changes.append((status, path))
+    return changes
+
+
+def enforce_publish_scope():
+    changes = get_repo_changes()
+    unexpected = [
+        path for _, path in changes
+        if not any(path == allowed or path.startswith(f"{allowed}/") for allowed in PUBLISH_PATHS)
+    ]
+    if unexpected:
+        print("❌ Refusing to publish with unrelated repo changes present:")
+        for path in unexpected:
+            print(f"   - {path}")
+        print("\nClean, ignore, or commit those files separately and retry publish.")
+        return False
+    return True
+
+
+def stage_publish_paths():
+    subprocess.run(["git", "add", "--", *PUBLISH_PATHS], cwd=PROJECT_ROOT, check=True)
+
+
 def git_commit(date_str, push=False):
     """Commit changes to git."""
     print("\n📝 Committing changes...")
 
-    # Stage all changes
-    subprocess.run(["git", "add", "."], cwd=PROJECT_ROOT, check=True)
+    if not enforce_publish_scope():
+        return False
+
+    stage_publish_paths()
 
     # Create commit message
     msg = f"Add tournament results for {date_str}"
@@ -99,10 +144,10 @@ def git_commit(date_str, push=False):
         print(f"   ✅ Committed: {msg}")
     elif "nothing to commit" in result.stdout + result.stderr:
         print("   ℹ️  Nothing to commit")
-        return
+        return True
     else:
         print(f"   ❌ Commit failed: {result.stderr}")
-        return
+        return False
 
     if push:
         print("🚀 Pushing to remote...")
@@ -116,6 +161,8 @@ def git_commit(date_str, push=False):
             print("   ✅ Pushed to remote")
         else:
             print(f"   ❌ Push failed: {result.stderr}")
+            return False
+    return True
 
 
 def main():
@@ -164,9 +211,9 @@ Examples:
     print("=" * 50)
 
     # Get tournament date
-    date_str = get_tournament_date(args.json_file)
+    date_str = get_tournament_label(args.json_file)
     if date_str:
-        print(f"📅 Tournament Date: {date_str}")
+        print(f"📅 Tournament Label: {date_str}")
     else:
         print("⚠️  Warning: No date found in JSON")
 
@@ -200,7 +247,8 @@ Examples:
         print("\n⚠️  Dry run requested. Skipping git operations.")
     elif args.commit or args.push:
         print("\n" + "-" * 50)
-        git_commit(date_str, push=args.push)
+        if not git_commit(date_str, push=args.push):
+            sys.exit(1)
 
     print("\n" + "=" * 50)
     print("✅ Tournament processing complete!")

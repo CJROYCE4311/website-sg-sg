@@ -26,12 +26,13 @@ This is the main operator guide for updating the SG@SG data and website.
 3. Build or update:
    `input/tournament_data.json`
 4. Run validation and present handicap readings that are more than 1 standard deviation above or below that player's historical mean.
-5. Wait for your review if anything looks questionable.
-6. Update the canonical files:
+5. Run automated post-ingest key validation so canonical files cannot be written with duplicate score, financial, or handicap keys.
+6. Wait for your review if anything looks questionable.
+7. Update the canonical files:
    - `data/scores.csv`
    - `data/financials.csv`
    - `data/handicaps.csv`
-7. Rebuild the local website output, including:
+8. Rebuild the local website output, including:
    - `website/index.html`
    - money list pages
    - handicap analysis pages
@@ -81,5 +82,8 @@ The generated website files are under:
 ## Notes
 
 - Stableford individual results currently roll into the money list through the `NetMedal` category, but the recap display can still show `Stableford`.
+- Re-running the same month with corrected payout or handicap values now updates the existing canonical row instead of creating duplicates or ignoring the correction.
+- The ingest step now aborts before writing if it detects duplicate canonical keys in scores, financials, or handicaps.
+- Publish commands now stage only `data/` and `website/`, and they abort if unrelated repo files are dirty.
 - By default this repo works locally only. Commit, push, and deploy happen only when explicitly requested.
 - The main local workflow docs are also in `AGENTS.md`.

@@ -53,10 +53,11 @@ The Agent will perform the following "Conductor" Track:
     ```bash
     python3 scripts/process_tournament.py input/tournament_data.json
     ```
-    *   *Note:* Scores are upserted, handicaps avoid duplicate date/player pairs, and financial rows are deduplicated on repeat runs.
+    *   *Note:* Scores are upserted, corrected handicaps update existing date/player rows, corrected financials update existing date/player/category rows, and the ingest aborts before writing if duplicate canonical keys are detected.
 6.  **Site Generation:** The ingestion script automatically triggers a local `update_site.py` build.
 7.  **Cleanup:** Move used screenshots to `input/processed/YYYY-MM-DD/`.
 8.  **Deployment:** Publish only from an explicit deployment step, not from routine local processing.
+    *   *Guardrail:* Publish stages only `data/` and `website/`, and aborts if unrelated repo files are dirty.
 
 ### Step 3: Verification (User)
 *   **Homepage:** Check "Latest Results" for correct Team/Net placements (e.g., "1: Scott Lucas").

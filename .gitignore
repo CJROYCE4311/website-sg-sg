@@ -1,4 +1,5 @@
 .DS_Store
+SESSION_HANDOFF.md
 node_modules/
 input/
 __pycache__/

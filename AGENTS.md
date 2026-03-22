@@ -27,8 +27,10 @@ This clone is intended to run locally in parallel with the production deployment
 - Default behavior is local only.
 - `scripts/update_site.py` rebuilds the site without committing or pushing.
 - `scripts/process_tournament.py` only commits or pushes if `--commit` or `--push` is explicitly passed.
-- `scripts/ingest_data.py` deduplicates financial rows on repeat runs for the same tournament payload.
+- `scripts/ingest_data.py` updates existing financial and handicap rows when a repeat run carries corrected values for the same date/player key.
 - `scripts/ingest_data.py` also flags handicap readings that are more than 1 standard deviation from a player's historical mean.
+- `scripts/ingest_data.py` aborts before writing if duplicate canonical keys are detected in scores, financials, or handicaps.
+- Publish commands stage only `data/` and `website/`, and they refuse to run if unrelated repo files are dirty.
 
 ## Weekly Operating Pattern
 
@@ -81,6 +83,6 @@ This clone is intended to run locally in parallel with the production deployment
 
 - Plus handicaps are stored as negative values.
 - Tournament year rolls November and December rounds into the following year.
-- Repeat runs for the same payout payload do not duplicate `financials.csv`.
+- Repeat runs for the same payout payload do not duplicate `financials.csv`, and corrected reruns replace the prior value for that date/player/category key.
 - `input/` is a local working area and is intentionally ignored by git.
-- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg copy/docs/CODEX_WORKFLOW.md) for the shorter operating summary.
+- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md) for the shorter operating summary.
