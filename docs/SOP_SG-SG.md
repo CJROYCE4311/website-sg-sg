@@ -34,24 +34,29 @@ Take clear, scrolling screenshots of the results in Squabbit:
 
 **Action:** Drag and drop these files into the `input/screenshots/` folder.
 
-### Step 2: Agent Execution (AI)
-Instruct the Agent: *"I have dropped the screenshots in input/screenshots. Please update the site."*
+### Step 2: Agent Execution (Codex)
+Instruct Codex to process the screenshots in stages and keep the output local to this directory.
 
 The Agent will perform the following "Conductor" Track:
 
-1.  **Vision Extraction:** Read the screenshots in `input/screenshots/`.
+1.  **Staged Extraction:** Read the screenshots in `input/screenshots/` in batches.
 2.  **Data Extraction:** Extract:
     *   Scores & Handicaps (converting `+` to negative numbers).
     *   **Financials:** Payout amounts per category.
     *   **Meta Data:** Partners, Team Ranks, and Individual Ranks.
-3.  **Ingestion:** Create a JSON payload (supporting `update_batch` for multiple dates) and run:
+3.  **Review Gate:** Consolidate the reviewed output into `input/tournament_data.json`.
+4.  **Validation:** Run:
     ```bash
-    python3 scripts/ingest_data.py <input.json>
+    python3 scripts/process_tournament.py input/tournament_data.json --dry-run
     ```
-    *   *Note:* The script uses **Upsert** logic. It updates existing records with new details (like Partners/Ranks) without creating duplicates.
-4.  **Site Generation:** The ingestion script automatically triggers `update_site.py`.
-5.  **Cleanup:** Move used screenshots to `input/processed/YYYY-MM-DD/`.
-6.  **Deployment:** Commit and push changes to GitHub.
+5.  **Ingestion:** After validation, run:
+    ```bash
+    python3 scripts/process_tournament.py input/tournament_data.json
+    ```
+    *   *Note:* Scores are upserted, handicaps avoid duplicate date/player pairs, and financial rows are deduplicated on repeat runs.
+6.  **Site Generation:** The ingestion script automatically triggers a local `update_site.py` build.
+7.  **Cleanup:** Move used screenshots to `input/processed/YYYY-MM-DD/`.
+8.  **Deployment:** Publish only from an explicit deployment step, not from routine local processing.
 
 ### Step 3: Verification (User)
 *   **Homepage:** Check "Latest Results" for correct Team/Net placements (e.g., "1: Scott Lucas").
@@ -67,7 +72,7 @@ The Agent will perform the following "Conductor" Track:
 *   **Writeups:**
     *   **Merged Data:** Combines Financials with Score data to display Rankings and Partners in the results feed.
     *   **Format:** Lists one team/player per line for readability.
-*   **Deployment:** Automatically commits and pushes to `main`.
+*   **Deployment:** Local builds do not commit or push unless `--publish` is explicitly used.
 
 ## 4. Troubleshooting
 

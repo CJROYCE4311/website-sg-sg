@@ -25,39 +25,50 @@ website-sg-sg/input/screenshots/
 
 ---
 
-## Step 3: Tell Claude to Process
+## Step 3: Build the Weekly JSON
 
-Open Claude Code in the `website-sg-sg` folder and say:
+Use Codex to extract the screenshots in manageable batches:
 
-> "Process the tournament screenshots for [DATE]"
+- scorecards
+- leaderboard / placements
+- payouts / skins
+- partner pairings and handicap indices
 
-or simply:
+Consolidate the reviewed result into:
 
-> "Update the site with the new tournament data"
+```
+input/tournament_data.json
+```
 
 ---
 
-## Step 4: Review and Confirm
+## Step 4: Validate First
 
-Claude will:
-1. Read all the screenshots
-2. Show you the extracted data for review
-3. Ask you to confirm before processing
+Run:
 
-If anything looks wrong (score, name, amount), tell Claude and it will fix it.
+```bash
+./venv/bin/python scripts/process_tournament.py input/tournament_data.json --dry-run
+```
+
+If anything looks wrong, fix the JSON and rerun the dry run.
 
 ---
 
 ## Step 5: Done
 
-Once you confirm, Claude runs one command that:
+Run:
+
+```bash
+./venv/bin/python scripts/process_tournament.py input/tournament_data.json
+```
+
+This will:
 - Validates the data
 - Updates the database
 - Regenerates the website
 - Archives everything
-- Pushes to GitHub
 
-Netlify auto-deploys. Site is live within minutes.
+It does not commit or deploy unless you explicitly request that later.
 
 ---
 

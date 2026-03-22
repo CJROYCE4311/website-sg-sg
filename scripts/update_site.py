@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import random
+import argparse
 from datetime import datetime
 import warnings
 
@@ -24,6 +25,14 @@ COURSE_FILE = os.path.join(DATA_DIR, "course_info.csv")
 # Constants
 COURSE_RATING, SLOPE_RATING = 70.5, 124
 MONTHS_LOOKBACK = 13
+FORMAT_DISPLAY_OVERRIDES = {
+    "2026-03-21": {
+        "format_name": "Stableford",
+        "category_titles": {
+            "NetMedal": "Stableford",
+        },
+    },
+}
 
 # --- BARSTOOL TEMPLATES ---
 OPENERS = [
@@ -51,9 +60,10 @@ CLOSERS = [
 ]
 
 def get_barstool_writeup(date_str, format_name, winners_html):
-    opener = random.choice(OPENERS)
-    middler = random.choice(MIDDLERS)
-    closer = random.choice(CLOSERS)
+    seeded_random = random.Random(f"{date_str}|{format_name}")
+    opener = seeded_random.choice(OPENERS)
+    middler = seeded_random.choice(MIDDLERS)
+    closer = seeded_random.choice(CLOSERS)
     
     return f"""
     <div class="prose prose-lg text-gray-700 mx-auto">
@@ -71,6 +81,27 @@ def get_barstool_writeup(date_str, format_name, winners_html):
         <p class="font-bold italic text-right">{closer}</p>
     </div>
     """
+
+def get_display_overrides(date_value):
+    date_str = pd.to_datetime(date_value).strftime('%Y-%m-%d')
+    return FORMAT_DISPLAY_OVERRIDES.get(date_str, {})
+
+def get_category_title(date_value, category_key, default_title):
+    overrides = get_display_overrides(date_value)
+    return overrides.get('category_titles', {}).get(category_key, default_title)
+
+def get_format_name(date_value, cats):
+    overrides = get_display_overrides(date_value)
+    if overrides.get('format_name'):
+        return overrides['format_name']
+
+    if 'Quota' in cats:
+        return "Team Quota"
+    if 'BestBall' in cats:
+        return "Best Ball"
+    if 'NetMedal' in cats:
+        return "Net Medal"
+    return "Tournament"
 
 def inject_to_html(filename, var_name, content, is_json=False):
     """Replaces data variables in HTML files."""
@@ -121,9 +152,10 @@ def get_latest_results_writeup(financials_df, scores_df):
     """
 
     cat_map = {'BestBall': 'Best Ball', 'Quota': 'Team Quota', 'NetMedal': 'Net Medal'}
-    for cat_key, cat_title in cat_map.items():
+    for cat_key, default_title in cat_map.items():
         cat_df = day_df[day_df['Category'] == cat_key]
         if not cat_df.empty:
+            cat_title = get_category_title(latest_date, cat_key, default_title)
             html += f"<div><h5 class='font-bold text-gray-900 mb-1 mt-0'>{cat_title}</h5><ul class='list-none pl-0 m-0 space-y-1'>"
 
             results = []
@@ -210,10 +242,7 @@ def generate_tournament_pages(financials_df, scores_df):
 
         # Determine Format
         cats = day_df['Category'].unique()
-        format_name = "Tournament"
-        if 'Quota' in cats: format_name = "Team Quota"
-        elif 'BestBall' in cats: format_name = "Best Ball"
-        elif 'NetMedal' in cats: format_name = "Net Medal"
+        format_name = get_format_name(date_val, cats)
 
         # Build Winners HTML
         winners_html = ""
@@ -226,7 +255,8 @@ def generate_tournament_pages(financials_df, scores_df):
             cat_df = day_df[day_df['Category'] == cat]
             if cat_df.empty: continue
 
-            winners_html += f"<div class='mb-6'><h4 class='font-bold text-gray-800 uppercase text-sm tracking-wide mb-2'>{cat_map.get(cat, cat)}</h4><ul class='space-y-2'>"
+            cat_title = get_category_title(date_val, cat, cat_map.get(cat, cat))
+            winners_html += f"<div class='mb-6'><h4 class='font-bold text-gray-800 uppercase text-sm tracking-wide mb-2'>{cat_title}</h4><ul class='space-y-2'>"
 
             # Group winners - keep teams together for team games
             grouped = []
@@ -534,6 +564,20 @@ def sync():
     subprocess.run(["git", "push"], cwd=PROJECT_ROOT)
     print("🎉 Done.")
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser(description="Regenerate website pages from CSV data.")
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        help="Stage, commit, and push generated changes after a successful build",
+    )
+    args = parser.parse_args()
+
     run_pipeline()
-    sync()
+    if args.publish:
+        sync()
+    else:
+        print("ℹ️ Local build complete. Publish skipped.")
+
+if __name__ == "__main__":
+    main()

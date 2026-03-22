@@ -140,11 +140,73 @@ def save_db(scores, financials, handicaps):
     handicaps.to_csv(HANDICAPS_FILE, index=False)
     print("✅ Database saved successfully.")
 
+def get_handicap_review_flags(data, current_handicaps):
+    review_flags = []
+    handicap_entries = data.get('handicaps', [])
+
+    if not handicap_entries and data.get('scores'):
+        handicap_entries = [
+            {'Player': row.get('Player'), 'Handicap_Index': row.get('Round_Handicap')}
+            for row in data.get('scores', [])
+            if row.get('Player') is not None and row.get('Round_Handicap') is not None
+        ]
+
+    if current_handicaps.empty or not handicap_entries:
+        return review_flags
+
+    for entry in handicap_entries:
+        player = entry.get('Player')
+        index_value = entry.get('Handicap_Index')
+        if player is None or index_value is None:
+            continue
+
+        history = current_handicaps[current_handicaps['Player'] == player]['Handicap_Index'].dropna()
+        if len(history) < 2:
+            continue
+
+        hist_mean = history.mean()
+        hist_std = history.std(ddof=1)
+        if pd.isna(hist_std) or hist_std == 0:
+            continue
+
+        z_score = (float(index_value) - hist_mean) / hist_std
+        if abs(z_score) > 1:
+            review_flags.append({
+                'Player': player,
+                'new_index': float(index_value),
+                'mean': round(float(hist_mean), 2),
+                'std': round(float(hist_std), 2),
+                'z_score': round(float(z_score), 2),
+            })
+
+    return review_flags
+
+def upsert_financials(current_financials, df_fin):
+    if df_fin.empty:
+        return current_financials, 0, 0
+
+    key_cols = ['Date', 'Player', 'Category', 'Amount']
+
+    if current_financials.empty:
+        deduped = df_fin.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+        return deduped, len(deduped), len(df_fin) - len(deduped)
+
+    missing_cols = [col for col in key_cols if col not in current_financials.columns]
+    for col in missing_cols:
+        current_financials[col] = None
+
+    combined = pd.concat([current_financials, df_fin], ignore_index=True)
+    before = len(combined)
+    combined = combined.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+    added = len(combined) - len(current_financials)
+    skipped = before - len(combined)
+    return combined, max(added, 0), skipped
+
 def process_entry(data, current_scores, current_financials, current_handicaps):
     date_str = data.get('date')
     if not date_str:
         print("❌ Error: Entry missing 'date' field.")
-        return current_scores, current_financials, current_handicaps
+        return current_scores, current_financials, current_handicaps, False
         
     print(f"📅 Processing Date: {date_str}")
     
@@ -188,8 +250,8 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
     if new_fin:
         df_fin = pd.DataFrame(new_fin)
         df_fin['Date'] = date_str
-        current_financials = pd.concat([current_financials, df_fin], ignore_index=True)
-        print(f"   ✅ Added {len(df_fin)} financial records.")
+        current_financials, added_financials, skipped_duplicates = upsert_financials(current_financials, df_fin)
+        print(f"   ✅ Financials: Added {added_financials} new, skipped {skipped_duplicates} duplicate rows.")
 
     # 3. Process Handicaps
     new_hcp = data.get('handicaps', [])
@@ -209,9 +271,9 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
             current_handicaps = pd.concat([current_handicaps, df_hcp], ignore_index=True)
             print(f"   ✅ Added {len(df_hcp)} handicap records.")
             
-    return current_scores, current_financials, current_handicaps
+    return current_scores, current_financials, current_handicaps, True
 
-def ingest(json_file, skip_validation=False, skip_archive=False):
+def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_update=False, dry_run=False):
     print(f"📥 Ingesting {json_file}...")
 
     with open(json_file, 'r') as f:
@@ -244,21 +306,45 @@ def ingest(json_file, skip_validation=False, skip_archive=False):
 
     current_scores, current_financials, current_handicaps = load_db()
 
+    if 'update_batch' in data:
+        handicap_flags = []
+        for entry in data['update_batch']:
+            handicap_flags.extend(get_handicap_review_flags(entry, current_handicaps))
+    else:
+        handicap_flags = get_handicap_review_flags(data, current_handicaps)
+
+    if handicap_flags:
+        print("🔎 Handicap review: values more than 1 SD from historical mean")
+        for flag in sorted(handicap_flags, key=lambda item: abs(item['z_score']), reverse=True):
+            print(
+                "   - {Player}: new {new_index:.1f}, mean {mean:.2f}, std {std:.2f}, z {z_score:+.2f}".format(
+                    **flag
+                )
+            )
+
     # Track date for archiving
     archive_date = None
 
     if 'update_batch' in data:
         print(f"📦 Batch Update Detected: {len(data['update_batch'])} entries.")
         for entry in data['update_batch']:
-            current_scores, current_financials, current_handicaps = process_entry(
+            current_scores, current_financials, current_handicaps, processed = process_entry(
                 entry, current_scores, current_financials, current_handicaps
             )
+            if not processed:
+                return False
             archive_date = entry.get('date', archive_date)
     else:
-        current_scores, current_financials, current_handicaps = process_entry(
+        current_scores, current_financials, current_handicaps, processed = process_entry(
             data, current_scores, current_financials, current_handicaps
         )
+        if not processed:
+            return False
         archive_date = data.get('date')
+
+    if dry_run:
+        print("🧪 Dry run complete. No CSVs, archives, or website files were modified.")
+        return True
 
     save_db(current_scores, current_financials, current_handicaps)
 
@@ -267,12 +353,15 @@ def ingest(json_file, skip_validation=False, skip_archive=False):
         archive_json(json_file, archive_date)
 
     # Trigger Site Update
-    print("\n🔄 Triggering Site Update...")
-    venv_python = os.path.join(PROJECT_ROOT, "venv", "bin", "python")
-    if not os.path.exists(venv_python):
-        venv_python = "python"  # Fallback
+    if not skip_site_update:
+        print("\n🔄 Triggering Site Update...")
+        venv_python = os.path.join(PROJECT_ROOT, "venv", "bin", "python")
+        if not os.path.exists(venv_python):
+            venv_python = "python"  # Fallback
 
-    subprocess.run([venv_python, os.path.join(SCRIPT_DIR, "update_site.py")])
+        subprocess.run([venv_python, os.path.join(SCRIPT_DIR, "update_site.py")], check=True)
+    else:
+        print("\nℹ️ Skipped site update.")
     return True
 
 if __name__ == "__main__":
@@ -280,11 +369,19 @@ if __name__ == "__main__":
     parser.add_argument("input_file", help="Path to JSON file containing new data.")
     parser.add_argument("--skip-validation", action="store_true", help="Skip data validation")
     parser.add_argument("--skip-archive", action="store_true", help="Skip JSON archiving")
+    parser.add_argument("--skip-site-update", action="store_true", help="Skip regenerating website files")
+    parser.add_argument("--dry-run", action="store_true", help="Validate and simulate ingestion without writing files")
     args = parser.parse_args()
 
     if not os.path.exists(args.input_file):
         print(f"❌ Input file not found: {args.input_file}")
         sys.exit(1)
 
-    success = ingest(args.input_file, args.skip_validation, args.skip_archive)
+    success = ingest(
+        args.input_file,
+        skip_validation=args.skip_validation,
+        skip_archive=args.skip_archive,
+        skip_site_update=args.skip_site_update,
+        dry_run=args.dry_run,
+    )
     sys.exit(0 if success else 1)

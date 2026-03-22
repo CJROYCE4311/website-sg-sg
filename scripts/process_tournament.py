@@ -127,6 +127,9 @@ Examples:
   Process data only:
     python scripts/process_tournament.py input/tournament_data.json
 
+  Validate only:
+    python scripts/process_tournament.py input/tournament_data.json --dry-run
+
   Process and commit:
     python scripts/process_tournament.py input/tournament_data.json --commit
 
@@ -144,6 +147,10 @@ Examples:
                         help="Don't move screenshots to processed folder")
     parser.add_argument("--skip-validation", action="store_true",
                         help="Skip data validation (not recommended)")
+    parser.add_argument("--skip-site-update", action="store_true",
+                        help="Don't regenerate website files after ingestion")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Validate and simulate processing without writing files")
 
     args = parser.parse_args()
 
@@ -172,6 +179,10 @@ Examples:
     ingest_args = [venv_python, os.path.join(SCRIPT_DIR, "ingest_data.py"), args.json_file]
     if args.skip_validation:
         ingest_args.append("--skip-validation")
+    if args.skip_site_update:
+        ingest_args.append("--skip-site-update")
+    if args.dry_run:
+        ingest_args.append("--dry-run")
 
     result = subprocess.run(ingest_args, cwd=PROJECT_ROOT)
 
@@ -180,12 +191,14 @@ Examples:
         sys.exit(1)
 
     # Archive screenshots
-    if not args.no_archive_screenshots and date_str:
+    if not args.dry_run and not args.no_archive_screenshots and date_str:
         print("\n" + "-" * 50)
         archive_screenshots(date_str)
 
     # Git operations
-    if args.commit or args.push:
+    if args.dry_run and (args.commit or args.push):
+        print("\n⚠️  Dry run requested. Skipping git operations.")
+    elif args.commit or args.push:
         print("\n" + "-" * 50)
         git_commit(date_str, push=args.push)
 
