@@ -515,35 +515,67 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
 
             row_html = []
             for row in date_rows.to_dict('records'):
+                player_value = str(row['Player'])
+                gross_value = "" if pd.isna(row.get('Gross_Score')) else f"{float(row.get('Gross_Score')):.0f}"
+                total_relative_value = "" if pd.isna(row.get('Gross_Score')) else str(int(round(float(row.get('Gross_Score')) - COURSE_PAR)))
+                total_relative_display = ""
+                if total_relative_value != "":
+                    total_relative_int = int(total_relative_value)
+                    total_relative_display = f"{total_relative_int:+d}" if total_relative_int != 0 else "0"
+                diff_value = "" if pd.isna(row.get('Differential')) else f"{float(row.get('Differential')):.1f}"
+                hi_value = "" if pd.isna(row.get('Handicap_Index')) else f"{float(row.get('Handicap_Index')):.1f}"
+                course_hcp_value = "" if pd.isna(row.get('Course_Handicap')) else f"{float(row.get('Course_Handicap')):.1f}"
+                best_ball_value = "" if pd.isna(row.get('BestBall')) or float(row.get('BestBall', 0.0)) == 0 else f"{float(row.get('BestBall', 0.0)):.2f}"
+                quota_value = "" if pd.isna(row.get('Quota')) or float(row.get('Quota', 0.0)) == 0 else f"{float(row.get('Quota', 0.0)):.2f}"
+                net_medal_value = "" if pd.isna(row.get('NetMedal')) or float(row.get('NetMedal', 0.0)) == 0 else f"{float(row.get('NetMedal', 0.0)):.2f}"
+                gross_skins_value = "" if pd.isna(row.get('GrossSkins')) or float(row.get('GrossSkins', 0.0)) == 0 else f"{float(row.get('GrossSkins', 0.0)):.2f}"
+                net_skins_value = "" if pd.isna(row.get('NetSkins')) or float(row.get('NetSkins', 0.0)) == 0 else f"{float(row.get('NetSkins', 0.0)):.2f}"
+                total_payout_value = "" if pd.isna(row.get('Total_Payout')) or float(row.get('Total_Payout', 0.0)) == 0 else f"{float(row.get('Total_Payout', 0.0)):.2f}"
+                notes_value = row.get('Review_Notes') or ""
                 row_html.append(
                     """
                     <tr class="border-t border-gray-100 hover:bg-gray-50/70">
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{player}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{gross}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{diff}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{hi}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{course_hcp}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{best_ball}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{quota}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{net_medal}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{gross_skins}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{net_skins}</td>
-                        <td class="px-4 py-3 text-sm font-semibold text-gray-900 text-right">{total_payout}</td>
-                        <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{notes}</td>
+                        <td data-sort-value="{player_value}" class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{player}</td>
+                        <td data-sort-value="{gross_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{gross}</td>
+                        <td data-sort-value="{total_relative_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{total_relative_display}</td>
+                        <td data-sort-value="{diff_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{diff}</td>
+                        <td data-sort-value="{hi_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{hi}</td>
+                        <td data-sort-value="{course_hcp_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{course_hcp}</td>
+                        <td data-sort-value="{best_ball_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{best_ball}</td>
+                        <td data-sort-value="{quota_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{quota}</td>
+                        <td data-sort-value="{net_medal_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{net_medal}</td>
+                        <td data-sort-value="{gross_skins_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{gross_skins}</td>
+                        <td data-sort-value="{net_skins_value}" class="px-4 py-3 text-sm text-gray-600 text-right">{net_skins}</td>
+                        <td data-sort-value="{total_payout_value}" class="px-4 py-3 text-sm font-semibold text-gray-900 text-right">{total_payout}</td>
+                        <td data-sort-value="{notes_value}" class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{notes}</td>
                     </tr>
                     """.format(
                         player=escape(str(row['Player'])),
+                        player_value=escape(player_value.lower()),
                         gross=format_decimal(row.get('Gross_Score'), 0),
+                        gross_value=escape(gross_value),
+                        total_relative_value=escape(total_relative_value),
+                        total_relative_display=escape(total_relative_display),
                         diff=format_decimal(row.get('Differential'), 1),
+                        diff_value=escape(diff_value),
                         hi=format_decimal(row.get('Handicap_Index'), 1),
+                        hi_value=escape(hi_value),
                         course_hcp=format_decimal(row.get('Course_Handicap'), 1),
+                        course_hcp_value=escape(course_hcp_value),
                         best_ball=format_currency(row.get('BestBall', 0.0)),
+                        best_ball_value=escape(best_ball_value),
                         quota=format_currency(row.get('Quota', 0.0)),
+                        quota_value=escape(quota_value),
                         net_medal=format_currency(row.get('NetMedal', 0.0)),
+                        net_medal_value=escape(net_medal_value),
                         gross_skins=format_currency(row.get('GrossSkins', 0.0)),
+                        gross_skins_value=escape(gross_skins_value),
                         net_skins=format_currency(row.get('NetSkins', 0.0)),
+                        net_skins_value=escape(net_skins_value),
                         total_payout=format_currency(row.get('Total_Payout', 0.0)),
-                        notes=escape(row.get('Review_Notes') or ""),
+                        total_payout_value=escape(total_payout_value),
+                        notes=escape(notes_value),
+                        notes_value=escape(notes_value.lower()),
                     )
                 )
 
@@ -566,21 +598,22 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
                         </div>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full border-collapse">
+                        <table class="min-w-full border-collapse" data-sort-table>
                             <thead class="bg-white">
                                 <tr class="text-xs uppercase tracking-wide text-gray-500">
-                                    <th class="px-4 py-3 text-left">Player</th>
-                                    <th class="px-4 py-3 text-right">Gross</th>
-                                    <th class="px-4 py-3 text-right">Diff</th>
-                                    <th class="px-4 py-3 text-right">HI</th>
-                                    <th class="px-4 py-3 text-right">Course HCP</th>
-                                    <th class="px-4 py-3 text-right">Best Ball</th>
-                                    <th class="px-4 py-3 text-right">Quota</th>
-                                    <th class="px-4 py-3 text-right">Net Medal</th>
-                                    <th class="px-4 py-3 text-right">Gross Skins</th>
-                                    <th class="px-4 py-3 text-right">Net Skins</th>
-                                    <th class="px-4 py-3 text-right">Total Payout</th>
-                                    <th class="px-4 py-3 text-left">Notes</th>
+                                    <th class="px-4 py-3 text-left"><button type="button" class="w-full flex items-center gap-2 text-left hover:text-green-700 transition" data-sort-button data-sort-type="text"><span>Player</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Gross</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Total</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Diff</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>HI</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Course HCP</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Best Ball</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Quota</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Net Medal</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Gross Skins</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Net Skins</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-right"><button type="button" class="w-full flex items-center justify-end gap-2 text-right hover:text-green-700 transition" data-sort-button data-sort-type="number"><span>Total Payout</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
+                                    <th class="px-4 py-3 text-left"><button type="button" class="w-full flex items-center gap-2 text-left hover:text-green-700 transition" data-sort-button data-sort-type="text"><span>Notes</span><span class="text-[10px] text-gray-400" data-sort-indicator>&#8597;</span></button></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -632,6 +665,23 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
                     Use it to validate gross totals, handicap snapshots, payouts by game, and payout-only exceptions before or after processing.
                 </p>
             </div>
+            <div class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6">
+                <h3 class="text-lg font-bold text-gray-900">How To Audit After Each Tournament Load</h3>
+                <p class="mt-2 text-sm text-gray-600">
+                    After each processed tournament date, run these three Squabbit checks and compare them to this page.
+                </p>
+                <ol class="mt-4 space-y-3 text-sm text-gray-700 list-decimal pl-5">
+                    <li>
+                        In Squabbit, open <span class="font-semibold">Leaderboard</span>, click <span class="font-semibold">Games</span>, sort <span class="font-semibold">Total Winnings</span> highest to lowest, and verify <span class="font-semibold">Total Payout</span> by player.
+                    </li>
+                    <li>
+                        In Squabbit, click the <span class="font-semibold">Gross</span> tab, sort by the <span class="font-semibold">Total</span> column, and verify <span class="font-semibold">Gross</span> and <span class="font-semibold">Total</span> by player.
+                    </li>
+                    <li>
+                        In Squabbit, click the top-right <span class="font-semibold">gear icon</span>, open <span class="font-semibold">Players</span>, sort the <span class="font-semibold">HDCP</span> column descending, then sort <span class="font-semibold">HI</span> on this page and verify handicap index values.
+                    </li>
+                </ol>
+            </div>
             <div class="mt-6 grid gap-4 md:grid-cols-3">
                 <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                     <p class="text-sm text-gray-500">Tournament dates</p>
@@ -643,7 +693,7 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
                 </div>
                 <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
                     <p class="text-sm text-gray-500">Included review fields</p>
-                    <p class="mt-1 text-sm font-medium text-gray-700">Gross, Differential, HI, Course HCP, Best Ball, Quota, Net Medal, Gross Skins, Net Skins, Total Payout</p>
+                    <p class="mt-1 text-sm font-medium text-gray-700">Gross, Total, Differential, HI, Course HCP, Best Ball, Quota, Net Medal, Gross Skins, Net Skins, Total Payout</p>
                 </div>
             </div>
         </section>
@@ -668,6 +718,61 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
             &copy; 2026 SG@SG. Data audit view generated from canonical CSVs.
         </div>
     </footer>
+    <script>
+        document.querySelectorAll('[data-sort-table]').forEach((table) => {{
+            const tbody = table.querySelector('tbody');
+            const buttons = Array.from(table.querySelectorAll('[data-sort-button]'));
+
+            const compareValues = (leftValue, rightValue, sortType, direction) => {{
+                const leftBlank = leftValue === '';
+                const rightBlank = rightValue === '';
+
+                if (leftBlank && rightBlank) return 0;
+                if (leftBlank) return 1;
+                if (rightBlank) return -1;
+
+                let comparison = 0;
+                if (sortType === 'number') {{
+                    comparison = parseFloat(leftValue) - parseFloat(rightValue);
+                }} else {{
+                    comparison = leftValue.localeCompare(rightValue, undefined, {{ numeric: true, sensitivity: 'base' }});
+                }}
+
+                return direction === 'asc' ? comparison : -comparison;
+            }};
+
+            buttons.forEach((button, columnIndex) => {{
+                button.addEventListener('click', () => {{
+                    const nextDirection = button.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
+                    const sortType = button.dataset.sortType || 'text';
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                    buttons.forEach((otherButton) => {{
+                        if (otherButton !== button) {{
+                            otherButton.dataset.sortDirection = '';
+                            otherButton.setAttribute('aria-sort', 'none');
+                            const indicator = otherButton.querySelector('[data-sort-indicator]');
+                            if (indicator) indicator.innerHTML = '&#8597;';
+                        }}
+                    }});
+
+                    rows.sort((leftRow, rightRow) => {{
+                        const leftCell = leftRow.children[columnIndex];
+                        const rightCell = rightRow.children[columnIndex];
+                        const leftValue = (leftCell.dataset.sortValue || leftCell.textContent || '').trim();
+                        const rightValue = (rightCell.dataset.sortValue || rightCell.textContent || '').trim();
+                        return compareValues(leftValue, rightValue, sortType, nextDirection);
+                    }});
+
+                    rows.forEach((row) => tbody.appendChild(row));
+                    button.dataset.sortDirection = nextDirection;
+                    button.setAttribute('aria-sort', nextDirection === 'asc' ? 'ascending' : 'descending');
+                    const indicator = button.querySelector('[data-sort-indicator]');
+                    if (indicator) indicator.innerHTML = nextDirection === 'asc' ? '&#8593;' : '&#8595;';
+                }});
+            }});
+        }});
+    </script>
 </body>
 </html>"""
 
