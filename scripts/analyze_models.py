@@ -5,6 +5,7 @@ import datetime
 COURSE_RATING = 70.5
 SLOPE_RATING = 124
 SCORES_FILE = 'data/scores.csv'
+HANDICAPS_FILE = 'data/handicaps.csv'
 MONTHS_LOOKBACK = 13
 
 def calculate_differential(score):
@@ -14,9 +15,17 @@ def get_affected_players():
     # Load Data
     try:
         df = pd.read_csv(SCORES_FILE, parse_dates=['Date'])
+        handicaps = pd.read_csv(HANDICAPS_FILE, parse_dates=['Date'])
     except FileNotFoundError:
         print("Error: scores.csv not found.")
         return
+
+    if 'Round_Handicap' in df.columns and 'Differential' not in df.columns:
+        df = df.rename(columns={'Round_Handicap': 'Differential'})
+    if 'Differential' not in df.columns:
+        df['Differential'] = df['Gross_Score'].apply(calculate_differential).round(1)
+    else:
+        df['Differential'] = pd.to_numeric(df['Differential'], errors='coerce')
 
     # Filter by Date (Last 13 Months)
     cutoff_date = datetime.datetime.now() - datetime.timedelta(days=MONTHS_LOOKBACK*30)
@@ -29,13 +38,14 @@ def get_affected_players():
         rounds = len(group)
         if rounds < 1: continue
 
-        # Get Current Index (from latest round entry)
         latest_round = group.sort_values('Date', ascending=False).iloc[0]
-        current_hcp = float(latest_round['Round_Handicap']) if 'Round_Handicap' in latest_round and pd.notna(latest_round['Round_Handicap']) else 0.0
+        hcp_history = handicaps[
+            (handicaps['Player'] == player) & (handicaps['Date'] <= latest_round['Date'])
+        ].sort_values('Date')
+        if hcp_history.empty:
+            continue
+        current_hcp = float(hcp_history.iloc[-1]['Course_Handicap'])
 
-        # Calculate Differentials
-        group['Differential'] = group['Gross_Score'].apply(calculate_differential)
-        
         # Sort by Date for Last 2
         group_date_sorted = group.sort_values('Date', ascending=False)
         last2_rounds = group_date_sorted.head(2)

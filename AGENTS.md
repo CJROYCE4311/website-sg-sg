@@ -41,6 +41,7 @@ This clone is intended to run locally in parallel with the production deployment
    - payouts and skins
    - handicap index list
 3. Consolidate the reviewed output into `input/tournament_data.json`.
+   - Start from `docs/tournament_data.template.json` so metadata is always included.
 4. Validate without writing:
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.json --dry-run

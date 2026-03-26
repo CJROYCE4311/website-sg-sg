@@ -6,6 +6,7 @@ import subprocess
 import random
 import argparse
 import sys
+from html import escape
 from datetime import datetime
 import warnings
 
@@ -26,6 +27,8 @@ COURSE_FILE = os.path.join(DATA_DIR, "course_info.csv")
 
 # Constants
 COURSE_RATING, SLOPE_RATING = 70.5, 124
+COURSE_PAR = 72
+BASE_SLOPE = 113
 MONTHS_LOOKBACK = 13
 FORMAT_DISPLAY_OVERRIDES = {
     "2026-03-21": {
@@ -60,6 +63,45 @@ CLOSERS = [
     "Don't let the door hit you on the way out.",
     "Viva la Stool... I mean, Viva la SG@SG."
 ]
+
+
+def calculate_course_handicap(index_value):
+    if pd.isna(index_value):
+        return pd.NA
+    return round(float(index_value) * SLOPE_RATING / BASE_SLOPE + (COURSE_RATING - COURSE_PAR), 1)
+
+
+def ensure_handicap_columns(df):
+    df = df.copy()
+
+    if 'Handicap_Index' in df.columns:
+        df['Handicap_Index'] = pd.to_numeric(df['Handicap_Index'], errors='coerce')
+    if 'Course_Handicap' in df.columns:
+        df['Course_Handicap'] = pd.to_numeric(df['Course_Handicap'], errors='coerce')
+
+    if 'Course_Handicap' not in df.columns and 'Handicap_Index' in df.columns:
+        df['Course_Handicap'] = df['Handicap_Index'].apply(calculate_course_handicap)
+    elif 'Handicap_Index' in df.columns:
+        missing_course = df['Course_Handicap'].isna() & df['Handicap_Index'].notna()
+        df.loc[missing_course, 'Course_Handicap'] = df.loc[missing_course, 'Handicap_Index'].apply(calculate_course_handicap)
+
+    return df
+
+
+def ensure_scores_columns(df):
+    df = df.copy()
+
+    if 'Round_Handicap' in df.columns and 'Differential' not in df.columns:
+        df = df.rename(columns={'Round_Handicap': 'Differential'})
+
+    if 'Gross_Score' in df.columns:
+        df['Gross_Score'] = pd.to_numeric(df['Gross_Score'], errors='coerce')
+    if 'Differential' not in df.columns or df['Differential'].isna().any():
+        df['Differential'] = ((df['Gross_Score'] - COURSE_RATING) * BASE_SLOPE / SLOPE_RATING).round(1)
+    else:
+        df['Differential'] = pd.to_numeric(df['Differential'], errors='coerce')
+
+    return df
 
 def get_barstool_writeup(date_str, format_name, winners_html):
     seeded_random = random.Random(f"{date_str}|{format_name}")
@@ -374,17 +416,289 @@ def update_index_html(writeup_html):
     with open(filepath, 'w') as f: f.write(html)
     print("✅ Updated Latest Results in index.html")
 
+
+def format_decimal(value, digits=1):
+    if pd.isna(value):
+        return ""
+    return f"{float(value):.{digits}f}"
+
+
+def format_currency(value):
+    if pd.isna(value) or abs(float(value)) < 0.005:
+        return ""
+    return f"${float(value):.2f}"
+
+
+def generate_data_audit_page(scores_df, financials_df, handicaps_df):
+    categories = ['BestBall', 'Quota', 'NetMedal', 'GrossSkins', 'NetSkins']
+
+    score_cols = ['Date', 'Player', 'Gross_Score', 'Differential']
+    score_base = scores_df[score_cols].copy() if not scores_df.empty else pd.DataFrame(columns=score_cols)
+
+    handicap_cols = ['Date', 'Player', 'Handicap_Index', 'Course_Handicap']
+    handicap_base = handicaps_df[handicap_cols].copy() if not handicaps_df.empty else pd.DataFrame(columns=handicap_cols)
+
+    if not financials_df.empty:
+        financial_pivot = (
+            financials_df
+            .pivot_table(index=['Date', 'Player'], columns='Category', values='Amount', aggfunc='sum')
+            .reset_index()
+        )
+        for category in categories:
+            if category not in financial_pivot.columns:
+                financial_pivot[category] = 0.0
+        financial_pivot = financial_pivot[['Date', 'Player', *categories]]
+    else:
+        financial_pivot = pd.DataFrame(columns=['Date', 'Player', *categories])
+
+    key_frames = [
+        frame[['Date', 'Player']]
+        for frame in (score_base, handicap_base, financial_pivot)
+        if not frame.empty
+    ]
+    if key_frames:
+        base = pd.concat(key_frames, ignore_index=True).drop_duplicates().reset_index(drop=True)
+    else:
+        base = pd.DataFrame(columns=['Date', 'Player'])
+
+    base = base.merge(score_base, on=['Date', 'Player'], how='left')
+    base = base.merge(handicap_base, on=['Date', 'Player'], how='left')
+    base = base.merge(financial_pivot, on=['Date', 'Player'], how='left')
+
+    for category in categories:
+        if category not in base.columns:
+            base[category] = 0.0
+    base[categories] = base[categories].fillna(0.0)
+    base['Total_Payout'] = base[categories].sum(axis=1)
+
+    def build_note(row):
+        notes = []
+        if pd.isna(row.get('Gross_Score')) and row.get('Total_Payout', 0) > 0:
+            notes.append('Payout-only row')
+        if pd.notna(row.get('Gross_Score')) and pd.isna(row.get('Handicap_Index')):
+            notes.append('Missing handicap snapshot')
+        return '; '.join(notes)
+
+    base['Review_Notes'] = base.apply(build_note, axis=1)
+    base = base.sort_values(['Date', 'Player']).reset_index(drop=True)
+
+    if base.empty:
+        sections_html = """
+        <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">
+            No canonical tournament rows found.
+        </div>
+        """
+        nav_html = ""
+        total_dates = 0
+        total_rows = 0
+    else:
+        unique_dates = sorted(base['Date'].dropna().unique(), reverse=True)
+        total_dates = len(unique_dates)
+        total_rows = len(base)
+
+        nav_links = []
+        section_blocks = []
+
+        for date_value in unique_dates:
+            date_rows = base[base['Date'] == date_value].copy().sort_values(['Player'])
+            date_str = pd.to_datetime(date_value).strftime('%Y-%m-%d')
+            section_id = f"audit-{date_str}"
+
+            players_with_scores = int(date_rows['Gross_Score'].notna().sum())
+            players_with_hcp = int(date_rows['Handicap_Index'].notna().sum())
+            players_with_payouts = int((date_rows['Total_Payout'] > 0).sum())
+            payout_only = int(((date_rows['Gross_Score'].isna()) & (date_rows['Total_Payout'] > 0)).sum())
+
+            nav_links.append(
+                f"<a href='#{section_id}' class='px-3 py-2 rounded-full bg-white border border-gray-200 text-sm text-gray-700 hover:border-green-500 hover:text-green-700 transition'>{date_str}</a>"
+            )
+
+            row_html = []
+            for row in date_rows.to_dict('records'):
+                row_html.append(
+                    """
+                    <tr class="border-t border-gray-100 hover:bg-gray-50/70">
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{player}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{gross}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{diff}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{hi}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{course_hcp}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{best_ball}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{quota}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{net_medal}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{gross_skins}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 text-right">{net_skins}</td>
+                        <td class="px-4 py-3 text-sm font-semibold text-gray-900 text-right">{total_payout}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{notes}</td>
+                    </tr>
+                    """.format(
+                        player=escape(str(row['Player'])),
+                        gross=format_decimal(row.get('Gross_Score'), 0),
+                        diff=format_decimal(row.get('Differential'), 1),
+                        hi=format_decimal(row.get('Handicap_Index'), 1),
+                        course_hcp=format_decimal(row.get('Course_Handicap'), 1),
+                        best_ball=format_currency(row.get('BestBall', 0.0)),
+                        quota=format_currency(row.get('Quota', 0.0)),
+                        net_medal=format_currency(row.get('NetMedal', 0.0)),
+                        gross_skins=format_currency(row.get('GrossSkins', 0.0)),
+                        net_skins=format_currency(row.get('NetSkins', 0.0)),
+                        total_payout=format_currency(row.get('Total_Payout', 0.0)),
+                        notes=escape(row.get('Review_Notes') or ""),
+                    )
+                )
+
+            section_blocks.append(
+                """
+                <section id="{section_id}" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50">
+                        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                            <div>
+                                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-green-700">Tournament Audit</p>
+                                <h2 class="text-2xl font-bold text-gray-900">{date_str}</h2>
+                                <p class="mt-2 text-sm text-gray-500">Validate gross totals, handicap snapshots, and payout rows against Squabbit.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2 text-sm">
+                                <span class="px-3 py-2 rounded-full bg-white border border-gray-200 text-gray-700">Scored players: {players_with_scores}</span>
+                                <span class="px-3 py-2 rounded-full bg-white border border-gray-200 text-gray-700">Handicap rows: {players_with_hcp}</span>
+                                <span class="px-3 py-2 rounded-full bg-white border border-gray-200 text-gray-700">Payout rows: {players_with_payouts}</span>
+                                <span class="px-3 py-2 rounded-full bg-white border border-gray-200 text-gray-700">Payout-only: {payout_only}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border-collapse">
+                            <thead class="bg-white">
+                                <tr class="text-xs uppercase tracking-wide text-gray-500">
+                                    <th class="px-4 py-3 text-left">Player</th>
+                                    <th class="px-4 py-3 text-right">Gross</th>
+                                    <th class="px-4 py-3 text-right">Diff</th>
+                                    <th class="px-4 py-3 text-right">HI</th>
+                                    <th class="px-4 py-3 text-right">Course HCP</th>
+                                    <th class="px-4 py-3 text-right">Best Ball</th>
+                                    <th class="px-4 py-3 text-right">Quota</th>
+                                    <th class="px-4 py-3 text-right">Net Medal</th>
+                                    <th class="px-4 py-3 text-right">Gross Skins</th>
+                                    <th class="px-4 py-3 text-right">Net Skins</th>
+                                    <th class="px-4 py-3 text-right">Total Payout</th>
+                                    <th class="px-4 py-3 text-left">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                """.format(
+                    section_id=section_id,
+                    date_str=date_str,
+                    players_with_scores=players_with_scores,
+                    players_with_hcp=players_with_hcp,
+                    players_with_payouts=players_with_payouts,
+                    payout_only=payout_only,
+                    rows="".join(row_html),
+                )
+            )
+
+        nav_html = "".join(nav_links)
+        sections_html = "\n".join(section_blocks)
+
+    page_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG@SG Data Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-gray-900 font-sans antialiased">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.22em] text-green-700 font-semibold">Operator View</p>
+                <h1 class="text-2xl font-bold text-gray-900">Data Audit</h1>
+            </div>
+            <a href="index.html" class="text-sm text-gray-500 hover:text-green-700 transition">Back to Home</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 space-y-8">
+        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+            <div class="max-w-4xl">
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Canonical review report for manual Squabbit validation</h2>
+                <p class="text-gray-600 leading-7">
+                    This page is intentionally narrow: one row per player per tournament date, showing the fields most worth checking manually.
+                    Use it to validate gross totals, handicap snapshots, payouts by game, and payout-only exceptions before or after processing.
+                </p>
+            </div>
+            <div class="mt-6 grid gap-4 md:grid-cols-3">
+                <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                    <p class="text-sm text-gray-500">Tournament dates</p>
+                    <p class="mt-1 text-3xl font-bold text-gray-900">{total_dates}</p>
+                </div>
+                <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                    <p class="text-sm text-gray-500">Player-date rows</p>
+                    <p class="mt-1 text-3xl font-bold text-gray-900">{total_rows}</p>
+                </div>
+                <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                    <p class="text-sm text-gray-500">Included review fields</p>
+                    <p class="mt-1 text-sm font-medium text-gray-700">Gross, Differential, HI, Course HCP, Best Ball, Quota, Net Medal, Gross Skins, Net Skins, Total Payout</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">Jump to tournament date</h2>
+                    <p class="text-sm text-gray-500">The newest dates are listed first.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    {nav_html}
+                </div>
+            </div>
+        </section>
+
+        {sections_html}
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
+            &copy; 2026 SG@SG. Data audit view generated from canonical CSVs.
+        </div>
+    </footer>
+</body>
+</html>"""
+
+    output_path = os.path.join(WEBSITE_DIR, "DataAudit.html")
+    with open(output_path, 'w') as output_file:
+        output_file.write(page_html)
+    print("✅ Updated DataAudit.html")
+
+
+def run_auxiliary_script(script_name):
+    script_path = os.path.join(SCRIPT_DIR, script_name)
+    print(f"🔄 Refreshing {script_name}...")
+    subprocess.run([sys.executable, script_path], cwd=PROJECT_ROOT, check=True)
+
+
 def run_pipeline():
     print("--- ⛳ Starting CSV-Based Site Refresh ---")
     
     # 1. Load Data
     if not os.path.exists(SCORES_FILE):
         print("❌ Critical: scores.csv not found.")
-        return
+        return False
 
     scores = pd.read_csv(SCORES_FILE, parse_dates=['Date'])
     financials = pd.read_csv(FINANCIALS_FILE, parse_dates=['Date']) if os.path.exists(FINANCIALS_FILE) else pd.DataFrame()
+    handicaps = pd.read_csv(HANDICAPS_FILE, parse_dates=['Date']) if os.path.exists(HANDICAPS_FILE) else pd.DataFrame()
     course = pd.read_csv(COURSE_FILE) if os.path.exists(COURSE_FILE) else pd.DataFrame()
+
+    scores = ensure_scores_columns(scores)
+    if not handicaps.empty:
+        handicaps = ensure_handicap_columns(handicaps)
     
     # Normalize Course Info
     if not course.empty:
@@ -409,34 +723,44 @@ def run_pipeline():
     
     # Merge Scores with Financials
     base = scores.copy()
+    if not handicaps.empty:
+        base = base.merge(
+            handicaps[['Date', 'Player', 'Handicap_Index', 'Course_Handicap']],
+            on=['Date', 'Player'],
+            how='left',
+        )
     if not fin_agg.empty:
         base = base.merge(fin_agg, on=['Date', 'Player'], how='left')
-    
+
     # Fill missing money with 0
     money_cols = ['BB_Earn', 'Quota_Earn', 'net_medal_earnings', 'Gskins_earnings', 'Nskins_earnings']
     for c in money_cols:
         if c not in base.columns: base[c] = 0.0
-    base = base.fillna(0)
+    fill_map = {col: 0.0 for col in money_cols}
+    base = base.fillna(fill_map)
     base['Total_Earnings'] = base[money_cols].sum(axis=1)
-    
+    if 'Course_Handicap' in base.columns:
+        base['Course_Handicap_Used'] = base['Course_Handicap']
+    else:
+        base['Course_Handicap_Used'] = pd.NA
+
     base['Tournament_Year'] = base['Date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
 
     # 3. Handicap Analysis (Best 3/6)
-    base['Differential'] = (base['Gross_Score'] - COURSE_RATING) * 113 / SLOPE_RATING
-    base['Differential'] = base['Differential'].round(1)
-    
     analysis_data_best3 = []
     analysis_data_best6 = []
     analysis_data_last2 = []
     analysis_base = base[base['Date'] >= cutoff_date].copy()
 
     for player, group in analysis_base.groupby('Player'):
+        if group['Course_Handicap_Used'].dropna().empty:
+            continue
         rounds = len(group)
         if rounds < 1: continue
 
-        # Latest Handicap
-        latest_row = group.sort_values('Date', ascending=False).iloc[0]
-        current_hcp = float(latest_row['Round_Handicap']) if 'Round_Handicap' in latest_row else 0.0
+        # Latest course handicap snapshot
+        latest_row = group[group['Course_Handicap_Used'].notna()].sort_values('Date', ascending=False).iloc[0]
+        current_hcp = float(latest_row['Course_Handicap_Used']) if pd.notna(latest_row['Course_Handicap_Used']) else 0.0
         
         diffs = group['Differential'].dropna().tolist()
         gross_scores = group['Gross_Score'].tolist()
@@ -446,7 +770,9 @@ def run_pipeline():
         last2_diffs = group_sorted['Differential'].head(2).tolist()
         
         avg_gross = sum(gross_scores) / len(gross_scores)
-        avg_net = avg_gross - current_hcp
+        avg_net = (group['Gross_Score'] - group['Course_Handicap_Used']).dropna().mean()
+        if pd.isna(avg_net):
+            avg_net = 0.0
 
         # Best 3
         best3_diffs = sorted(diffs)[:3]
@@ -476,17 +802,20 @@ def run_pipeline():
     inject_to_html("HandicapAnalysis.html", "dataLast2", analysis_data_last2, is_json=True)
 
     # 4. Handicap Detail (Drilldown)
-    detail_lines = ["Player\tDate\tGross Score\tHCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
+    detail_lines = ["Player\tDate\tGross Score\tCourse HCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
     rounds_map = base.groupby('Player').size().to_dict()
     
     for _, row in base.sort_values(['Player', 'Date'], ascending=[True, False]).iterrows():
         d_str = row['Date'].strftime('%Y-%m-%d')
-        hcp = row.get('Round_Handicap', 0.0)
+        hcp = row.get('Course_Handicap_Used', pd.NA)
         gross = row['Gross_Score']
-        net = gross - hcp
+        net = gross - hcp if pd.notna(hcp) else pd.NA
         diff = row['Differential']
         r_count = rounds_map.get(row['Player'], 0)
-        detail_lines.append(f"{row['Player']}\t{d_str}\t{gross}\t{hcp:.1f}\t{net:.1f}\t{diff:.1f}\t{r_count}\t")
+        note = "" if pd.notna(hcp) else "Missing handicap snapshot"
+        hcp_display = f"{hcp:.1f}" if pd.notna(hcp) else ""
+        net_display = f"{net:.1f}" if pd.notna(net) else ""
+        detail_lines.append(f"{row['Player']}\t{d_str}\t{gross}\t{hcp_display}\t{net_display}\t{diff:.1f}\t{r_count}\t{note}")
     
     detail_path = os.path.join(WEBSITE_DIR, "Handicap_Detail.html")
     if os.path.exists(detail_path):
@@ -540,7 +869,7 @@ def run_pipeline():
 
     # 8. Player Stats
     stats_df = base.copy()
-    stats_df['Net_Score'] = stats_df['Gross_Score'] - stats_df['Round_Handicap']
+    stats_df['Net_Score'] = stats_df['Gross_Score'] - stats_df['Course_Handicap_Used']
     stats_df['Net_to_Par'] = stats_df['Net_Score'] - 72
     
     p_stats = stats_df.groupby('Player').agg({
@@ -558,6 +887,13 @@ def run_pipeline():
     links = generate_tournament_pages(financials, scores)
     if links:
         inject_results_log(links)
+
+    # 11. Operator Data Audit
+    generate_data_audit_page(scores, financials, handicaps)
+
+    run_auxiliary_script("generate_methodology_data.py")
+    run_auxiliary_script("convert_json_to_js.py")
+    return True
 
 def get_repo_changes():
     result = subprocess.run(
@@ -617,7 +953,9 @@ def main():
     )
     args = parser.parse_args()
 
-    run_pipeline()
+    success = run_pipeline()
+    if not success:
+        sys.exit(1)
     if args.publish:
         if not sync():
             sys.exit(1)

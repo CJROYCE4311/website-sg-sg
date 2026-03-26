@@ -198,6 +198,8 @@ Examples:
                         help="Don't regenerate website files after ingestion")
     parser.add_argument("--dry-run", action="store_true",
                         help="Validate and simulate processing without writing files")
+    parser.add_argument("--allow-incomplete", action="store_true",
+                        help="Allow incomplete score/handicap coverage to pass through ingest")
 
     args = parser.parse_args()
 
@@ -230,6 +232,8 @@ Examples:
         ingest_args.append("--skip-site-update")
     if args.dry_run:
         ingest_args.append("--dry-run")
+    if args.allow_incomplete:
+        ingest_args.append("--allow-incomplete")
 
     result = subprocess.run(ingest_args, cwd=PROJECT_ROOT)
 

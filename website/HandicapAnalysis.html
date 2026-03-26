@@ -98,7 +98,7 @@
                         <span>SG@SG</span>
                         <span class="text-emerald-600">Handicap Audit</span>
                     </h1>
-                    <p class="text-slate-500 mt-1">Implied Index vs. Current Index Analysis</p>
+                    <p class="text-slate-500 mt-1">Implied Differential vs. Current Course Handicap</p>
                 </div>
             </div>
 
@@ -185,12 +185,12 @@
             </h3>
             <p class="mb-3">
                 The Handicap Committee provides this report to ensure fair play and transparency for all members.
-                By comparing your <strong>Current Index</strong> against an <strong>Implied Index</strong> (calculated from your recent tournament scores),
+                By comparing your <strong>Current Course Handicap</strong> against an <strong>Implied Differential</strong> (calculated from your recent tournament scores),
                 we can identify potential discrepancies.
             </p>
             <p>
-                <strong>The "Probability" Column:</strong> This new metric estimates the statistical odds of a player shooting their recent scores given their current index.
-                For example, consistently shooting "1 in 1,000" odds scores may suggest the Current Index is higher than the player's potential ability.
+                <strong>The "Probability" Column:</strong> This metric estimates the statistical odds of a player reaching the displayed adjustment using their current course handicap bucket.
+                For example, consistently producing "1 in 1,000" adjustments may suggest the player's current course handicap is too generous.
             </p>
             <div class="mt-4 flex items-center gap-3 p-3 bg-white rounded-lg border border-indigo-100">
                 <i class="fa-solid fa-bell text-indigo-500"></i>
@@ -230,9 +230,9 @@
                             <th class="p-4 cursor-pointer hover:bg-slate-100" onclick="sortTable('name')">Player <i
                                     class="fa-solid fa-sort ml-1"></i></th>
                             <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
-                                onclick="sortTable('implied')">Implied Index <i class="fa-solid fa-sort ml-1"></i></th>
+                                onclick="sortTable('implied')">Implied Diff <i class="fa-solid fa-sort ml-1"></i></th>
                             <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
-                                onclick="sortTable('current')">Current Index <i class="fa-solid fa-sort ml-1"></i></th>
+                                onclick="sortTable('current')">Current Course HCP <i class="fa-solid fa-sort ml-1"></i></th>
                             <th class="p-4 text-center cursor-pointer hover:bg-slate-100"
                                 onclick="sortTable('adjustment')">Suggested Adj <i class="fa-solid fa-sort ml-1"></i>
                             </th>
@@ -260,449 +260,449 @@
         const dataBest3 = [
     {
         "name": "Andrew Burnheimer",
-        "current": 0.0,
+        "current": -1.5,
         "avgGross": 83.0,
-        "avgNet": 83.0,
+        "avgNet": 84.5,
         "rounds": 1,
         "notes": "",
         "implied": 11.4,
-        "adjustment": 11.4
+        "adjustment": 12.9
     },
     {
         "name": "Andy Meach",
-        "current": 7.5,
+        "current": 6.7,
         "avgGross": 83.3,
-        "avgNet": 75.8,
+        "avgNet": 77.5,
         "rounds": 6,
         "notes": "",
         "implied": 9.9,
-        "adjustment": 2.4
-    },
-    {
-        "name": "Ben Magnone",
-        "current": 10.4,
-        "avgGross": 83.7,
-        "avgNet": 73.3,
-        "rounds": 9,
-        "notes": "",
-        "implied": 7.7,
-        "adjustment": -2.7
-    },
-    {
-        "name": "Brad Ackley",
-        "current": 13.9,
-        "avgGross": 92.0,
-        "avgNet": 78.1,
-        "rounds": 1,
-        "notes": "",
-        "implied": 19.6,
-        "adjustment": 5.7
-    },
-    {
-        "name": "Brian Howell",
-        "current": 6.9,
-        "avgGross": 81.5,
-        "avgNet": 74.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 10.1,
         "adjustment": 3.2
     },
     {
+        "name": "Ben Magnone",
+        "current": 9.9,
+        "avgGross": 83.7,
+        "avgNet": 72.7,
+        "rounds": 9,
+        "notes": "",
+        "implied": 7.7,
+        "adjustment": -2.2
+    },
+    {
+        "name": "Brad Ackley",
+        "current": 13.8,
+        "avgGross": 92.0,
+        "avgNet": 78.2,
+        "rounds": 1,
+        "notes": "",
+        "implied": 19.6,
+        "adjustment": 5.8
+    },
+    {
+        "name": "Brian Howell",
+        "current": 6.1,
+        "avgGross": 81.5,
+        "avgNet": 75.7,
+        "rounds": 2,
+        "notes": "",
+        "implied": 10.1,
+        "adjustment": 4.0
+    },
+    {
         "name": "Bud Scott",
-        "current": 9.4,
+        "current": 8.8,
         "avgGross": 87.5,
-        "avgNet": 78.1,
+        "avgNet": 78.2,
         "rounds": 2,
         "notes": "",
         "implied": 15.5,
-        "adjustment": 6.1
+        "adjustment": 6.7
     },
     {
         "name": "Buddy Goldstone",
-        "current": 13.3,
+        "current": 11.8,
         "avgGross": 90.2,
-        "avgNet": 77.0,
+        "avgNet": 77.6,
         "rounds": 4,
         "notes": "",
         "implied": 16.9,
-        "adjustment": 3.6
+        "adjustment": 5.1
     },
     {
         "name": "Chris Beck",
-        "current": 14.5,
+        "current": 13.0,
         "avgGross": 90.2,
-        "avgNet": 75.7,
+        "avgNet": 76.5,
         "rounds": 9,
         "notes": "",
         "implied": 13.8,
-        "adjustment": -0.7
+        "adjustment": 0.8
     },
     {
         "name": "Chris Husong",
-        "current": 8.1,
+        "current": 7.4,
         "avgGross": 85.2,
-        "avgNet": 77.2,
+        "avgNet": 76.3,
         "rounds": 4,
         "notes": "",
         "implied": 12.3,
-        "adjustment": 4.2
+        "adjustment": 4.9
     },
     {
         "name": "Chris Ryan",
-        "current": 16.4,
+        "current": 14.9,
         "avgGross": 91.0,
-        "avgNet": 74.6,
+        "avgNet": 76.5,
         "rounds": 7,
         "notes": "",
         "implied": 15.9,
-        "adjustment": -0.5
-    },
-    {
-        "name": "Christopher Royce",
-        "current": 15.6,
-        "avgGross": 90.8,
-        "avgNet": 75.2,
-        "rounds": 11,
-        "notes": "",
-        "implied": 14.1,
-        "adjustment": -1.5
-    },
-    {
-        "name": "Clark Koch",
-        "current": 8.8,
-        "avgGross": 81.6,
-        "avgNet": 72.8,
-        "rounds": 8,
-        "notes": "",
-        "implied": 7.4,
-        "adjustment": -1.4
-    },
-    {
-        "name": "Conrad Copeland",
-        "current": 11.8,
-        "avgGross": 91.0,
-        "avgNet": 79.2,
-        "rounds": 1,
-        "notes": "",
-        "implied": 18.7,
-        "adjustment": 6.9
-    },
-    {
-        "name": "Dan Denham",
-        "current": 6.5,
-        "avgGross": 79.7,
-        "avgNet": 73.2,
-        "rounds": 3,
-        "notes": "",
-        "implied": 8.4,
-        "adjustment": 1.9
-    },
-    {
-        "name": "Dana Beckley",
-        "current": 6.9,
-        "avgGross": 90.0,
-        "avgNet": 83.1,
-        "rounds": 2,
-        "notes": "",
-        "implied": 17.8,
-        "adjustment": 10.8
-    },
-    {
-        "name": "David Adams",
-        "current": 6.1,
-        "avgGross": 83.5,
-        "avgNet": 77.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": 11.9,
-        "adjustment": 5.8
-    },
-    {
-        "name": "David Edwards",
-        "current": 8.6,
-        "avgGross": 81.0,
-        "avgNet": 72.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 9.6,
         "adjustment": 1.0
     },
     {
-        "name": "David Pearson",
-        "current": 9.6,
-        "avgGross": 83.0,
-        "avgNet": 73.4,
-        "rounds": 1,
+        "name": "Christopher Royce",
+        "current": 14.1,
+        "avgGross": 90.8,
+        "avgNet": 77.1,
+        "rounds": 11,
         "notes": "",
-        "implied": 11.4,
-        "adjustment": 1.8
+        "implied": 14.1,
+        "adjustment": 0.0
     },
     {
-        "name": "Dean Fisk",
-        "current": 8.0,
-        "avgGross": 85.7,
-        "avgNet": 77.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 13.8,
-        "adjustment": 5.8
-    },
-    {
-        "name": "Derek Becko",
-        "current": 3.5,
-        "avgGross": 78.6,
-        "avgNet": 75.1,
-        "rounds": 7,
-        "notes": "",
-        "implied": 5.3,
-        "adjustment": 1.8
-    },
-    {
-        "name": "Dusty Wasmund",
-        "current": 9.7,
-        "avgGross": 80.7,
-        "avgNet": 71.0,
-        "rounds": 6,
+        "name": "Clark Koch",
+        "current": 8.2,
+        "avgGross": 81.6,
+        "avgNet": 74.8,
+        "rounds": 8,
         "notes": "",
         "implied": 7.4,
-        "adjustment": -2.3
-    },
-    {
-        "name": "Eric Hamilton",
-        "current": 19.5,
-        "avgGross": 105.0,
-        "avgNet": 85.5,
-        "rounds": 1,
-        "notes": "",
-        "implied": 31.4,
-        "adjustment": 11.9
-    },
-    {
-        "name": "Eric Lamb",
-        "current": 23.9,
-        "avgGross": 98.5,
-        "avgNet": 74.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 25.5,
-        "adjustment": 1.6
-    },
-    {
-        "name": "Eric Weiss",
-        "current": 1.3,
-        "avgGross": 73.4,
-        "avgNet": 72.1,
-        "rounds": 10,
-        "notes": "",
-        "implied": -0.4,
-        "adjustment": -1.7
-    },
-    {
-        "name": "Frank Angeloro",
-        "current": 8.6,
-        "avgGross": 81.2,
-        "avgNet": 72.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 8.1,
-        "adjustment": -0.5
-    },
-    {
-        "name": "Glenn Brand",
-        "current": 10.9,
-        "avgGross": 91.5,
-        "avgNet": 80.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 19.1,
-        "adjustment": 8.2
-    },
-    {
-        "name": "Greg Funk",
-        "current": 4.9,
-        "avgGross": 78.3,
-        "avgNet": 73.4,
-        "rounds": 12,
-        "notes": "",
-        "implied": 4.4,
-        "adjustment": -0.5
-    },
-    {
-        "name": "Hans Anderson",
-        "current": 0.0,
-        "avgGross": 74.0,
-        "avgNet": 74.0,
-        "rounds": 5,
-        "notes": "",
-        "implied": 0.5,
-        "adjustment": 0.5
-    },
-    {
-        "name": "James Feutz",
-        "current": -0.9,
-        "avgGross": 69.5,
-        "avgNet": 70.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": -0.9,
-        "adjustment": -0.0
-    },
-    {
-        "name": "Jamey Davis",
-        "current": 13.7,
-        "avgGross": 86.8,
-        "avgNet": 73.1,
-        "rounds": 5,
-        "notes": "",
-        "implied": 12.3,
-        "adjustment": -1.4
-    },
-    {
-        "name": "Jared Strathe",
-        "current": -4.6,
-        "avgGross": 68.0,
-        "avgNet": 72.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": -2.3,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Jeff Avery",
-        "current": 11.2,
-        "avgGross": 86.7,
-        "avgNet": 75.5,
-        "rounds": 3,
-        "notes": "",
-        "implied": 14.7,
-        "adjustment": 3.5
-    },
-    {
-        "name": "Jeff Cloepfil",
-        "current": 12.3,
-        "avgGross": 84.6,
-        "avgNet": 72.3,
-        "rounds": 9,
-        "notes": "",
-        "implied": 11.1,
-        "adjustment": -1.2
-    },
-    {
-        "name": "Jeff De Laveaga",
-        "current": -0.2,
-        "avgGross": 70.7,
-        "avgNet": 70.9,
-        "rounds": 6,
-        "notes": "",
-        "implied": -1.4,
-        "adjustment": -1.2
-    },
-    {
-        "name": "Jim Restivo",
-        "current": 12.7,
-        "avgGross": 88.3,
-        "avgNet": 75.6,
-        "rounds": 6,
-        "notes": "",
-        "implied": 15.0,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Joe Sepessy",
-        "current": 6.8,
-        "avgGross": 77.2,
-        "avgNet": 70.5,
-        "rounds": 8,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": -3.6
-    },
-    {
-        "name": "Jon Vrolyks",
-        "current": 6.2,
-        "avgGross": 81.5,
-        "avgNet": 75.3,
-        "rounds": 8,
-        "notes": "",
-        "implied": 6.5,
-        "adjustment": 0.3
-    },
-    {
-        "name": "Justin Deuker",
-        "current": 3.7,
-        "avgGross": 78.6,
-        "avgNet": 74.9,
-        "rounds": 5,
-        "notes": "",
-        "implied": 6.5,
-        "adjustment": 2.8
-    },
-    {
-        "name": "Ken Vonwald",
-        "current": 14.2,
-        "avgGross": 95.0,
-        "avgNet": 80.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 22.3,
-        "adjustment": 8.1
-    },
-    {
-        "name": "Kevin Barber",
-        "current": 16.4,
-        "avgGross": 89.4,
-        "avgNet": 73.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 13.5,
-        "adjustment": -2.9
-    },
-    {
-        "name": "Kevin Mueller",
-        "current": 9.4,
-        "avgGross": 89.0,
-        "avgNet": 79.6,
-        "rounds": 1,
-        "notes": "",
-        "implied": 16.9,
-        "adjustment": 7.5
-    },
-    {
-        "name": "Kiernan Mattson",
-        "current": 2.8,
-        "avgGross": 77.2,
-        "avgNet": 74.4,
-        "rounds": 6,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": 0.4
-    },
-    {
-        "name": "Korey Jerome",
-        "current": 9.5,
-        "avgGross": 85.5,
-        "avgNet": 76.0,
-        "rounds": 12,
-        "notes": "",
-        "implied": 8.7,
         "adjustment": -0.8
     },
     {
+        "name": "Conrad Copeland",
+        "current": 11.4,
+        "avgGross": 91.0,
+        "avgNet": 79.6,
+        "rounds": 1,
+        "notes": "",
+        "implied": 18.7,
+        "adjustment": 7.3
+    },
+    {
+        "name": "Dan Denham",
+        "current": 5.6,
+        "avgGross": 79.7,
+        "avgNet": 75.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 8.4,
+        "adjustment": 2.8
+    },
+    {
+        "name": "Dana Beckley",
+        "current": 6.1,
+        "avgGross": 90.0,
+        "avgNet": 84.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 17.8,
+        "adjustment": 11.7
+    },
+    {
+        "name": "David Adams",
+        "current": 5.2,
+        "avgGross": 83.5,
+        "avgNet": 77.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 11.9,
+        "adjustment": 6.7
+    },
+    {
+        "name": "David Edwards",
+        "current": 7.9,
+        "avgGross": 81.0,
+        "avgNet": 73.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 9.6,
+        "adjustment": 1.7
+    },
+    {
+        "name": "David Pearson",
+        "current": 9.0,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 1,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 2.4
+    },
+    {
+        "name": "Dean Fisk",
+        "current": 7.3,
+        "avgGross": 85.7,
+        "avgNet": 77.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 13.8,
+        "adjustment": 6.5
+    },
+    {
+        "name": "Derek Becko",
+        "current": 2.3,
+        "avgGross": 78.6,
+        "avgNet": 75.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 5.3,
+        "adjustment": 3.0
+    },
+    {
+        "name": "Dusty Wasmund",
+        "current": 8.2,
+        "avgGross": 80.7,
+        "avgNet": 73.3,
+        "rounds": 6,
+        "notes": "",
+        "implied": 7.4,
+        "adjustment": -0.8
+    },
+    {
+        "name": "Eric Hamilton",
+        "current": 18.0,
+        "avgGross": 105.0,
+        "avgNet": 87.0,
+        "rounds": 1,
+        "notes": "",
+        "implied": 31.4,
+        "adjustment": 13.4
+    },
+    {
+        "name": "Eric Lamb",
+        "current": 24.7,
+        "avgGross": 98.5,
+        "avgNet": 73.8,
+        "rounds": 2,
+        "notes": "",
+        "implied": 25.5,
+        "adjustment": 0.8
+    },
+    {
+        "name": "Eric Weiss",
+        "current": -0.1,
+        "avgGross": 73.4,
+        "avgNet": 74.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": -0.4,
+        "adjustment": -0.3
+    },
+    {
+        "name": "Frank Angeloro",
+        "current": 7.9,
+        "avgGross": 81.2,
+        "avgNet": 73.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 8.1,
+        "adjustment": 0.2
+    },
+    {
+        "name": "Glenn Brand",
+        "current": 10.5,
+        "avgGross": 91.5,
+        "avgNet": 80.9,
+        "rounds": 2,
+        "notes": "",
+        "implied": 19.1,
+        "adjustment": 8.6
+    },
+    {
+        "name": "Greg Funk",
+        "current": 3.9,
+        "avgGross": 78.3,
+        "avgNet": 75.0,
+        "rounds": 12,
+        "notes": "",
+        "implied": 4.4,
+        "adjustment": 0.5
+    },
+    {
+        "name": "Hans Anderson",
+        "current": -1.5,
+        "avgGross": 74.0,
+        "avgNet": 75.2,
+        "rounds": 5,
+        "notes": "",
+        "implied": 0.5,
+        "adjustment": 2.0
+    },
+    {
+        "name": "James Feutz",
+        "current": -2.5,
+        "avgGross": 69.5,
+        "avgNet": 72.4,
+        "rounds": 2,
+        "notes": "",
+        "implied": -0.9,
+        "adjustment": 1.6
+    },
+    {
+        "name": "Jamey Davis",
+        "current": 12.2,
+        "avgGross": 86.8,
+        "avgNet": 73.7,
+        "rounds": 5,
+        "notes": "",
+        "implied": 12.3,
+        "adjustment": 0.1
+    },
+    {
+        "name": "Jared Strathe",
+        "current": -6.5,
+        "avgGross": 68.0,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": -2.3,
+        "adjustment": 4.2
+    },
+    {
+        "name": "Jeff Avery",
+        "current": 10.8,
+        "avgGross": 86.7,
+        "avgNet": 75.6,
+        "rounds": 3,
+        "notes": "",
+        "implied": 14.7,
+        "adjustment": 3.9
+    },
+    {
+        "name": "Jeff Cloepfil",
+        "current": 12.0,
+        "avgGross": 84.6,
+        "avgNet": 74.3,
+        "rounds": 9,
+        "notes": "",
+        "implied": 11.1,
+        "adjustment": -0.9
+    },
+    {
+        "name": "Jeff De Laveaga",
+        "current": -1.7,
+        "avgGross": 70.7,
+        "avgNet": 71.9,
+        "rounds": 6,
+        "notes": "",
+        "implied": -1.4,
+        "adjustment": 0.3
+    },
+    {
+        "name": "Jim Restivo",
+        "current": 12.4,
+        "avgGross": 88.3,
+        "avgNet": 75.8,
+        "rounds": 6,
+        "notes": "",
+        "implied": 15.0,
+        "adjustment": 2.6
+    },
+    {
+        "name": "Joe Sepessy",
+        "current": 6.0,
+        "avgGross": 77.2,
+        "avgNet": 72.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": -2.8
+    },
+    {
+        "name": "Jon Vrolyks",
+        "current": 5.3,
+        "avgGross": 81.5,
+        "avgNet": 76.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 6.5,
+        "adjustment": 1.2
+    },
+    {
+        "name": "Justin Deuker",
+        "current": 2.6,
+        "avgGross": 78.6,
+        "avgNet": 75.9,
+        "rounds": 5,
+        "notes": "",
+        "implied": 6.5,
+        "adjustment": 3.9
+    },
+    {
+        "name": "Ken Vonwald",
+        "current": 14.1,
+        "avgGross": 95.0,
+        "avgNet": 80.9,
+        "rounds": 1,
+        "notes": "",
+        "implied": 22.3,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Kevin Barber",
+        "current": 16.5,
+        "avgGross": 89.4,
+        "avgNet": 73.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 13.5,
+        "adjustment": -3.0
+    },
+    {
+        "name": "Kevin Mueller",
+        "current": 8.8,
+        "avgGross": 89.0,
+        "avgNet": 80.2,
+        "rounds": 1,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 8.1
+    },
+    {
+        "name": "Kiernan Mattson",
+        "current": 1.6,
+        "avgGross": 77.2,
+        "avgNet": 77.0,
+        "rounds": 6,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": 1.6
+    },
+    {
+        "name": "Korey Jerome",
+        "current": 8.9,
+        "avgGross": 85.5,
+        "avgNet": 77.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 8.7,
+        "adjustment": -0.2
+    },
+    {
         "name": "Larry Caplan",
-        "current": 17.5,
+        "current": 17.7,
         "avgGross": 93.9,
-        "avgNet": 76.4,
+        "avgNet": 77.8,
         "rounds": 7,
         "notes": "",
         "implied": 17.2,
-        "adjustment": -0.3
+        "adjustment": -0.5
     },
     {
         "name": "Mark Albedyll",
         "current": 15.7,
         "avgGross": 93.3,
-        "avgNet": 77.6,
+        "avgNet": 77.1,
         "rounds": 6,
         "notes": "",
         "implied": 18.1,
@@ -710,379 +710,379 @@
     },
     {
         "name": "Mark James",
-        "current": 12.6,
+        "current": 12.3,
         "avgGross": 90.0,
-        "avgNet": 77.4,
+        "avgNet": 78.5,
         "rounds": 3,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 5.2
+        "adjustment": 5.5
     },
     {
         "name": "Mark Lewis",
-        "current": 10.5,
+        "current": 10.0,
         "avgGross": 87.1,
         "avgNet": 76.6,
         "rounds": 7,
         "notes": "",
         "implied": 12.6,
-        "adjustment": 2.1
+        "adjustment": 2.6
     },
     {
         "name": "Matt Neimeier",
-        "current": 12.2,
+        "current": 11.9,
         "avgGross": 87.0,
-        "avgNet": 74.8,
+        "avgNet": 76.1,
         "rounds": 7,
         "notes": "",
         "implied": 11.4,
-        "adjustment": -0.8
+        "adjustment": -0.5
     },
     {
         "name": "Matt Pullen",
-        "current": -0.1,
+        "current": -1.6,
         "avgGross": 73.0,
-        "avgNet": 73.1,
+        "avgNet": 74.6,
         "rounds": 1,
         "notes": "",
         "implied": 2.3,
-        "adjustment": 2.4
+        "adjustment": 3.9
     },
     {
         "name": "Michael Falagrady",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 80.4,
-        "avgNet": 73.5,
+        "avgNet": 74.8,
         "rounds": 5,
         "notes": "",
         "implied": 7.7,
-        "adjustment": 0.8
+        "adjustment": 1.6
     },
     {
         "name": "Mike Muller",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 83.1,
-        "avgNet": 76.2,
+        "avgNet": 76.8,
         "rounds": 10,
         "notes": "",
         "implied": 7.1,
-        "adjustment": 0.2
-    },
-    {
-        "name": "Nate Adams",
-        "current": -5.0,
-        "avgGross": 66.3,
-        "avgNet": 71.3,
-        "rounds": 3,
-        "notes": "",
-        "implied": -3.8,
-        "adjustment": 1.2
-    },
-    {
-        "name": "Neil Harris",
-        "current": -1.7,
-        "avgGross": 71.8,
-        "avgNet": 73.5,
-        "rounds": 9,
-        "notes": "",
-        "implied": -1.7,
-        "adjustment": 0.0
-    },
-    {
-        "name": "Nick Rucci",
-        "current": 12.1,
-        "avgGross": 82.0,
-        "avgNet": 69.9,
-        "rounds": 1,
-        "notes": "",
-        "implied": 10.5,
-        "adjustment": -1.6
-    },
-    {
-        "name": "Pat Feutz",
-        "current": 5.6,
-        "avgGross": 77.0,
-        "avgNet": 71.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 5.9,
-        "adjustment": 0.3
-    },
-    {
-        "name": "Patrick Schueppert",
-        "current": 16.8,
-        "avgGross": 95.3,
-        "avgNet": 78.5,
-        "rounds": 12,
-        "notes": "",
-        "implied": 17.8,
         "adjustment": 1.0
     },
     {
-        "name": "Paul Benga",
-        "current": 5.3,
-        "avgGross": 78.3,
-        "avgNet": 73.0,
-        "rounds": 13,
-        "notes": "",
-        "implied": 4.1,
-        "adjustment": -1.2
-    },
-    {
-        "name": "Rich Fagan",
-        "current": 10.4,
-        "avgGross": 89.4,
-        "avgNet": 79.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 13.2,
-        "adjustment": 2.8
-    },
-    {
-        "name": "Rich McKeon",
-        "current": 13.2,
-        "avgGross": 84.0,
-        "avgNet": 70.8,
+        "name": "Nate Adams",
+        "current": -7.0,
+        "avgGross": 66.3,
+        "avgNet": 74.1,
         "rounds": 3,
         "notes": "",
-        "implied": 12.3,
-        "adjustment": -0.9
+        "implied": -3.8,
+        "adjustment": 3.2
     },
     {
-        "name": "Richard Lederman",
-        "current": 13.6,
-        "avgGross": 88.2,
-        "avgNet": 74.6,
-        "rounds": 5,
+        "name": "Neil Harris",
+        "current": -3.4,
+        "avgGross": 71.8,
+        "avgNet": 75.2,
+        "rounds": 9,
         "notes": "",
-        "implied": 13.8,
-        "adjustment": 0.2
+        "implied": -1.7,
+        "adjustment": 1.7
     },
     {
-        "name": "Rick Deloney",
-        "current": 8.2,
-        "avgGross": 85.7,
-        "avgNet": 77.5,
-        "rounds": 7,
+        "name": "Nick Rucci",
+        "current": 11.8,
+        "avgGross": 82.0,
+        "avgNet": 70.2,
+        "rounds": 1,
         "notes": "",
-        "implied": 9.0,
-        "adjustment": 0.8
-    },
-    {
-        "name": "Rick Meewes",
-        "current": 3.8,
-        "avgGross": 78.5,
-        "avgNet": 74.7,
-        "rounds": 4,
-        "notes": "",
-        "implied": 5.9,
-        "adjustment": 2.1
-    },
-    {
-        "name": "Rob Oliver",
-        "current": 17.8,
-        "avgGross": 90.8,
-        "avgNet": 73.0,
-        "rounds": 4,
-        "notes": "",
-        "implied": 17.5,
-        "adjustment": -0.3
-    },
-    {
-        "name": "Robert Hill",
-        "current": 19.6,
-        "avgGross": 99.1,
-        "avgNet": 79.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 22.0,
-        "adjustment": 2.4
-    },
-    {
-        "name": "Ron Amstutz",
-        "current": 12.4,
-        "avgGross": 85.9,
-        "avgNet": 73.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 11.1,
+        "implied": 10.5,
         "adjustment": -1.3
     },
     {
-        "name": "Ron Marino",
-        "current": 7.2,
-        "avgGross": 81.8,
-        "avgNet": 74.5,
-        "rounds": 4,
-        "notes": "",
-        "implied": 9.3,
-        "adjustment": 2.1
-    },
-    {
-        "name": "Scott Benton",
-        "current": 14.7,
-        "avgGross": 89.4,
-        "avgNet": 74.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 14.1,
-        "adjustment": -0.6
-    },
-    {
-        "name": "Scott Bracken",
-        "current": 10.3,
-        "avgGross": 83.0,
-        "avgNet": 72.7,
-        "rounds": 9,
-        "notes": "",
-        "implied": 7.8,
-        "adjustment": -2.5
-    },
-    {
-        "name": "Scott Lucas",
-        "current": 11.8,
-        "avgGross": 83.8,
-        "avgNet": 72.0,
-        "rounds": 4,
-        "notes": "",
-        "implied": 9.9,
-        "adjustment": -1.9
-    },
-    {
-        "name": "Shane Bolosan",
-        "current": 9.5,
-        "avgGross": 84.2,
-        "avgNet": 74.8,
-        "rounds": 12,
-        "notes": "",
-        "implied": 6.8,
-        "adjustment": -2.7
-    },
-    {
-        "name": "Shawn Warner",
-        "current": 12.6,
-        "avgGross": 86.5,
-        "avgNet": 73.9,
-        "rounds": 2,
-        "notes": "",
-        "implied": 14.6,
-        "adjustment": 2.0
-    },
-    {
-        "name": "Shawn Wojtcuk",
-        "current": 0.0,
-        "avgGross": 72.0,
-        "avgNet": 72.0,
+        "name": "Pat Feutz",
+        "current": 4.6,
+        "avgGross": 77.0,
+        "avgNet": 72.4,
         "rounds": 1,
         "notes": "",
-        "implied": 1.4,
-        "adjustment": 1.4
-    },
-    {
-        "name": "Stephen Cherepy",
-        "current": 11.0,
-        "avgGross": 87.0,
-        "avgNet": 76.0,
-        "rounds": 1,
-        "notes": "",
-        "implied": 15.0,
-        "adjustment": 4.0
-    },
-    {
-        "name": "Steve McCormick",
-        "current": 10.4,
-        "avgGross": 85.7,
-        "avgNet": 75.3,
-        "rounds": 10,
-        "notes": "",
-        "implied": 10.2,
-        "adjustment": -0.2
-    },
-    {
-        "name": "Steve Rosenbluth",
-        "current": 9.4,
-        "avgGross": 84.8,
-        "avgNet": 75.4,
-        "rounds": 5,
-        "notes": "",
-        "implied": 12.0,
-        "adjustment": 2.6
-    },
-    {
-        "name": "Stewart Polakov",
-        "current": 4.9,
-        "avgGross": 74.0,
-        "avgNet": 69.1,
-        "rounds": 1,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": -1.7
-    },
-    {
-        "name": "Thomas Earl",
-        "current": 4.3,
-        "avgGross": 83.0,
-        "avgNet": 78.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 7.1
-    },
-    {
-        "name": "Timothy Wigder",
-        "current": 8.2,
-        "avgGross": 80.0,
-        "avgNet": 71.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 8.7,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Todd Densley",
-        "current": -0.2,
-        "avgGross": 73.4,
-        "avgNet": 73.6,
-        "rounds": 9,
-        "notes": "",
-        "implied": 1.1,
+        "implied": 5.9,
         "adjustment": 1.3
     },
     {
-        "name": "Tracy Copenhaver",
-        "current": 14.8,
-        "avgGross": 89.5,
-        "avgNet": 74.7,
-        "rounds": 2,
+        "name": "Patrick Schueppert",
+        "current": 16.9,
+        "avgGross": 95.3,
+        "avgNet": 79.4,
+        "rounds": 12,
         "notes": "",
-        "implied": 17.4,
-        "adjustment": 2.6
+        "implied": 17.8,
+        "adjustment": 0.9
     },
     {
-        "name": "Travis Ingram",
-        "current": 6.8,
-        "avgGross": 81.3,
-        "avgNet": 74.5,
-        "rounds": 11,
+        "name": "Paul Benga",
+        "current": 4.3,
+        "avgGross": 78.3,
+        "avgNet": 74.7,
+        "rounds": 13,
         "notes": "",
-        "implied": 7.4,
+        "implied": 4.1,
+        "adjustment": -0.2
+    },
+    {
+        "name": "Rich Fagan",
+        "current": 9.9,
+        "avgGross": 89.4,
+        "avgNet": 77.2,
+        "rounds": 7,
+        "notes": "",
+        "implied": 13.2,
+        "adjustment": 3.3
+    },
+    {
+        "name": "Rich McKeon",
+        "current": 11.7,
+        "avgGross": 84.0,
+        "avgNet": 73.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 12.3,
         "adjustment": 0.6
     },
     {
+        "name": "Richard Lederman",
+        "current": 13.4,
+        "avgGross": 88.2,
+        "avgNet": 75.6,
+        "rounds": 5,
+        "notes": "",
+        "implied": 13.8,
+        "adjustment": 0.4
+    },
+    {
+        "name": "Rick Deloney",
+        "current": 6.7,
+        "avgGross": 85.7,
+        "avgNet": 79.6,
+        "rounds": 7,
+        "notes": "",
+        "implied": 9.0,
+        "adjustment": 2.3
+    },
+    {
+        "name": "Rick Meewes",
+        "current": 2.7,
+        "avgGross": 78.5,
+        "avgNet": 74.2,
+        "rounds": 4,
+        "notes": "",
+        "implied": 5.9,
+        "adjustment": 3.2
+    },
+    {
+        "name": "Rob Oliver",
+        "current": 18.0,
+        "avgGross": 90.8,
+        "avgNet": 73.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 17.5,
+        "adjustment": -0.5
+    },
+    {
+        "name": "Robert Hill",
+        "current": 20.0,
+        "avgGross": 99.1,
+        "avgNet": 80.2,
+        "rounds": 7,
+        "notes": "",
+        "implied": 22.0,
+        "adjustment": 2.0
+    },
+    {
+        "name": "Ron Amstutz",
+        "current": 12.1,
+        "avgGross": 85.9,
+        "avgNet": 75.0,
+        "rounds": 7,
+        "notes": "",
+        "implied": 11.1,
+        "adjustment": -1.0
+    },
+    {
+        "name": "Ron Marino",
+        "current": 6.4,
+        "avgGross": 81.8,
+        "avgNet": 75.1,
+        "rounds": 4,
+        "notes": "",
+        "implied": 9.3,
+        "adjustment": 2.9
+    },
+    {
+        "name": "Scott Benton",
+        "current": 13.2,
+        "avgGross": 89.4,
+        "avgNet": 77.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 14.1,
+        "adjustment": 0.9
+    },
+    {
+        "name": "Scott Bracken",
+        "current": 9.8,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 7.8,
+        "adjustment": -2.0
+    },
+    {
+        "name": "Scott Lucas",
+        "current": 11.4,
+        "avgGross": 83.8,
+        "avgNet": 72.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 9.9,
+        "adjustment": -1.5
+    },
+    {
+        "name": "Shane Bolosan",
+        "current": 8.9,
+        "avgGross": 84.2,
+        "avgNet": 75.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 6.8,
+        "adjustment": -2.1
+    },
+    {
+        "name": "Shawn Warner",
+        "current": 12.3,
+        "avgGross": 86.5,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": 14.6,
+        "adjustment": 2.2
+    },
+    {
+        "name": "Shawn Wojtcuk",
+        "current": -1.5,
+        "avgGross": 72.0,
+        "avgNet": 73.5,
+        "rounds": 1,
+        "notes": "",
+        "implied": 1.4,
+        "adjustment": 2.9
+    },
+    {
+        "name": "Stephen Cherepy",
+        "current": 10.6,
+        "avgGross": 87.0,
+        "avgNet": 76.4,
+        "rounds": 1,
+        "notes": "",
+        "implied": 15.0,
+        "adjustment": 4.4
+    },
+    {
+        "name": "Steve McCormick",
+        "current": 8.9,
+        "avgGross": 85.7,
+        "avgNet": 76.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": 10.2,
+        "adjustment": 1.3
+    },
+    {
+        "name": "Steve Rosenbluth",
+        "current": 8.8,
+        "avgGross": 84.8,
+        "avgNet": 77.0,
+        "rounds": 5,
+        "notes": "",
+        "implied": 12.0,
+        "adjustment": 3.2
+    },
+    {
+        "name": "Stewart Polakov",
+        "current": 3.9,
+        "avgGross": 74.0,
+        "avgNet": 70.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": -0.7
+    },
+    {
+        "name": "Thomas Earl",
+        "current": 3.2,
+        "avgGross": 83.0,
+        "avgNet": 79.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Timothy Wigder",
+        "current": 6.7,
+        "avgGross": 80.0,
+        "avgNet": 73.3,
+        "rounds": 1,
+        "notes": "",
+        "implied": 8.7,
+        "adjustment": 2.0
+    },
+    {
+        "name": "Todd Densley",
+        "current": -1.7,
+        "avgGross": 73.4,
+        "avgNet": 75.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 1.1,
+        "adjustment": 2.8
+    },
+    {
+        "name": "Tracy Copenhaver",
+        "current": 14.7,
+        "avgGross": 89.5,
+        "avgNet": 75.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": 17.4,
+        "adjustment": 2.7
+    },
+    {
+        "name": "Travis Ingram",
+        "current": 6.0,
+        "avgGross": 81.3,
+        "avgNet": 75.2,
+        "rounds": 11,
+        "notes": "",
+        "implied": 7.4,
+        "adjustment": 1.4
+    },
+    {
         "name": "Travis Jorgensen",
-        "current": 8.7,
+        "current": 8.0,
         "avgGross": 84.0,
-        "avgNet": 75.3,
+        "avgNet": 76.0,
         "rounds": 1,
         "notes": "",
         "implied": 12.3,
-        "adjustment": 3.6
+        "adjustment": 4.3
     },
     {
         "name": "Trent Dana",
         "current": 15.6,
         "avgGross": 93.0,
-        "avgNet": 77.4,
+        "avgNet": 77.6,
         "rounds": 5,
         "notes": "",
         "implied": 16.8,
@@ -1090,502 +1090,502 @@
     },
     {
         "name": "Win Doolittle",
-        "current": 8.0,
+        "current": 7.3,
         "avgGross": 90.0,
-        "avgNet": 82.0,
+        "avgNet": 82.7,
         "rounds": 1,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 9.8
+        "adjustment": 10.5
     },
     {
         "name": "Zach Coe",
-        "current": 1.5,
+        "current": 0.1,
         "avgGross": 75.5,
-        "avgNet": 74.0,
+        "avgNet": 75.4,
         "rounds": 2,
         "notes": "",
         "implied": 4.5,
-        "adjustment": 3.0
+        "adjustment": 4.5
     },
     {
         "name": "Zach Fleishman",
-        "current": 11.7,
+        "current": 11.3,
         "avgGross": 86.3,
-        "avgNet": 74.6,
+        "avgNet": 73.8,
         "rounds": 3,
         "notes": "",
         "implied": 14.4,
-        "adjustment": 2.7
+        "adjustment": 3.1
     },
     {
         "name": "Zach Mattson",
-        "current": 6.1,
+        "current": 5.2,
         "avgGross": 79.0,
-        "avgNet": 72.9,
+        "avgNet": 73.8,
         "rounds": 1,
         "notes": "",
         "implied": 7.7,
-        "adjustment": 1.6
+        "adjustment": 2.5
     },
     {
         "name": "Zane Eisenbarth",
-        "current": 4.4,
+        "current": 3.3,
         "avgGross": 83.0,
-        "avgNet": 78.6,
+        "avgNet": 78.5,
         "rounds": 5,
         "notes": "",
         "implied": 9.6,
-        "adjustment": 5.2
+        "adjustment": 6.3
     }
 ];
 
         const dataBest6 = [
     {
         "name": "Andrew Burnheimer",
-        "current": 0.0,
+        "current": -1.5,
         "avgGross": 83.0,
-        "avgNet": 83.0,
+        "avgNet": 84.5,
         "rounds": 1,
         "notes": "",
         "implied": 11.4,
-        "adjustment": 11.4
+        "adjustment": 12.9
     },
     {
         "name": "Andy Meach",
-        "current": 7.5,
+        "current": 6.7,
         "avgGross": 83.3,
-        "avgNet": 75.8,
+        "avgNet": 77.5,
         "rounds": 6,
         "notes": "",
         "implied": 11.7,
-        "adjustment": 4.2
+        "adjustment": 5.0
     },
     {
         "name": "Ben Magnone",
-        "current": 10.4,
+        "current": 9.9,
         "avgGross": 83.7,
-        "avgNet": 73.3,
+        "avgNet": 72.7,
         "rounds": 9,
         "notes": "",
         "implied": 10.0,
-        "adjustment": -0.4
+        "adjustment": 0.1
     },
     {
         "name": "Brad Ackley",
-        "current": 13.9,
+        "current": 13.8,
         "avgGross": 92.0,
-        "avgNet": 78.1,
+        "avgNet": 78.2,
         "rounds": 1,
         "notes": "",
         "implied": 19.6,
-        "adjustment": 5.7
+        "adjustment": 5.8
     },
     {
         "name": "Brian Howell",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 81.5,
-        "avgNet": 74.6,
+        "avgNet": 75.7,
         "rounds": 2,
         "notes": "",
         "implied": 10.1,
-        "adjustment": 3.2
+        "adjustment": 4.0
     },
     {
         "name": "Bud Scott",
-        "current": 9.4,
+        "current": 8.8,
         "avgGross": 87.5,
-        "avgNet": 78.1,
+        "avgNet": 78.2,
         "rounds": 2,
         "notes": "",
         "implied": 15.5,
-        "adjustment": 6.1
+        "adjustment": 6.7
     },
     {
         "name": "Buddy Goldstone",
-        "current": 13.3,
+        "current": 11.8,
         "avgGross": 90.2,
-        "avgNet": 77.0,
+        "avgNet": 77.6,
         "rounds": 4,
         "notes": "",
         "implied": 18.0,
-        "adjustment": 4.7
+        "adjustment": 6.2
     },
     {
         "name": "Chris Beck",
-        "current": 14.5,
+        "current": 13.0,
         "avgGross": 90.2,
-        "avgNet": 75.7,
+        "avgNet": 76.5,
         "rounds": 9,
         "notes": "",
         "implied": 15.3,
-        "adjustment": 0.8
+        "adjustment": 2.3
     },
     {
         "name": "Chris Husong",
-        "current": 8.1,
+        "current": 7.4,
         "avgGross": 85.2,
-        "avgNet": 77.2,
+        "avgNet": 76.3,
         "rounds": 4,
         "notes": "",
         "implied": 13.4,
-        "adjustment": 5.3
+        "adjustment": 6.0
     },
     {
         "name": "Chris Ryan",
-        "current": 16.4,
+        "current": 14.9,
         "avgGross": 91.0,
-        "avgNet": 74.6,
+        "avgNet": 76.5,
         "rounds": 7,
         "notes": "",
         "implied": 18.1,
-        "adjustment": 1.7
+        "adjustment": 3.2
     },
     {
         "name": "Christopher Royce",
-        "current": 15.6,
+        "current": 14.1,
         "avgGross": 90.8,
-        "avgNet": 75.2,
+        "avgNet": 77.1,
         "rounds": 11,
         "notes": "",
         "implied": 15.3,
-        "adjustment": -0.3
-    },
-    {
-        "name": "Clark Koch",
-        "current": 8.8,
-        "avgGross": 81.6,
-        "avgNet": 72.8,
-        "rounds": 8,
-        "notes": "",
-        "implied": 9.3,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Conrad Copeland",
-        "current": 11.8,
-        "avgGross": 91.0,
-        "avgNet": 79.2,
-        "rounds": 1,
-        "notes": "",
-        "implied": 18.7,
-        "adjustment": 6.9
-    },
-    {
-        "name": "Dan Denham",
-        "current": 6.5,
-        "avgGross": 79.7,
-        "avgNet": 73.2,
-        "rounds": 3,
-        "notes": "",
-        "implied": 8.4,
-        "adjustment": 1.9
-    },
-    {
-        "name": "Dana Beckley",
-        "current": 6.9,
-        "avgGross": 90.0,
-        "avgNet": 83.1,
-        "rounds": 2,
-        "notes": "",
-        "implied": 17.8,
-        "adjustment": 10.8
-    },
-    {
-        "name": "David Adams",
-        "current": 6.1,
-        "avgGross": 83.5,
-        "avgNet": 77.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": 11.9,
-        "adjustment": 5.8
-    },
-    {
-        "name": "David Edwards",
-        "current": 8.6,
-        "avgGross": 81.0,
-        "avgNet": 72.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 9.6,
-        "adjustment": 1.0
-    },
-    {
-        "name": "David Pearson",
-        "current": 9.6,
-        "avgGross": 83.0,
-        "avgNet": 73.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 1.8
-    },
-    {
-        "name": "Dean Fisk",
-        "current": 8.0,
-        "avgGross": 85.7,
-        "avgNet": 77.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 13.8,
-        "adjustment": 5.8
-    },
-    {
-        "name": "Derek Becko",
-        "current": 3.5,
-        "avgGross": 78.6,
-        "avgNet": 75.1,
-        "rounds": 7,
-        "notes": "",
-        "implied": 6.7,
-        "adjustment": 3.2
-    },
-    {
-        "name": "Dusty Wasmund",
-        "current": 9.7,
-        "avgGross": 80.7,
-        "avgNet": 71.0,
-        "rounds": 6,
-        "notes": "",
-        "implied": 9.3,
-        "adjustment": -0.4
-    },
-    {
-        "name": "Eric Hamilton",
-        "current": 19.5,
-        "avgGross": 105.0,
-        "avgNet": 85.5,
-        "rounds": 1,
-        "notes": "",
-        "implied": 31.4,
-        "adjustment": 11.9
-    },
-    {
-        "name": "Eric Lamb",
-        "current": 23.9,
-        "avgGross": 98.5,
-        "avgNet": 74.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 25.5,
-        "adjustment": 1.6
-    },
-    {
-        "name": "Eric Weiss",
-        "current": 1.3,
-        "avgGross": 73.4,
-        "avgNet": 72.1,
-        "rounds": 10,
-        "notes": "",
-        "implied": 0.9,
-        "adjustment": -0.4
-    },
-    {
-        "name": "Frank Angeloro",
-        "current": 8.6,
-        "avgGross": 81.2,
-        "avgNet": 72.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 9.1,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Glenn Brand",
-        "current": 10.9,
-        "avgGross": 91.5,
-        "avgNet": 80.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 19.1,
-        "adjustment": 8.2
-    },
-    {
-        "name": "Greg Funk",
-        "current": 4.9,
-        "avgGross": 78.3,
-        "avgNet": 73.4,
-        "rounds": 12,
-        "notes": "",
-        "implied": 5.6,
-        "adjustment": 0.7
-    },
-    {
-        "name": "Hans Anderson",
-        "current": 0.0,
-        "avgGross": 74.0,
-        "avgNet": 74.0,
-        "rounds": 5,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": 3.2
-    },
-    {
-        "name": "James Feutz",
-        "current": -0.9,
-        "avgGross": 69.5,
-        "avgNet": 70.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": -0.9,
-        "adjustment": -0.0
-    },
-    {
-        "name": "Jamey Davis",
-        "current": 13.7,
-        "avgGross": 86.8,
-        "avgNet": 73.1,
-        "rounds": 5,
-        "notes": "",
-        "implied": 14.9,
         "adjustment": 1.2
     },
     {
-        "name": "Jared Strathe",
-        "current": -4.6,
-        "avgGross": 68.0,
-        "avgNet": 72.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": -2.3,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Jeff Avery",
-        "current": 11.2,
-        "avgGross": 86.7,
-        "avgNet": 75.5,
-        "rounds": 3,
-        "notes": "",
-        "implied": 14.7,
-        "adjustment": 3.5
-    },
-    {
-        "name": "Jeff Cloepfil",
-        "current": 12.3,
-        "avgGross": 84.6,
-        "avgNet": 72.3,
-        "rounds": 9,
-        "notes": "",
-        "implied": 11.8,
-        "adjustment": -0.5
-    },
-    {
-        "name": "Jeff De Laveaga",
-        "current": -0.2,
-        "avgGross": 70.7,
-        "avgNet": 70.9,
-        "rounds": 6,
-        "notes": "",
-        "implied": 0.2,
-        "adjustment": 0.4
-    },
-    {
-        "name": "Jim Restivo",
-        "current": 12.7,
-        "avgGross": 88.3,
-        "avgNet": 75.6,
-        "rounds": 6,
-        "notes": "",
-        "implied": 16.2,
-        "adjustment": 3.5
-    },
-    {
-        "name": "Joe Sepessy",
-        "current": 6.8,
-        "avgGross": 77.2,
-        "avgNet": 70.5,
+        "name": "Clark Koch",
+        "current": 8.2,
+        "avgGross": 81.6,
+        "avgNet": 74.8,
         "rounds": 8,
         "notes": "",
-        "implied": 4.9,
-        "adjustment": -1.9
+        "implied": 9.3,
+        "adjustment": 1.1
     },
     {
-        "name": "Jon Vrolyks",
-        "current": 6.2,
-        "avgGross": 81.5,
-        "avgNet": 75.3,
-        "rounds": 8,
-        "notes": "",
-        "implied": 8.5,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Justin Deuker",
-        "current": 3.7,
-        "avgGross": 78.6,
-        "avgNet": 74.9,
-        "rounds": 5,
-        "notes": "",
-        "implied": 7.4,
-        "adjustment": 3.7
-    },
-    {
-        "name": "Ken Vonwald",
-        "current": 14.2,
-        "avgGross": 95.0,
-        "avgNet": 80.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 22.3,
-        "adjustment": 8.1
-    },
-    {
-        "name": "Kevin Barber",
-        "current": 16.4,
-        "avgGross": 89.4,
-        "avgNet": 73.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 16.3,
-        "adjustment": -0.1
-    },
-    {
-        "name": "Kevin Mueller",
-        "current": 9.4,
-        "avgGross": 89.0,
+        "name": "Conrad Copeland",
+        "current": 11.4,
+        "avgGross": 91.0,
         "avgNet": 79.6,
         "rounds": 1,
         "notes": "",
-        "implied": 16.9,
-        "adjustment": 7.5
+        "implied": 18.7,
+        "adjustment": 7.3
     },
     {
-        "name": "Kiernan Mattson",
-        "current": 2.8,
-        "avgGross": 77.2,
-        "avgNet": 74.4,
+        "name": "Dan Denham",
+        "current": 5.6,
+        "avgGross": 79.7,
+        "avgNet": 75.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 8.4,
+        "adjustment": 2.8
+    },
+    {
+        "name": "Dana Beckley",
+        "current": 6.1,
+        "avgGross": 90.0,
+        "avgNet": 84.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 17.8,
+        "adjustment": 11.7
+    },
+    {
+        "name": "David Adams",
+        "current": 5.2,
+        "avgGross": 83.5,
+        "avgNet": 77.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 11.9,
+        "adjustment": 6.7
+    },
+    {
+        "name": "David Edwards",
+        "current": 7.9,
+        "avgGross": 81.0,
+        "avgNet": 73.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 9.6,
+        "adjustment": 1.7
+    },
+    {
+        "name": "David Pearson",
+        "current": 9.0,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 1,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 2.4
+    },
+    {
+        "name": "Dean Fisk",
+        "current": 7.3,
+        "avgGross": 85.7,
+        "avgNet": 77.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 13.8,
+        "adjustment": 6.5
+    },
+    {
+        "name": "Derek Becko",
+        "current": 2.3,
+        "avgGross": 78.6,
+        "avgNet": 75.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 6.7,
+        "adjustment": 4.4
+    },
+    {
+        "name": "Dusty Wasmund",
+        "current": 8.2,
+        "avgGross": 80.7,
+        "avgNet": 73.3,
         "rounds": 6,
         "notes": "",
-        "implied": 6.1,
-        "adjustment": 3.3
+        "implied": 9.3,
+        "adjustment": 1.1
     },
     {
-        "name": "Korey Jerome",
-        "current": 9.5,
-        "avgGross": 85.5,
-        "avgNet": 76.0,
+        "name": "Eric Hamilton",
+        "current": 18.0,
+        "avgGross": 105.0,
+        "avgNet": 87.0,
+        "rounds": 1,
+        "notes": "",
+        "implied": 31.4,
+        "adjustment": 13.4
+    },
+    {
+        "name": "Eric Lamb",
+        "current": 24.7,
+        "avgGross": 98.5,
+        "avgNet": 73.8,
+        "rounds": 2,
+        "notes": "",
+        "implied": 25.5,
+        "adjustment": 0.8
+    },
+    {
+        "name": "Eric Weiss",
+        "current": -0.1,
+        "avgGross": 73.4,
+        "avgNet": 74.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": 0.9,
+        "adjustment": 1.0
+    },
+    {
+        "name": "Frank Angeloro",
+        "current": 7.9,
+        "avgGross": 81.2,
+        "avgNet": 73.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 9.1,
+        "adjustment": 1.2
+    },
+    {
+        "name": "Glenn Brand",
+        "current": 10.5,
+        "avgGross": 91.5,
+        "avgNet": 80.9,
+        "rounds": 2,
+        "notes": "",
+        "implied": 19.1,
+        "adjustment": 8.6
+    },
+    {
+        "name": "Greg Funk",
+        "current": 3.9,
+        "avgGross": 78.3,
+        "avgNet": 75.0,
         "rounds": 12,
         "notes": "",
-        "implied": 9.3,
+        "implied": 5.6,
+        "adjustment": 1.7
+    },
+    {
+        "name": "Hans Anderson",
+        "current": -1.5,
+        "avgGross": 74.0,
+        "avgNet": 75.2,
+        "rounds": 5,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": 4.7
+    },
+    {
+        "name": "James Feutz",
+        "current": -2.5,
+        "avgGross": 69.5,
+        "avgNet": 72.4,
+        "rounds": 2,
+        "notes": "",
+        "implied": -0.9,
+        "adjustment": 1.6
+    },
+    {
+        "name": "Jamey Davis",
+        "current": 12.2,
+        "avgGross": 86.8,
+        "avgNet": 73.7,
+        "rounds": 5,
+        "notes": "",
+        "implied": 14.9,
+        "adjustment": 2.7
+    },
+    {
+        "name": "Jared Strathe",
+        "current": -6.5,
+        "avgGross": 68.0,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": -2.3,
+        "adjustment": 4.2
+    },
+    {
+        "name": "Jeff Avery",
+        "current": 10.8,
+        "avgGross": 86.7,
+        "avgNet": 75.6,
+        "rounds": 3,
+        "notes": "",
+        "implied": 14.7,
+        "adjustment": 3.9
+    },
+    {
+        "name": "Jeff Cloepfil",
+        "current": 12.0,
+        "avgGross": 84.6,
+        "avgNet": 74.3,
+        "rounds": 9,
+        "notes": "",
+        "implied": 11.8,
         "adjustment": -0.2
     },
     {
+        "name": "Jeff De Laveaga",
+        "current": -1.7,
+        "avgGross": 70.7,
+        "avgNet": 71.9,
+        "rounds": 6,
+        "notes": "",
+        "implied": 0.2,
+        "adjustment": 1.9
+    },
+    {
+        "name": "Jim Restivo",
+        "current": 12.4,
+        "avgGross": 88.3,
+        "avgNet": 75.8,
+        "rounds": 6,
+        "notes": "",
+        "implied": 16.2,
+        "adjustment": 3.8
+    },
+    {
+        "name": "Joe Sepessy",
+        "current": 6.0,
+        "avgGross": 77.2,
+        "avgNet": 72.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 4.9,
+        "adjustment": -1.1
+    },
+    {
+        "name": "Jon Vrolyks",
+        "current": 5.3,
+        "avgGross": 81.5,
+        "avgNet": 76.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 8.5,
+        "adjustment": 3.2
+    },
+    {
+        "name": "Justin Deuker",
+        "current": 2.6,
+        "avgGross": 78.6,
+        "avgNet": 75.9,
+        "rounds": 5,
+        "notes": "",
+        "implied": 7.4,
+        "adjustment": 4.8
+    },
+    {
+        "name": "Ken Vonwald",
+        "current": 14.1,
+        "avgGross": 95.0,
+        "avgNet": 80.9,
+        "rounds": 1,
+        "notes": "",
+        "implied": 22.3,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Kevin Barber",
+        "current": 16.5,
+        "avgGross": 89.4,
+        "avgNet": 73.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 16.3,
+        "adjustment": -0.2
+    },
+    {
+        "name": "Kevin Mueller",
+        "current": 8.8,
+        "avgGross": 89.0,
+        "avgNet": 80.2,
+        "rounds": 1,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 8.1
+    },
+    {
+        "name": "Kiernan Mattson",
+        "current": 1.6,
+        "avgGross": 77.2,
+        "avgNet": 77.0,
+        "rounds": 6,
+        "notes": "",
+        "implied": 6.1,
+        "adjustment": 4.5
+    },
+    {
+        "name": "Korey Jerome",
+        "current": 8.9,
+        "avgGross": 85.5,
+        "avgNet": 77.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 9.3,
+        "adjustment": 0.4
+    },
+    {
         "name": "Larry Caplan",
-        "current": 17.5,
+        "current": 17.7,
         "avgGross": 93.9,
-        "avgNet": 76.4,
+        "avgNet": 77.8,
         "rounds": 7,
         "notes": "",
         "implied": 20.2,
-        "adjustment": 2.7
+        "adjustment": 2.5
     },
     {
         "name": "Mark Albedyll",
         "current": 15.7,
         "avgGross": 93.3,
-        "avgNet": 77.6,
+        "avgNet": 77.1,
         "rounds": 6,
         "notes": "",
         "implied": 20.8,
@@ -1593,109 +1593,109 @@
     },
     {
         "name": "Mark James",
-        "current": 12.6,
+        "current": 12.3,
         "avgGross": 90.0,
-        "avgNet": 77.4,
+        "avgNet": 78.5,
         "rounds": 3,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 5.2
+        "adjustment": 5.5
     },
     {
         "name": "Mark Lewis",
-        "current": 10.5,
+        "current": 10.0,
         "avgGross": 87.1,
         "avgNet": 76.6,
         "rounds": 7,
         "notes": "",
         "implied": 14.2,
-        "adjustment": 3.8
+        "adjustment": 4.2
     },
     {
         "name": "Matt Neimeier",
-        "current": 12.2,
+        "current": 11.9,
         "avgGross": 87.0,
-        "avgNet": 74.8,
+        "avgNet": 76.1,
         "rounds": 7,
         "notes": "",
         "implied": 13.7,
-        "adjustment": 1.5
+        "adjustment": 1.8
     },
     {
         "name": "Matt Pullen",
-        "current": -0.1,
+        "current": -1.6,
         "avgGross": 73.0,
-        "avgNet": 73.1,
+        "avgNet": 74.6,
         "rounds": 1,
         "notes": "",
         "implied": 2.3,
-        "adjustment": 2.4
+        "adjustment": 3.9
     },
     {
         "name": "Michael Falagrady",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 80.4,
-        "avgNet": 73.5,
+        "avgNet": 74.8,
         "rounds": 5,
         "notes": "",
         "implied": 9.0,
-        "adjustment": 2.1
+        "adjustment": 2.9
     },
     {
         "name": "Mike Muller",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 83.1,
-        "avgNet": 76.2,
+        "avgNet": 76.8,
         "rounds": 10,
         "notes": "",
         "implied": 9.1,
-        "adjustment": 2.2
+        "adjustment": 3.0
     },
     {
         "name": "Nate Adams",
-        "current": -5.0,
+        "current": -7.0,
         "avgGross": 66.3,
-        "avgNet": 71.3,
+        "avgNet": 74.1,
         "rounds": 3,
         "notes": "",
         "implied": -3.8,
-        "adjustment": 1.2
+        "adjustment": 3.2
     },
     {
         "name": "Neil Harris",
-        "current": -1.7,
+        "current": -3.4,
         "avgGross": 71.8,
-        "avgNet": 73.5,
+        "avgNet": 75.2,
         "rounds": 9,
         "notes": "",
         "implied": -0.6,
-        "adjustment": 1.1
+        "adjustment": 2.8
     },
     {
         "name": "Nick Rucci",
-        "current": 12.1,
+        "current": 11.8,
         "avgGross": 82.0,
-        "avgNet": 69.9,
+        "avgNet": 70.2,
         "rounds": 1,
         "notes": "",
         "implied": 10.5,
-        "adjustment": -1.6
+        "adjustment": -1.3
     },
     {
         "name": "Pat Feutz",
-        "current": 5.6,
+        "current": 4.6,
         "avgGross": 77.0,
-        "avgNet": 71.4,
+        "avgNet": 72.4,
         "rounds": 1,
         "notes": "",
         "implied": 5.9,
-        "adjustment": 0.3
+        "adjustment": 1.3
     },
     {
         "name": "Patrick Schueppert",
-        "current": 16.8,
+        "current": 16.9,
         "avgGross": 95.3,
-        "avgNet": 78.5,
+        "avgNet": 79.4,
         "rounds": 12,
         "notes": "",
         "implied": 19.4,
@@ -1703,269 +1703,269 @@
     },
     {
         "name": "Paul Benga",
-        "current": 5.3,
+        "current": 4.3,
         "avgGross": 78.3,
-        "avgNet": 73.0,
+        "avgNet": 74.7,
         "rounds": 13,
         "notes": "",
         "implied": 4.9,
-        "adjustment": -0.4
-    },
-    {
-        "name": "Rich Fagan",
-        "current": 10.4,
-        "avgGross": 89.4,
-        "avgNet": 79.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 15.9,
-        "adjustment": 5.5
-    },
-    {
-        "name": "Rich McKeon",
-        "current": 13.2,
-        "avgGross": 84.0,
-        "avgNet": 70.8,
-        "rounds": 3,
-        "notes": "",
-        "implied": 12.3,
-        "adjustment": -0.9
-    },
-    {
-        "name": "Richard Lederman",
-        "current": 13.6,
-        "avgGross": 88.2,
-        "avgNet": 74.6,
-        "rounds": 5,
-        "notes": "",
-        "implied": 16.1,
-        "adjustment": 2.5
-    },
-    {
-        "name": "Rick Deloney",
-        "current": 8.2,
-        "avgGross": 85.7,
-        "avgNet": 77.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 12.8,
-        "adjustment": 4.6
-    },
-    {
-        "name": "Rick Meewes",
-        "current": 3.8,
-        "avgGross": 78.5,
-        "avgNet": 74.7,
-        "rounds": 4,
-        "notes": "",
-        "implied": 7.3,
-        "adjustment": 3.5
-    },
-    {
-        "name": "Rob Oliver",
-        "current": 17.8,
-        "avgGross": 90.8,
-        "avgNet": 73.0,
-        "rounds": 4,
-        "notes": "",
-        "implied": 18.4,
         "adjustment": 0.6
     },
     {
+        "name": "Rich Fagan",
+        "current": 9.9,
+        "avgGross": 89.4,
+        "avgNet": 77.2,
+        "rounds": 7,
+        "notes": "",
+        "implied": 15.9,
+        "adjustment": 6.0
+    },
+    {
+        "name": "Rich McKeon",
+        "current": 11.7,
+        "avgGross": 84.0,
+        "avgNet": 73.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 12.3,
+        "adjustment": 0.6
+    },
+    {
+        "name": "Richard Lederman",
+        "current": 13.4,
+        "avgGross": 88.2,
+        "avgNet": 75.6,
+        "rounds": 5,
+        "notes": "",
+        "implied": 16.1,
+        "adjustment": 2.7
+    },
+    {
+        "name": "Rick Deloney",
+        "current": 6.7,
+        "avgGross": 85.7,
+        "avgNet": 79.6,
+        "rounds": 7,
+        "notes": "",
+        "implied": 12.8,
+        "adjustment": 6.1
+    },
+    {
+        "name": "Rick Meewes",
+        "current": 2.7,
+        "avgGross": 78.5,
+        "avgNet": 74.2,
+        "rounds": 4,
+        "notes": "",
+        "implied": 7.3,
+        "adjustment": 4.6
+    },
+    {
+        "name": "Rob Oliver",
+        "current": 18.0,
+        "avgGross": 90.8,
+        "avgNet": 73.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 18.4,
+        "adjustment": 0.4
+    },
+    {
         "name": "Robert Hill",
-        "current": 19.6,
+        "current": 20.0,
         "avgGross": 99.1,
-        "avgNet": 79.5,
+        "avgNet": 80.2,
         "rounds": 7,
         "notes": "",
         "implied": 25.2,
-        "adjustment": 5.6
+        "adjustment": 5.2
     },
     {
         "name": "Ron Amstutz",
-        "current": 12.4,
+        "current": 12.1,
         "avgGross": 85.9,
-        "avgNet": 73.5,
+        "avgNet": 75.0,
         "rounds": 7,
         "notes": "",
         "implied": 13.2,
-        "adjustment": 0.8
-    },
-    {
-        "name": "Ron Marino",
-        "current": 7.2,
-        "avgGross": 81.8,
-        "avgNet": 74.5,
-        "rounds": 4,
-        "notes": "",
-        "implied": 10.2,
-        "adjustment": 3.0
-    },
-    {
-        "name": "Scott Benton",
-        "current": 14.7,
-        "avgGross": 89.4,
-        "avgNet": 74.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 15.8,
         "adjustment": 1.1
     },
     {
-        "name": "Scott Bracken",
-        "current": 10.3,
-        "avgGross": 83.0,
-        "avgNet": 72.7,
-        "rounds": 9,
-        "notes": "",
-        "implied": 9.9,
-        "adjustment": -0.4
-    },
-    {
-        "name": "Scott Lucas",
-        "current": 11.8,
-        "avgGross": 83.8,
-        "avgNet": 72.0,
+        "name": "Ron Marino",
+        "current": 6.4,
+        "avgGross": 81.8,
+        "avgNet": 75.1,
         "rounds": 4,
         "notes": "",
-        "implied": 12.1,
-        "adjustment": 0.3
+        "implied": 10.2,
+        "adjustment": 3.8
     },
     {
-        "name": "Shane Bolosan",
-        "current": 9.5,
-        "avgGross": 84.2,
-        "avgNet": 74.8,
-        "rounds": 12,
+        "name": "Scott Benton",
+        "current": 13.2,
+        "avgGross": 89.4,
+        "avgNet": 77.8,
+        "rounds": 8,
         "notes": "",
-        "implied": 8.5,
-        "adjustment": -1.0
-    },
-    {
-        "name": "Shawn Warner",
-        "current": 12.6,
-        "avgGross": 86.5,
-        "avgNet": 73.9,
-        "rounds": 2,
-        "notes": "",
-        "implied": 14.6,
-        "adjustment": 2.0
-    },
-    {
-        "name": "Shawn Wojtcuk",
-        "current": 0.0,
-        "avgGross": 72.0,
-        "avgNet": 72.0,
-        "rounds": 1,
-        "notes": "",
-        "implied": 1.4,
-        "adjustment": 1.4
-    },
-    {
-        "name": "Stephen Cherepy",
-        "current": 11.0,
-        "avgGross": 87.0,
-        "avgNet": 76.0,
-        "rounds": 1,
-        "notes": "",
-        "implied": 15.0,
-        "adjustment": 4.0
-    },
-    {
-        "name": "Steve McCormick",
-        "current": 10.4,
-        "avgGross": 85.7,
-        "avgNet": 75.3,
-        "rounds": 10,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 1.0
-    },
-    {
-        "name": "Steve Rosenbluth",
-        "current": 9.4,
-        "avgGross": 84.8,
-        "avgNet": 75.4,
-        "rounds": 5,
-        "notes": "",
-        "implied": 13.0,
-        "adjustment": 3.6
-    },
-    {
-        "name": "Stewart Polakov",
-        "current": 4.9,
-        "avgGross": 74.0,
-        "avgNet": 69.1,
-        "rounds": 1,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": -1.7
-    },
-    {
-        "name": "Thomas Earl",
-        "current": 4.3,
-        "avgGross": 83.0,
-        "avgNet": 78.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 7.1
-    },
-    {
-        "name": "Timothy Wigder",
-        "current": 8.2,
-        "avgGross": 80.0,
-        "avgNet": 71.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 8.7,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Todd Densley",
-        "current": -0.2,
-        "avgGross": 73.4,
-        "avgNet": 73.6,
-        "rounds": 9,
-        "notes": "",
-        "implied": 1.4,
-        "adjustment": 1.6
-    },
-    {
-        "name": "Tracy Copenhaver",
-        "current": 14.8,
-        "avgGross": 89.5,
-        "avgNet": 74.7,
-        "rounds": 2,
-        "notes": "",
-        "implied": 17.4,
+        "implied": 15.8,
         "adjustment": 2.6
     },
     {
+        "name": "Scott Bracken",
+        "current": 9.8,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 9.9,
+        "adjustment": 0.1
+    },
+    {
+        "name": "Scott Lucas",
+        "current": 11.4,
+        "avgGross": 83.8,
+        "avgNet": 72.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 12.1,
+        "adjustment": 0.7
+    },
+    {
+        "name": "Shane Bolosan",
+        "current": 8.9,
+        "avgGross": 84.2,
+        "avgNet": 75.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 8.5,
+        "adjustment": -0.4
+    },
+    {
+        "name": "Shawn Warner",
+        "current": 12.3,
+        "avgGross": 86.5,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": 14.6,
+        "adjustment": 2.2
+    },
+    {
+        "name": "Shawn Wojtcuk",
+        "current": -1.5,
+        "avgGross": 72.0,
+        "avgNet": 73.5,
+        "rounds": 1,
+        "notes": "",
+        "implied": 1.4,
+        "adjustment": 2.9
+    },
+    {
+        "name": "Stephen Cherepy",
+        "current": 10.6,
+        "avgGross": 87.0,
+        "avgNet": 76.4,
+        "rounds": 1,
+        "notes": "",
+        "implied": 15.0,
+        "adjustment": 4.4
+    },
+    {
+        "name": "Steve McCormick",
+        "current": 8.9,
+        "avgGross": 85.7,
+        "avgNet": 76.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 2.5
+    },
+    {
+        "name": "Steve Rosenbluth",
+        "current": 8.8,
+        "avgGross": 84.8,
+        "avgNet": 77.0,
+        "rounds": 5,
+        "notes": "",
+        "implied": 13.0,
+        "adjustment": 4.2
+    },
+    {
+        "name": "Stewart Polakov",
+        "current": 3.9,
+        "avgGross": 74.0,
+        "avgNet": 70.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": -0.7
+    },
+    {
+        "name": "Thomas Earl",
+        "current": 3.2,
+        "avgGross": 83.0,
+        "avgNet": 79.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Timothy Wigder",
+        "current": 6.7,
+        "avgGross": 80.0,
+        "avgNet": 73.3,
+        "rounds": 1,
+        "notes": "",
+        "implied": 8.7,
+        "adjustment": 2.0
+    },
+    {
+        "name": "Todd Densley",
+        "current": -1.7,
+        "avgGross": 73.4,
+        "avgNet": 75.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 1.4,
+        "adjustment": 3.1
+    },
+    {
+        "name": "Tracy Copenhaver",
+        "current": 14.7,
+        "avgGross": 89.5,
+        "avgNet": 75.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": 17.4,
+        "adjustment": 2.7
+    },
+    {
         "name": "Travis Ingram",
-        "current": 6.8,
+        "current": 6.0,
         "avgGross": 81.3,
-        "avgNet": 74.5,
+        "avgNet": 75.2,
         "rounds": 11,
         "notes": "",
         "implied": 8.5,
-        "adjustment": 1.7
+        "adjustment": 2.5
     },
     {
         "name": "Travis Jorgensen",
-        "current": 8.7,
+        "current": 8.0,
         "avgGross": 84.0,
-        "avgNet": 75.3,
+        "avgNet": 76.0,
         "rounds": 1,
         "notes": "",
         "implied": 12.3,
-        "adjustment": 3.6
+        "adjustment": 4.3
     },
     {
         "name": "Trent Dana",
         "current": 15.6,
         "avgGross": 93.0,
-        "avgNet": 77.4,
+        "avgNet": 77.6,
         "rounds": 5,
         "notes": "",
         "implied": 20.5,
@@ -1973,53 +1973,53 @@
     },
     {
         "name": "Win Doolittle",
-        "current": 8.0,
+        "current": 7.3,
         "avgGross": 90.0,
-        "avgNet": 82.0,
+        "avgNet": 82.7,
         "rounds": 1,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 9.8
+        "adjustment": 10.5
     },
     {
         "name": "Zach Coe",
-        "current": 1.5,
+        "current": 0.1,
         "avgGross": 75.5,
-        "avgNet": 74.0,
+        "avgNet": 75.4,
         "rounds": 2,
         "notes": "",
         "implied": 4.5,
-        "adjustment": 3.0
+        "adjustment": 4.5
     },
     {
         "name": "Zach Fleishman",
-        "current": 11.7,
+        "current": 11.3,
         "avgGross": 86.3,
-        "avgNet": 74.6,
+        "avgNet": 73.8,
         "rounds": 3,
         "notes": "",
         "implied": 14.4,
-        "adjustment": 2.7
+        "adjustment": 3.1
     },
     {
         "name": "Zach Mattson",
-        "current": 6.1,
+        "current": 5.2,
         "avgGross": 79.0,
-        "avgNet": 72.9,
+        "avgNet": 73.8,
         "rounds": 1,
         "notes": "",
         "implied": 7.7,
-        "adjustment": 1.6
+        "adjustment": 2.5
     },
     {
         "name": "Zane Eisenbarth",
-        "current": 4.4,
+        "current": 3.3,
         "avgGross": 83.0,
-        "avgNet": 78.6,
+        "avgNet": 78.5,
         "rounds": 5,
         "notes": "",
         "implied": 11.4,
-        "adjustment": 7.0
+        "adjustment": 8.1
     }
 ];
 
@@ -2027,449 +2027,449 @@
 const dataLast2 = [
     {
         "name": "Andrew Burnheimer",
-        "current": 0.0,
+        "current": -1.5,
         "avgGross": 83.0,
-        "avgNet": 83.0,
+        "avgNet": 84.5,
         "rounds": 1,
         "notes": "",
         "implied": 11.4,
-        "adjustment": 11.4
+        "adjustment": 12.9
     },
     {
         "name": "Andy Meach",
-        "current": 7.5,
+        "current": 6.7,
         "avgGross": 83.3,
-        "avgNet": 75.8,
+        "avgNet": 77.5,
         "rounds": 6,
         "notes": "",
         "implied": 12.8,
-        "adjustment": 5.2
+        "adjustment": 6.0
     },
     {
         "name": "Ben Magnone",
-        "current": 10.4,
+        "current": 9.9,
         "avgGross": 83.7,
-        "avgNet": 73.3,
+        "avgNet": 72.7,
         "rounds": 9,
         "notes": "",
         "implied": 7.2,
-        "adjustment": -3.2
+        "adjustment": -2.7
     },
     {
         "name": "Brad Ackley",
-        "current": 13.9,
+        "current": 13.8,
         "avgGross": 92.0,
-        "avgNet": 78.1,
+        "avgNet": 78.2,
         "rounds": 1,
         "notes": "",
         "implied": 19.6,
-        "adjustment": 5.7
+        "adjustment": 5.8
     },
     {
         "name": "Brian Howell",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 81.5,
-        "avgNet": 74.6,
+        "avgNet": 75.7,
         "rounds": 2,
         "notes": "",
         "implied": 10.1,
-        "adjustment": 3.2
+        "adjustment": 4.0
     },
     {
         "name": "Bud Scott",
-        "current": 9.4,
+        "current": 8.8,
         "avgGross": 87.5,
-        "avgNet": 78.1,
+        "avgNet": 78.2,
         "rounds": 2,
         "notes": "",
         "implied": 15.5,
-        "adjustment": 6.1
+        "adjustment": 6.7
     },
     {
         "name": "Buddy Goldstone",
-        "current": 13.3,
+        "current": 11.8,
         "avgGross": 90.2,
-        "avgNet": 77.0,
+        "avgNet": 77.6,
         "rounds": 4,
         "notes": "",
         "implied": 19.1,
-        "adjustment": 5.8
+        "adjustment": 7.3
     },
     {
         "name": "Chris Beck",
-        "current": 14.5,
+        "current": 13.0,
         "avgGross": 90.2,
-        "avgNet": 75.7,
+        "avgNet": 76.5,
         "rounds": 9,
         "notes": "",
         "implied": 22.8,
-        "adjustment": 8.3
+        "adjustment": 9.8
     },
     {
         "name": "Chris Husong",
-        "current": 8.1,
+        "current": 7.4,
         "avgGross": 85.2,
-        "avgNet": 77.2,
+        "avgNet": 76.3,
         "rounds": 4,
         "notes": "",
         "implied": 11.8,
-        "adjustment": 3.8
+        "adjustment": 4.4
     },
     {
         "name": "Chris Ryan",
-        "current": 16.4,
+        "current": 14.9,
         "avgGross": 91.0,
-        "avgNet": 74.6,
+        "avgNet": 76.5,
         "rounds": 7,
         "notes": "",
         "implied": 16.9,
-        "adjustment": 0.5
+        "adjustment": 2.0
     },
     {
         "name": "Christopher Royce",
-        "current": 15.6,
+        "current": 14.1,
         "avgGross": 90.8,
-        "avgNet": 75.2,
+        "avgNet": 77.1,
         "rounds": 11,
         "notes": "",
         "implied": 17.3,
-        "adjustment": 1.7
+        "adjustment": 3.2
     },
     {
         "name": "Clark Koch",
-        "current": 8.8,
+        "current": 8.2,
         "avgGross": 81.6,
-        "avgNet": 72.8,
+        "avgNet": 74.8,
         "rounds": 8,
         "notes": "",
         "implied": 9.6,
-        "adjustment": 0.8
-    },
-    {
-        "name": "Conrad Copeland",
-        "current": 11.8,
-        "avgGross": 91.0,
-        "avgNet": 79.2,
-        "rounds": 1,
-        "notes": "",
-        "implied": 18.7,
-        "adjustment": 6.9
-    },
-    {
-        "name": "Dan Denham",
-        "current": 6.5,
-        "avgGross": 79.7,
-        "avgNet": 73.2,
-        "rounds": 3,
-        "notes": "",
-        "implied": 10.1,
-        "adjustment": 3.6
-    },
-    {
-        "name": "Dana Beckley",
-        "current": 6.9,
-        "avgGross": 90.0,
-        "avgNet": 83.1,
-        "rounds": 2,
-        "notes": "",
-        "implied": 17.8,
-        "adjustment": 10.8
-    },
-    {
-        "name": "David Adams",
-        "current": 6.1,
-        "avgGross": 83.5,
-        "avgNet": 77.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": 11.9,
-        "adjustment": 5.8
-    },
-    {
-        "name": "David Edwards",
-        "current": 8.6,
-        "avgGross": 81.0,
-        "avgNet": 72.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 9.6,
-        "adjustment": 1.0
-    },
-    {
-        "name": "David Pearson",
-        "current": 9.6,
-        "avgGross": 83.0,
-        "avgNet": 73.4,
-        "rounds": 1,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 1.8
-    },
-    {
-        "name": "Dean Fisk",
-        "current": 8.0,
-        "avgGross": 85.7,
-        "avgNet": 77.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 15.0,
-        "adjustment": 7.0
-    },
-    {
-        "name": "Derek Becko",
-        "current": 3.5,
-        "avgGross": 78.6,
-        "avgNet": 75.1,
-        "rounds": 7,
-        "notes": "",
-        "implied": 7.2,
-        "adjustment": 3.8
-    },
-    {
-        "name": "Dusty Wasmund",
-        "current": 9.7,
-        "avgGross": 80.7,
-        "avgNet": 71.0,
-        "rounds": 6,
-        "notes": "",
-        "implied": 9.1,
-        "adjustment": -0.6
-    },
-    {
-        "name": "Eric Hamilton",
-        "current": 19.5,
-        "avgGross": 105.0,
-        "avgNet": 85.5,
-        "rounds": 1,
-        "notes": "",
-        "implied": 31.4,
-        "adjustment": 11.9
-    },
-    {
-        "name": "Eric Lamb",
-        "current": 23.9,
-        "avgGross": 98.5,
-        "avgNet": 74.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 25.5,
-        "adjustment": 1.6
-    },
-    {
-        "name": "Eric Weiss",
-        "current": 1.3,
-        "avgGross": 73.4,
-        "avgNet": 72.1,
-        "rounds": 10,
-        "notes": "",
-        "implied": 4.5,
-        "adjustment": 3.2
-    },
-    {
-        "name": "Frank Angeloro",
-        "current": 8.6,
-        "avgGross": 81.2,
-        "avgNet": 72.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 10.1,
-        "adjustment": 1.5
-    },
-    {
-        "name": "Glenn Brand",
-        "current": 10.9,
-        "avgGross": 91.5,
-        "avgNet": 80.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": 19.1,
-        "adjustment": 8.2
-    },
-    {
-        "name": "Greg Funk",
-        "current": 4.9,
-        "avgGross": 78.3,
-        "avgNet": 73.4,
-        "rounds": 12,
-        "notes": "",
-        "implied": 8.2,
-        "adjustment": 3.3
-    },
-    {
-        "name": "Hans Anderson",
-        "current": 0.0,
-        "avgGross": 74.0,
-        "avgNet": 74.0,
-        "rounds": 5,
-        "notes": "",
-        "implied": 3.6,
-        "adjustment": 3.6
-    },
-    {
-        "name": "James Feutz",
-        "current": -0.9,
-        "avgGross": 69.5,
-        "avgNet": 70.4,
-        "rounds": 2,
-        "notes": "",
-        "implied": -0.9,
-        "adjustment": -0.0
-    },
-    {
-        "name": "Jamey Davis",
-        "current": 13.7,
-        "avgGross": 86.8,
-        "avgNet": 73.1,
-        "rounds": 5,
-        "notes": "",
-        "implied": 16.9,
-        "adjustment": 3.2
-    },
-    {
-        "name": "Jared Strathe",
-        "current": -4.6,
-        "avgGross": 68.0,
-        "avgNet": 72.6,
-        "rounds": 2,
-        "notes": "",
-        "implied": -2.3,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Jeff Avery",
-        "current": 11.2,
-        "avgGross": 86.7,
-        "avgNet": 75.5,
-        "rounds": 3,
-        "notes": "",
-        "implied": 12.3,
-        "adjustment": 1.1
-    },
-    {
-        "name": "Jeff Cloepfil",
-        "current": 12.3,
-        "avgGross": 84.6,
-        "avgNet": 72.3,
-        "rounds": 9,
-        "notes": "",
-        "implied": 13.2,
-        "adjustment": 0.9
-    },
-    {
-        "name": "Jeff De Laveaga",
-        "current": -0.2,
-        "avgGross": 70.7,
-        "avgNet": 70.9,
-        "rounds": 6,
-        "notes": "",
-        "implied": 0.5,
-        "adjustment": 0.7
-    },
-    {
-        "name": "Jim Restivo",
-        "current": 12.7,
-        "avgGross": 88.3,
-        "avgNet": 75.6,
-        "rounds": 6,
-        "notes": "",
-        "implied": 16.4,
-        "adjustment": 3.7
-    },
-    {
-        "name": "Joe Sepessy",
-        "current": 6.8,
-        "avgGross": 77.2,
-        "avgNet": 70.5,
-        "rounds": 8,
-        "notes": "",
-        "implied": 5.0,
-        "adjustment": -1.8
-    },
-    {
-        "name": "Jon Vrolyks",
-        "current": 6.2,
-        "avgGross": 81.5,
-        "avgNet": 75.3,
-        "rounds": 8,
-        "notes": "",
-        "implied": 7.3,
-        "adjustment": 1.1
-    },
-    {
-        "name": "Justin Deuker",
-        "current": 3.7,
-        "avgGross": 78.6,
-        "avgNet": 74.9,
-        "rounds": 5,
-        "notes": "",
-        "implied": 8.2,
-        "adjustment": 4.5
-    },
-    {
-        "name": "Ken Vonwald",
-        "current": 14.2,
-        "avgGross": 95.0,
-        "avgNet": 80.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 22.3,
-        "adjustment": 8.1
-    },
-    {
-        "name": "Kevin Barber",
-        "current": 16.4,
-        "avgGross": 89.4,
-        "avgNet": 73.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 17.8,
         "adjustment": 1.4
     },
     {
-        "name": "Kevin Mueller",
-        "current": 9.4,
-        "avgGross": 89.0,
+        "name": "Conrad Copeland",
+        "current": 11.4,
+        "avgGross": 91.0,
         "avgNet": 79.6,
         "rounds": 1,
         "notes": "",
-        "implied": 16.9,
-        "adjustment": 7.5
+        "implied": 18.7,
+        "adjustment": 7.3
     },
     {
-        "name": "Kiernan Mattson",
-        "current": 2.8,
-        "avgGross": 77.2,
-        "avgNet": 74.4,
+        "name": "Dan Denham",
+        "current": 5.6,
+        "avgGross": 79.7,
+        "avgNet": 75.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 10.1,
+        "adjustment": 4.5
+    },
+    {
+        "name": "Dana Beckley",
+        "current": 6.1,
+        "avgGross": 90.0,
+        "avgNet": 84.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 17.8,
+        "adjustment": 11.7
+    },
+    {
+        "name": "David Adams",
+        "current": 5.2,
+        "avgGross": 83.5,
+        "avgNet": 77.0,
+        "rounds": 2,
+        "notes": "",
+        "implied": 11.9,
+        "adjustment": 6.7
+    },
+    {
+        "name": "David Edwards",
+        "current": 7.9,
+        "avgGross": 81.0,
+        "avgNet": 73.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 9.6,
+        "adjustment": 1.7
+    },
+    {
+        "name": "David Pearson",
+        "current": 9.0,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 1,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 2.4
+    },
+    {
+        "name": "Dean Fisk",
+        "current": 7.3,
+        "avgGross": 85.7,
+        "avgNet": 77.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 15.0,
+        "adjustment": 7.7
+    },
+    {
+        "name": "Derek Becko",
+        "current": 2.3,
+        "avgGross": 78.6,
+        "avgNet": 75.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 7.2,
+        "adjustment": 5.0
+    },
+    {
+        "name": "Dusty Wasmund",
+        "current": 8.2,
+        "avgGross": 80.7,
+        "avgNet": 73.3,
         "rounds": 6,
         "notes": "",
-        "implied": 5.5,
-        "adjustment": 2.7
+        "implied": 9.1,
+        "adjustment": 0.9
     },
     {
-        "name": "Korey Jerome",
-        "current": 9.5,
-        "avgGross": 85.5,
-        "avgNet": 76.0,
-        "rounds": 12,
+        "name": "Eric Hamilton",
+        "current": 18.0,
+        "avgGross": 105.0,
+        "avgNet": 87.0,
+        "rounds": 1,
         "notes": "",
-        "implied": 14.1,
+        "implied": 31.4,
+        "adjustment": 13.4
+    },
+    {
+        "name": "Eric Lamb",
+        "current": 24.7,
+        "avgGross": 98.5,
+        "avgNet": 73.8,
+        "rounds": 2,
+        "notes": "",
+        "implied": 25.5,
+        "adjustment": 0.8
+    },
+    {
+        "name": "Eric Weiss",
+        "current": -0.1,
+        "avgGross": 73.4,
+        "avgNet": 74.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": 4.5,
         "adjustment": 4.6
     },
     {
+        "name": "Frank Angeloro",
+        "current": 7.9,
+        "avgGross": 81.2,
+        "avgNet": 73.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 10.1,
+        "adjustment": 2.2
+    },
+    {
+        "name": "Glenn Brand",
+        "current": 10.5,
+        "avgGross": 91.5,
+        "avgNet": 80.9,
+        "rounds": 2,
+        "notes": "",
+        "implied": 19.1,
+        "adjustment": 8.6
+    },
+    {
+        "name": "Greg Funk",
+        "current": 3.9,
+        "avgGross": 78.3,
+        "avgNet": 75.0,
+        "rounds": 12,
+        "notes": "",
+        "implied": 8.2,
+        "adjustment": 4.3
+    },
+    {
+        "name": "Hans Anderson",
+        "current": -1.5,
+        "avgGross": 74.0,
+        "avgNet": 75.2,
+        "rounds": 5,
+        "notes": "",
+        "implied": 3.6,
+        "adjustment": 5.2
+    },
+    {
+        "name": "James Feutz",
+        "current": -2.5,
+        "avgGross": 69.5,
+        "avgNet": 72.4,
+        "rounds": 2,
+        "notes": "",
+        "implied": -0.9,
+        "adjustment": 1.6
+    },
+    {
+        "name": "Jamey Davis",
+        "current": 12.2,
+        "avgGross": 86.8,
+        "avgNet": 73.7,
+        "rounds": 5,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 4.7
+    },
+    {
+        "name": "Jared Strathe",
+        "current": -6.5,
+        "avgGross": 68.0,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": -2.3,
+        "adjustment": 4.2
+    },
+    {
+        "name": "Jeff Avery",
+        "current": 10.8,
+        "avgGross": 86.7,
+        "avgNet": 75.6,
+        "rounds": 3,
+        "notes": "",
+        "implied": 12.3,
+        "adjustment": 1.5
+    },
+    {
+        "name": "Jeff Cloepfil",
+        "current": 12.0,
+        "avgGross": 84.6,
+        "avgNet": 74.3,
+        "rounds": 9,
+        "notes": "",
+        "implied": 13.2,
+        "adjustment": 1.2
+    },
+    {
+        "name": "Jeff De Laveaga",
+        "current": -1.7,
+        "avgGross": 70.7,
+        "avgNet": 71.9,
+        "rounds": 6,
+        "notes": "",
+        "implied": 0.5,
+        "adjustment": 2.2
+    },
+    {
+        "name": "Jim Restivo",
+        "current": 12.4,
+        "avgGross": 88.3,
+        "avgNet": 75.8,
+        "rounds": 6,
+        "notes": "",
+        "implied": 16.4,
+        "adjustment": 4.0
+    },
+    {
+        "name": "Joe Sepessy",
+        "current": 6.0,
+        "avgGross": 77.2,
+        "avgNet": 72.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 5.0,
+        "adjustment": -1.0
+    },
+    {
+        "name": "Jon Vrolyks",
+        "current": 5.3,
+        "avgGross": 81.5,
+        "avgNet": 76.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 7.3,
+        "adjustment": 2.0
+    },
+    {
+        "name": "Justin Deuker",
+        "current": 2.6,
+        "avgGross": 78.6,
+        "avgNet": 75.9,
+        "rounds": 5,
+        "notes": "",
+        "implied": 8.2,
+        "adjustment": 5.6
+    },
+    {
+        "name": "Ken Vonwald",
+        "current": 14.1,
+        "avgGross": 95.0,
+        "avgNet": 80.9,
+        "rounds": 1,
+        "notes": "",
+        "implied": 22.3,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Kevin Barber",
+        "current": 16.5,
+        "avgGross": 89.4,
+        "avgNet": 73.3,
+        "rounds": 7,
+        "notes": "",
+        "implied": 17.8,
+        "adjustment": 1.2
+    },
+    {
+        "name": "Kevin Mueller",
+        "current": 8.8,
+        "avgGross": 89.0,
+        "avgNet": 80.2,
+        "rounds": 1,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 8.1
+    },
+    {
+        "name": "Kiernan Mattson",
+        "current": 1.6,
+        "avgGross": 77.2,
+        "avgNet": 77.0,
+        "rounds": 6,
+        "notes": "",
+        "implied": 5.5,
+        "adjustment": 3.9
+    },
+    {
+        "name": "Korey Jerome",
+        "current": 8.9,
+        "avgGross": 85.5,
+        "avgNet": 77.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 14.1,
+        "adjustment": 5.2
+    },
+    {
         "name": "Larry Caplan",
-        "current": 17.5,
+        "current": 17.7,
         "avgGross": 93.9,
-        "avgNet": 76.4,
+        "avgNet": 77.8,
         "rounds": 7,
         "notes": "",
         "implied": 21.4,
-        "adjustment": 3.9
+        "adjustment": 3.7
     },
     {
         "name": "Mark Albedyll",
         "current": 15.7,
         "avgGross": 93.3,
-        "avgNet": 77.6,
+        "avgNet": 77.1,
         "rounds": 6,
         "notes": "",
         "implied": 25.0,
@@ -2477,379 +2477,379 @@ const dataLast2 = [
     },
     {
         "name": "Mark James",
-        "current": 12.6,
+        "current": 12.3,
         "avgGross": 90.0,
-        "avgNet": 77.4,
+        "avgNet": 78.5,
         "rounds": 3,
         "notes": "",
         "implied": 18.7,
-        "adjustment": 6.1
+        "adjustment": 6.4
     },
     {
         "name": "Mark Lewis",
-        "current": 10.5,
+        "current": 10.0,
         "avgGross": 87.1,
         "avgNet": 76.6,
         "rounds": 7,
         "notes": "",
         "implied": 15.9,
-        "adjustment": 5.4
+        "adjustment": 5.9
     },
     {
         "name": "Matt Neimeier",
-        "current": 12.2,
+        "current": 11.9,
         "avgGross": 87.0,
-        "avgNet": 74.8,
+        "avgNet": 76.1,
         "rounds": 7,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 5.6
+        "adjustment": 5.8
     },
     {
         "name": "Matt Pullen",
-        "current": -0.1,
+        "current": -1.6,
         "avgGross": 73.0,
-        "avgNet": 73.1,
+        "avgNet": 74.6,
         "rounds": 1,
         "notes": "",
         "implied": 2.3,
-        "adjustment": 2.4
+        "adjustment": 3.9
     },
     {
         "name": "Michael Falagrady",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 80.4,
-        "avgNet": 73.5,
+        "avgNet": 74.8,
         "rounds": 5,
         "notes": "",
         "implied": 7.8,
-        "adjustment": 0.8
+        "adjustment": 1.7
     },
     {
         "name": "Mike Muller",
-        "current": 6.9,
+        "current": 6.1,
         "avgGross": 83.1,
-        "avgNet": 76.2,
+        "avgNet": 76.8,
         "rounds": 10,
         "notes": "",
         "implied": 10.0,
-        "adjustment": 3.1
+        "adjustment": 3.9
     },
     {
         "name": "Nate Adams",
-        "current": -5.0,
+        "current": -7.0,
         "avgGross": 66.3,
-        "avgNet": 71.3,
+        "avgNet": 74.1,
         "rounds": 3,
         "notes": "",
         "implied": -3.2,
-        "adjustment": 1.8
+        "adjustment": 3.8
     },
     {
         "name": "Neil Harris",
-        "current": -1.7,
+        "current": -3.4,
         "avgGross": 71.8,
-        "avgNet": 73.5,
+        "avgNet": 75.2,
         "rounds": 9,
         "notes": "",
         "implied": 0.4,
-        "adjustment": 2.1
+        "adjustment": 3.8
     },
     {
         "name": "Nick Rucci",
-        "current": 12.1,
+        "current": 11.8,
         "avgGross": 82.0,
-        "avgNet": 69.9,
+        "avgNet": 70.2,
         "rounds": 1,
         "notes": "",
         "implied": 10.5,
-        "adjustment": -1.6
+        "adjustment": -1.3
     },
     {
         "name": "Pat Feutz",
-        "current": 5.6,
+        "current": 4.6,
         "avgGross": 77.0,
-        "avgNet": 71.4,
+        "avgNet": 72.4,
         "rounds": 1,
         "notes": "",
         "implied": 5.9,
-        "adjustment": 0.3
+        "adjustment": 1.3
     },
     {
         "name": "Patrick Schueppert",
-        "current": 16.8,
+        "current": 16.9,
         "avgGross": 95.3,
-        "avgNet": 78.5,
+        "avgNet": 79.4,
         "rounds": 12,
         "notes": "",
         "implied": 25.0,
-        "adjustment": 8.2
+        "adjustment": 8.1
     },
     {
         "name": "Paul Benga",
-        "current": 5.3,
+        "current": 4.3,
         "avgGross": 78.3,
-        "avgNet": 73.0,
+        "avgNet": 74.7,
         "rounds": 13,
         "notes": "",
         "implied": 7.2,
-        "adjustment": 2.0
-    },
-    {
-        "name": "Rich Fagan",
-        "current": 10.4,
-        "avgGross": 89.4,
-        "avgNet": 79.0,
-        "rounds": 7,
-        "notes": "",
-        "implied": 16.9,
-        "adjustment": 6.5
-    },
-    {
-        "name": "Rich McKeon",
-        "current": 13.2,
-        "avgGross": 84.0,
-        "avgNet": 70.8,
-        "rounds": 3,
-        "notes": "",
-        "implied": 13.6,
-        "adjustment": 0.4
-    },
-    {
-        "name": "Richard Lederman",
-        "current": 13.6,
-        "avgGross": 88.2,
-        "avgNet": 74.6,
-        "rounds": 5,
-        "notes": "",
-        "implied": 14.1,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Rick Deloney",
-        "current": 8.2,
-        "avgGross": 85.7,
-        "avgNet": 77.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 18.2,
-        "adjustment": 10.0
-    },
-    {
-        "name": "Rick Meewes",
-        "current": 3.8,
-        "avgGross": 78.5,
-        "avgNet": 74.7,
-        "rounds": 4,
-        "notes": "",
-        "implied": 4.6,
-        "adjustment": 0.8
-    },
-    {
-        "name": "Rob Oliver",
-        "current": 17.8,
-        "avgGross": 90.8,
-        "avgNet": 73.0,
-        "rounds": 4,
-        "notes": "",
-        "implied": 19.6,
-        "adjustment": 1.8
-    },
-    {
-        "name": "Robert Hill",
-        "current": 19.6,
-        "avgGross": 99.1,
-        "avgNet": 79.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 26.4,
-        "adjustment": 6.8
-    },
-    {
-        "name": "Ron Amstutz",
-        "current": 12.4,
-        "avgGross": 85.9,
-        "avgNet": 73.5,
-        "rounds": 7,
-        "notes": "",
-        "implied": 16.9,
-        "adjustment": 4.5
-    },
-    {
-        "name": "Ron Marino",
-        "current": 7.2,
-        "avgGross": 81.8,
-        "avgNet": 74.5,
-        "rounds": 4,
-        "notes": "",
-        "implied": 8.2,
-        "adjustment": 1.0
-    },
-    {
-        "name": "Scott Benton",
-        "current": 14.7,
-        "avgGross": 89.4,
-        "avgNet": 74.7,
-        "rounds": 8,
-        "notes": "",
-        "implied": 19.1,
-        "adjustment": 4.4
-    },
-    {
-        "name": "Scott Bracken",
-        "current": 10.3,
-        "avgGross": 83.0,
-        "avgNet": 72.7,
-        "rounds": 9,
-        "notes": "",
-        "implied": 10.0,
-        "adjustment": -0.3
-    },
-    {
-        "name": "Scott Lucas",
-        "current": 11.8,
-        "avgGross": 83.8,
-        "avgNet": 72.0,
-        "rounds": 4,
-        "notes": "",
-        "implied": 7.8,
-        "adjustment": -4.1
-    },
-    {
-        "name": "Shane Bolosan",
-        "current": 9.5,
-        "avgGross": 84.2,
-        "avgNet": 74.8,
-        "rounds": 12,
-        "notes": "",
-        "implied": 11.8,
-        "adjustment": 2.3
-    },
-    {
-        "name": "Shawn Warner",
-        "current": 12.6,
-        "avgGross": 86.5,
-        "avgNet": 73.9,
-        "rounds": 2,
-        "notes": "",
-        "implied": 14.6,
-        "adjustment": 2.0
-    },
-    {
-        "name": "Shawn Wojtcuk",
-        "current": 0.0,
-        "avgGross": 72.0,
-        "avgNet": 72.0,
-        "rounds": 1,
-        "notes": "",
-        "implied": 1.4,
-        "adjustment": 1.4
-    },
-    {
-        "name": "Stephen Cherepy",
-        "current": 11.0,
-        "avgGross": 87.0,
-        "avgNet": 76.0,
-        "rounds": 1,
-        "notes": "",
-        "implied": 15.0,
-        "adjustment": 4.0
-    },
-    {
-        "name": "Steve McCormick",
-        "current": 10.4,
-        "avgGross": 85.7,
-        "avgNet": 75.3,
-        "rounds": 10,
-        "notes": "",
-        "implied": 10.0,
-        "adjustment": -0.4
-    },
-    {
-        "name": "Steve Rosenbluth",
-        "current": 9.4,
-        "avgGross": 84.8,
-        "avgNet": 75.4,
-        "rounds": 5,
-        "notes": "",
-        "implied": 11.9,
-        "adjustment": 2.5
-    },
-    {
-        "name": "Stewart Polakov",
-        "current": 4.9,
-        "avgGross": 74.0,
-        "avgNet": 69.1,
-        "rounds": 1,
-        "notes": "",
-        "implied": 3.2,
-        "adjustment": -1.7
-    },
-    {
-        "name": "Thomas Earl",
-        "current": 4.3,
-        "avgGross": 83.0,
-        "avgNet": 78.7,
-        "rounds": 3,
-        "notes": "",
-        "implied": 11.4,
-        "adjustment": 7.1
-    },
-    {
-        "name": "Timothy Wigder",
-        "current": 8.2,
-        "avgGross": 80.0,
-        "avgNet": 71.8,
-        "rounds": 1,
-        "notes": "",
-        "implied": 8.7,
-        "adjustment": 0.5
-    },
-    {
-        "name": "Todd Densley",
-        "current": -0.2,
-        "avgGross": 73.4,
-        "avgNet": 73.6,
-        "rounds": 9,
-        "notes": "",
-        "implied": 2.8,
         "adjustment": 3.0
     },
     {
+        "name": "Rich Fagan",
+        "current": 9.9,
+        "avgGross": 89.4,
+        "avgNet": 77.2,
+        "rounds": 7,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 7.0
+    },
+    {
+        "name": "Rich McKeon",
+        "current": 11.7,
+        "avgGross": 84.0,
+        "avgNet": 73.4,
+        "rounds": 3,
+        "notes": "",
+        "implied": 13.6,
+        "adjustment": 1.9
+    },
+    {
+        "name": "Richard Lederman",
+        "current": 13.4,
+        "avgGross": 88.2,
+        "avgNet": 75.6,
+        "rounds": 5,
+        "notes": "",
+        "implied": 14.1,
+        "adjustment": 0.7
+    },
+    {
+        "name": "Rick Deloney",
+        "current": 6.7,
+        "avgGross": 85.7,
+        "avgNet": 79.6,
+        "rounds": 7,
+        "notes": "",
+        "implied": 18.2,
+        "adjustment": 11.5
+    },
+    {
+        "name": "Rick Meewes",
+        "current": 2.7,
+        "avgGross": 78.5,
+        "avgNet": 74.2,
+        "rounds": 4,
+        "notes": "",
+        "implied": 4.6,
+        "adjustment": 1.9
+    },
+    {
+        "name": "Rob Oliver",
+        "current": 18.0,
+        "avgGross": 90.8,
+        "avgNet": 73.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 19.6,
+        "adjustment": 1.6
+    },
+    {
+        "name": "Robert Hill",
+        "current": 20.0,
+        "avgGross": 99.1,
+        "avgNet": 80.2,
+        "rounds": 7,
+        "notes": "",
+        "implied": 26.4,
+        "adjustment": 6.4
+    },
+    {
+        "name": "Ron Amstutz",
+        "current": 12.1,
+        "avgGross": 85.9,
+        "avgNet": 75.0,
+        "rounds": 7,
+        "notes": "",
+        "implied": 16.9,
+        "adjustment": 4.8
+    },
+    {
+        "name": "Ron Marino",
+        "current": 6.4,
+        "avgGross": 81.8,
+        "avgNet": 75.1,
+        "rounds": 4,
+        "notes": "",
+        "implied": 8.2,
+        "adjustment": 1.8
+    },
+    {
+        "name": "Scott Benton",
+        "current": 13.2,
+        "avgGross": 89.4,
+        "avgNet": 77.8,
+        "rounds": 8,
+        "notes": "",
+        "implied": 19.1,
+        "adjustment": 5.9
+    },
+    {
+        "name": "Scott Bracken",
+        "current": 9.8,
+        "avgGross": 83.0,
+        "avgNet": 74.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 10.0,
+        "adjustment": 0.2
+    },
+    {
+        "name": "Scott Lucas",
+        "current": 11.4,
+        "avgGross": 83.8,
+        "avgNet": 72.4,
+        "rounds": 4,
+        "notes": "",
+        "implied": 7.8,
+        "adjustment": -3.7
+    },
+    {
+        "name": "Shane Bolosan",
+        "current": 8.9,
+        "avgGross": 84.2,
+        "avgNet": 75.2,
+        "rounds": 12,
+        "notes": "",
+        "implied": 11.8,
+        "adjustment": 2.9
+    },
+    {
+        "name": "Shawn Warner",
+        "current": 12.3,
+        "avgGross": 86.5,
+        "avgNet": 74.1,
+        "rounds": 2,
+        "notes": "",
+        "implied": 14.6,
+        "adjustment": 2.2
+    },
+    {
+        "name": "Shawn Wojtcuk",
+        "current": -1.5,
+        "avgGross": 72.0,
+        "avgNet": 73.5,
+        "rounds": 1,
+        "notes": "",
+        "implied": 1.4,
+        "adjustment": 2.9
+    },
+    {
+        "name": "Stephen Cherepy",
+        "current": 10.6,
+        "avgGross": 87.0,
+        "avgNet": 76.4,
+        "rounds": 1,
+        "notes": "",
+        "implied": 15.0,
+        "adjustment": 4.4
+    },
+    {
+        "name": "Steve McCormick",
+        "current": 8.9,
+        "avgGross": 85.7,
+        "avgNet": 76.3,
+        "rounds": 10,
+        "notes": "",
+        "implied": 10.0,
+        "adjustment": 1.1
+    },
+    {
+        "name": "Steve Rosenbluth",
+        "current": 8.8,
+        "avgGross": 84.8,
+        "avgNet": 77.0,
+        "rounds": 5,
+        "notes": "",
+        "implied": 11.9,
+        "adjustment": 3.1
+    },
+    {
+        "name": "Stewart Polakov",
+        "current": 3.9,
+        "avgGross": 74.0,
+        "avgNet": 70.1,
+        "rounds": 1,
+        "notes": "",
+        "implied": 3.2,
+        "adjustment": -0.7
+    },
+    {
+        "name": "Thomas Earl",
+        "current": 3.2,
+        "avgGross": 83.0,
+        "avgNet": 79.0,
+        "rounds": 3,
+        "notes": "",
+        "implied": 11.4,
+        "adjustment": 8.2
+    },
+    {
+        "name": "Timothy Wigder",
+        "current": 6.7,
+        "avgGross": 80.0,
+        "avgNet": 73.3,
+        "rounds": 1,
+        "notes": "",
+        "implied": 8.7,
+        "adjustment": 2.0
+    },
+    {
+        "name": "Todd Densley",
+        "current": -1.7,
+        "avgGross": 73.4,
+        "avgNet": 75.0,
+        "rounds": 9,
+        "notes": "",
+        "implied": 2.8,
+        "adjustment": 4.5
+    },
+    {
         "name": "Tracy Copenhaver",
-        "current": 14.8,
+        "current": 14.7,
         "avgGross": 89.5,
-        "avgNet": 74.7,
+        "avgNet": 75.1,
         "rounds": 2,
         "notes": "",
         "implied": 17.4,
-        "adjustment": 2.6
+        "adjustment": 2.7
     },
     {
         "name": "Travis Ingram",
-        "current": 6.8,
+        "current": 6.0,
         "avgGross": 81.3,
-        "avgNet": 74.5,
+        "avgNet": 75.2,
         "rounds": 11,
         "notes": "",
         "implied": 11.4,
-        "adjustment": 4.6
+        "adjustment": 5.4
     },
     {
         "name": "Travis Jorgensen",
-        "current": 8.7,
+        "current": 8.0,
         "avgGross": 84.0,
-        "avgNet": 75.3,
+        "avgNet": 76.0,
         "rounds": 1,
         "notes": "",
         "implied": 12.3,
-        "adjustment": 3.6
+        "adjustment": 4.3
     },
     {
         "name": "Trent Dana",
         "current": 15.6,
         "avgGross": 93.0,
-        "avgNet": 77.4,
+        "avgNet": 77.6,
         "rounds": 5,
         "notes": "",
         "implied": 26.0,
@@ -2857,55 +2857,103 @@ const dataLast2 = [
     },
     {
         "name": "Win Doolittle",
-        "current": 8.0,
+        "current": 7.3,
         "avgGross": 90.0,
-        "avgNet": 82.0,
+        "avgNet": 82.7,
         "rounds": 1,
         "notes": "",
         "implied": 17.8,
-        "adjustment": 9.8
+        "adjustment": 10.5
     },
     {
         "name": "Zach Coe",
-        "current": 1.5,
+        "current": 0.1,
         "avgGross": 75.5,
-        "avgNet": 74.0,
+        "avgNet": 75.4,
         "rounds": 2,
         "notes": "",
         "implied": 4.5,
-        "adjustment": 3.0
+        "adjustment": 4.5
     },
     {
         "name": "Zach Fleishman",
-        "current": 11.7,
+        "current": 11.3,
         "avgGross": 86.3,
-        "avgNet": 74.6,
+        "avgNet": 73.8,
         "rounds": 3,
         "notes": "",
         "implied": 14.1,
-        "adjustment": 2.4
+        "adjustment": 2.8
     },
     {
         "name": "Zach Mattson",
-        "current": 6.1,
+        "current": 5.2,
         "avgGross": 79.0,
-        "avgNet": 72.9,
+        "avgNet": 73.8,
         "rounds": 1,
         "notes": "",
         "implied": 7.7,
-        "adjustment": 1.6
+        "adjustment": 2.5
     },
     {
         "name": "Zane Eisenbarth",
-        "current": 4.4,
+        "current": 3.3,
         "avgGross": 83.0,
-        "avgNet": 78.6,
+        "avgNet": 78.5,
         "rounds": 5,
         "notes": "",
         "implied": 9.1,
-        "adjustment": 4.7
+        "adjustment": 5.8
     }
 ]; // Populated by Python script
+
+        const probabilityTable = {
+            3: [1.8, 1.8, 1.9, 2.0, 2.1, 2.1, 2.2, 2.3, 2.4],
+            2: [2.4, 2.5, 2.5, 2.5, 2.6, 2.7, 2.8, 2.9, 2.9],
+            1: [3.6, 3.6, 3.6, 3.6, 3.5, 3.5, 3.5, 3.5, 3.5],
+            0: [5.9, 5.5, 5.3, 5.2, 5.1, 5.0, 5.0, 4.8, 4.6],
+            "-1": [11.1, 9.7, 8.9, 8.2, 7.7, 7.4, 7.1, 6.6, 6.0],
+            "-2": [23.0, 18.5, 16.1, 13.8, 12.4, 11.3, 10.5, 9.4, 8.2],
+            "-3": [53.5, 38.5, 31.2, 24.7, 21.1, 18.0, 16.0, 13.7, 11.3],
+            "-4": [139.8, 87.1, 64.7, 46.9, 37.3, 29.8, 25.1, 20.4, 16.1],
+            "-5": [376.5, 210.9, 140.1, 93.3, 68.6, 51.2, 40.4, 31.0, 23.1],
+            "-6": [986.8, 535.7, 317.4, 191.5, 130.5, 89.9, 66.5, 47.9, 33.6],
+            "-7": [2247.9, 1282.2, 704.6, 391.4, 251.2, 161.8, 110.5, 74.5, 48.8],
+            "-8": [6362.8, 3361.9, 1580.6, 743.0, 451.2, 265.7, 170.1, 109.3, 67.1],
+            "-9": [13861.8, 8202.6, 3609.9, 1362.7, 828.0, 449.0, 264.2, 159.8, 94.0],
+            "-10": [22831.3, 15812.0, 7186.6, 2204.6, 1431.9, 715.9, 398.0, 226.6, 127.7],
+            "-11": [32344.3, 28561.4, 13166.4, 3153.5, 2202.2, 1061.6, 559.8, 299.6, 164.5],
+            "-12": [58219.8, 44968.9, 21133.7, 4085.7, 3157.2, 1476.7, 748.1, 380.5, 205.1]
+        };
+
+        const hcpRanges = [
+            { max: 0.0, idx: 0 },
+            { max: 4.9, idx: 1 },
+            { max: 9.9, idx: 2 },
+            { max: 14.9, idx: 3 },
+            { max: 19.9, idx: 4 },
+            { max: 24.9, idx: 5 },
+            { max: 29.9, idx: 6 },
+            { max: 34.9, idx: 7 },
+            { max: 39.9, idx: 8 }
+        ];
+
+        function getProbability(gap, hcp) {
+            let colIdx = 8;
+            for (const range of hcpRanges) {
+                if (hcp <= range.max) {
+                    colIdx = range.idx;
+                    break;
+                }
+            }
+
+            const ceilGap = Math.ceil(gap);
+            if (ceilGap > 3) return "-";
+            if (ceilGap < -12) return "1 in 58,000+";
+
+            const row = probabilityTable[ceilGap.toString()];
+            return row ? `1 in ${row[colIdx].toLocaleString()}` : "-";
+        }
 
         let currentData = [...dataBest3];
         let currentMode = 'best3';
@@ -2977,23 +3025,6 @@ const dataLast2 = [
             }
         }
 
-        function getProbability(adj) {
-            // Using approximate odds for 10.0-14.9 index range from USGA table
-            const val = Math.round(adj);
-            if (val >= 0) return "-";
-            if (val === -1) return "1 in 8";
-            if (val === -2) return "1 in 14";
-            if (val === -3) return "1 in 25";
-            if (val === -4) return "1 in 47";
-            if (val === -5) return "1 in 93";
-            if (val === -6) return "1 in 191";
-            if (val === -7) return "1 in 391";
-            if (val === -8) return "1 in 743";
-            if (val === -9) return "1 in 1,362";
-            if (val <= -10) return "1 in 2,200+";
-            return "-";
-        }
-
         function renderTable(data) {
             const tbody = document.getElementById('statsTableBody');
             tbody.innerHTML = '';
@@ -3011,7 +3042,7 @@ const dataLast2 = [
                 const roundsWarning = player.rounds < 3 ? `<i class="fa-solid fa-triangle-exclamation text-yellow-500 ml-1" title="Low Round Count"></i>` : '';
 
                 // Probability
-                const prob = getProbability(player.adjustment);
+                const prob = getProbability(player.adjustment, player.current);
                 let probClass = "text-slate-400";
                 if (player.adjustment <= -3) probClass = "text-red-600 font-bold";
                 else if (player.adjustment <= -2) probClass = "text-orange-600 font-medium";

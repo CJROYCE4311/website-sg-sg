@@ -1,0 +1,65 @@
+{
+  "date": "YYYY-MM-DD",
+  "metadata": {
+    "full_scorecard_available": true,
+    "handicap_list_available": true,
+    "screenshots": [
+      "input/screenshots/example-scorecard-1.png",
+      "input/screenshots/example-payouts-1.png"
+    ],
+    "source_notes": [
+      "Replace these notes with anything you want to remember about this tournament payload.",
+      "Use this field to explain missing screenshots, payout-only rows, manual confirmations, or edge cases."
+    ],
+    "approximations": []
+  },
+  "scores": [
+    {
+      "Player": "Example Player",
+      "H1": 4,
+      "H2": 5,
+      "H3": 3,
+      "H4": 5,
+      "H5": 4,
+      "H6": 4,
+      "H7": 3,
+      "H8": 4,
+      "H9": 5,
+      "H10": 5,
+      "H11": 5,
+      "H12": 4,
+      "H13": 3,
+      "H14": 5,
+      "H15": 4,
+      "H16": 4,
+      "H17": 4,
+      "H18": 5,
+      "Gross_Score": 79,
+      "Partner": "Example Partner",
+      "Team_Rank": "T1",
+      "Individual_Rank": "3"
+    }
+  ],
+  "financials": [
+    {
+      "Player": "Example Player",
+      "Category": "NetMedal",
+      "Amount": 84.0
+    },
+    {
+      "Player": "Example Player",
+      "Category": "NetSkins",
+      "Amount": 28.0
+    }
+  ],
+  "handicaps": [
+    {
+      "Player": "Example Player",
+      "Handicap_Index": 8.4
+    },
+    {
+      "Player": "Example Partner",
+      "Handicap_Index": 10.1
+    }
+  ]
+}

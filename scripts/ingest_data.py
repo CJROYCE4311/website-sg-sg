@@ -5,6 +5,7 @@ import argparse
 import sys
 import subprocess
 import shutil
+import copy
 from datetime import datetime
 
 # Paths
@@ -16,6 +17,7 @@ HISTORY_DIR = os.path.join(PROJECT_ROOT, "input", "history")
 SCORES_FILE = os.path.join(DB_DIR, "scores.csv")
 FINANCIALS_FILE = os.path.join(DB_DIR, "financials.csv")
 HANDICAPS_FILE = os.path.join(DB_DIR, "handicaps.csv")
+ALIASES_FILE = os.path.join(DB_DIR, "player_aliases.json")
 
 # Validation constants
 HOLE_COLS = [f'H{i}' for i in range(1, 19)]
@@ -23,6 +25,143 @@ MIN_HANDICAP = -10.0
 MAX_HANDICAP = 54.0
 MIN_GROSS_SCORE = 50
 MAX_GROSS_SCORE = 150
+BASE_SLOPE = 113
+COURSE_SLOPE = 124
+COURSE_RATING = 70.5
+COURSE_PAR = 72
+KNOWN_PARTIAL_SCORE_DATES = {"2025-01-04"}
+
+
+def calculate_differential(gross_score):
+    if pd.isna(gross_score):
+        return pd.NA
+    return round((float(gross_score) - COURSE_RATING) * BASE_SLOPE / COURSE_SLOPE, 1)
+
+
+def calculate_course_handicap(index_value):
+    if pd.isna(index_value):
+        return pd.NA
+    return round(float(index_value) * COURSE_SLOPE / BASE_SLOPE + (COURSE_RATING - COURSE_PAR), 1)
+
+
+def calculate_handicap_index(course_handicap):
+    if pd.isna(course_handicap):
+        return pd.NA
+    return round((float(course_handicap) - (COURSE_RATING - COURSE_PAR)) * BASE_SLOPE / COURSE_SLOPE, 1)
+
+
+def clean_player_name(name):
+    if name is None or pd.isna(name):
+        return name
+    return " ".join(str(name).split())
+
+
+def load_player_aliases():
+    if not os.path.exists(ALIASES_FILE):
+        return {}
+
+    with open(ALIASES_FILE, 'r') as f:
+        raw_aliases = json.load(f)
+
+    aliases = {}
+    for alias, canonical in raw_aliases.items():
+        clean_alias = clean_player_name(alias)
+        clean_canonical = clean_player_name(canonical)
+        if clean_alias and clean_canonical:
+            aliases[clean_alias.casefold()] = clean_canonical
+    return aliases
+
+
+def canonicalize_player_name(name, aliases):
+    cleaned = clean_player_name(name)
+    if cleaned is None or pd.isna(cleaned):
+        return cleaned
+    return aliases.get(cleaned.casefold(), cleaned)
+
+
+def normalize_player_fields(records, aliases, fields, rewrites, section):
+    for record in records:
+        for field in fields:
+            if field not in record or record[field] is None:
+                continue
+            original = clean_player_name(record[field])
+            canonical = canonicalize_player_name(original, aliases)
+            record[field] = canonical
+            if original != canonical:
+                rewrites.append({
+                    'section': section,
+                    'field': field,
+                    'from': original,
+                    'to': canonical,
+                })
+
+
+def normalize_payload_names(data, aliases):
+    normalized = copy.deepcopy(data)
+    rewrites = []
+
+    entries = normalized.get('update_batch', [normalized])
+    for entry in entries:
+        normalize_player_fields(entry.get('scores', []), aliases, ['Player', 'Partner'], rewrites, 'scores')
+        normalize_player_fields(entry.get('financials', []), aliases, ['Player'], rewrites, 'financials')
+        normalize_player_fields(entry.get('handicaps', []), aliases, ['Player'], rewrites, 'handicaps')
+
+    unique_rewrites = []
+    seen = set()
+    for rewrite in rewrites:
+        key = (rewrite['section'], rewrite['field'], rewrite['from'], rewrite['to'])
+        if key in seen:
+            continue
+        seen.add(key)
+        unique_rewrites.append(rewrite)
+    return normalized, unique_rewrites
+
+
+def ensure_handicap_columns(df):
+    df = df.copy()
+
+    if 'Handicap_Index' in df.columns:
+        df['Handicap_Index'] = pd.to_numeric(df['Handicap_Index'], errors='coerce')
+    if 'Course_Handicap' in df.columns:
+        df['Course_Handicap'] = pd.to_numeric(df['Course_Handicap'], errors='coerce')
+
+    if 'Course_Handicap' not in df.columns:
+        df['Course_Handicap'] = df['Handicap_Index'].apply(calculate_course_handicap)
+    elif 'Handicap_Index' in df.columns:
+        missing_course = df['Course_Handicap'].isna() & df['Handicap_Index'].notna()
+        df.loc[missing_course, 'Course_Handicap'] = df.loc[missing_course, 'Handicap_Index'].apply(calculate_course_handicap)
+
+    return df
+
+
+def ensure_scores_columns(df):
+    df = df.copy()
+
+    if 'Round_Handicap' in df.columns and 'Differential' not in df.columns:
+        df = df.rename(columns={'Round_Handicap': 'Differential'})
+
+    if 'Gross_Score' in df.columns:
+        df['Gross_Score'] = pd.to_numeric(df['Gross_Score'], errors='coerce')
+        df['Differential'] = df['Gross_Score'].apply(calculate_differential)
+    elif 'Differential' in df.columns:
+        df['Differential'] = pd.to_numeric(df['Differential'], errors='coerce')
+
+    return df
+
+
+def normalize_dataframe_player_names(df, aliases, fields, key_cols=None):
+    if df.empty:
+        return df
+
+    normalized = df.copy()
+    for field in fields:
+        if field in normalized.columns:
+            normalized[field] = normalized[field].apply(lambda value: canonicalize_player_name(value, aliases))
+
+    if key_cols and set(key_cols).issubset(normalized.columns):
+        normalized = normalized.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
+
+    return normalized
 
 
 def build_archive_label(data):
@@ -53,6 +192,28 @@ def validate_data(data):
     except ValueError:
         errors.append(f"Invalid date format: {date_str} (expected YYYY-MM-DD)")
 
+    metadata = data.get('metadata', {})
+    if not metadata:
+        warnings.append(f"{date_str}: missing metadata block")
+    else:
+        for field in ['full_scorecard_available', 'handicap_list_available']:
+            if field in metadata and not isinstance(metadata[field], bool):
+                errors.append(f"{date_str}: metadata.{field} must be true/false")
+            elif field not in metadata:
+                warnings.append(f"{date_str}: metadata missing '{field}'")
+
+        screenshots = metadata.get('screenshots')
+        if screenshots is not None and not isinstance(screenshots, list):
+            errors.append(f"{date_str}: metadata.screenshots must be a list when provided")
+
+        approximations = metadata.get('approximations')
+        if approximations is not None and not isinstance(approximations, list):
+            errors.append(f"{date_str}: metadata.approximations must be a list when provided")
+
+        source_notes = metadata.get('source_notes')
+        if source_notes is not None and not isinstance(source_notes, (str, list)):
+            errors.append(f"{date_str}: metadata.source_notes must be text or a list when provided")
+
     # Validate scores
     scores = data.get('scores', [])
     seen_players = set()
@@ -82,10 +243,12 @@ def validate_data(data):
         if gross > 0 and (gross < MIN_GROSS_SCORE or gross > MAX_GROSS_SCORE):
             warnings.append(f"{player}: Unusual gross score: {gross}")
 
-        # Validate handicap range
-        hcp = score.get('Round_Handicap')
-        if hcp is not None and (hcp < MIN_HANDICAP or hcp > MAX_HANDICAP):
-            errors.append(f"{player}: Handicap {hcp} outside valid range ({MIN_HANDICAP} to {MAX_HANDICAP})")
+        # Validate differential if explicitly provided
+        differential = score.get('Differential')
+        if differential is not None:
+            expected_diff = calculate_differential(gross)
+            if pd.notna(expected_diff) and round(float(differential), 1) != expected_diff:
+                errors.append(f"{player}: Differential {differential} != expected {expected_diff}")
 
     # Validate financials
     financials = data.get('financials', [])
@@ -114,6 +277,9 @@ def validate_data(data):
             idx = hcp['Handicap_Index']
             if idx < MIN_HANDICAP or idx > MAX_HANDICAP:
                 errors.append(f"Handicap entry {i}: index {idx} outside valid range")
+        course_hcp = hcp.get('Course_Handicap')
+        if course_hcp is not None and (course_hcp < MIN_HANDICAP or course_hcp > MAX_HANDICAP):
+            errors.append(f"Handicap entry {i}: course handicap {course_hcp} outside valid range")
 
     # Print warnings
     for w in warnings:
@@ -141,9 +307,18 @@ def archive_json(json_file, date_str):
     print(f"📁 Archived JSON to: input/history/{archive_name}")
 
 def load_db():
+    aliases = load_player_aliases()
     scores = pd.read_csv(SCORES_FILE) if os.path.exists(SCORES_FILE) else pd.DataFrame()
     financials = pd.read_csv(FINANCIALS_FILE) if os.path.exists(FINANCIALS_FILE) else pd.DataFrame()
     handicaps = pd.read_csv(HANDICAPS_FILE) if os.path.exists(HANDICAPS_FILE) else pd.DataFrame()
+    if not scores.empty:
+        scores = ensure_scores_columns(scores)
+        scores = normalize_dataframe_player_names(scores, aliases, ['Player', 'Partner'], key_cols=['Date', 'Player'])
+    if not handicaps.empty:
+        handicaps = ensure_handicap_columns(handicaps)
+        handicaps = normalize_dataframe_player_names(handicaps, aliases, ['Player'], key_cols=['Date', 'Player'])
+    if not financials.empty:
+        financials = normalize_dataframe_player_names(financials, aliases, ['Player'], key_cols=['Date', 'Player', 'Category'])
     return scores, financials, handicaps
 
 def sort_canonical_tables(scores, financials, handicaps):
@@ -157,6 +332,12 @@ def sort_canonical_tables(scores, financials, handicaps):
 
 
 def save_db(scores, financials, handicaps):
+    aliases = load_player_aliases()
+    scores = ensure_scores_columns(scores)
+    handicaps = ensure_handicap_columns(handicaps)
+    scores = normalize_dataframe_player_names(scores, aliases, ['Player', 'Partner'], key_cols=['Date', 'Player'])
+    financials = normalize_dataframe_player_names(financials, aliases, ['Player'], key_cols=['Date', 'Player', 'Category'])
+    handicaps = normalize_dataframe_player_names(handicaps, aliases, ['Player'], key_cols=['Date', 'Player'])
     scores, financials, handicaps = sort_canonical_tables(scores, financials, handicaps)
     scores.to_csv(SCORES_FILE, index=False)
     financials.to_csv(FINANCIALS_FILE, index=False)
@@ -192,16 +373,108 @@ def validate_canonical_state(scores, financials, handicaps):
     issues.extend(duplicate_key_issues(handicaps, ['Date', 'Player'], 'handicaps'))
     return issues
 
+
+def build_canonical_audit(scores, financials, handicaps):
+    issues = validate_canonical_state(scores, financials, handicaps)
+
+    score_keys = (
+        scores[['Date', 'Player']].drop_duplicates()
+        if not scores.empty and {'Date', 'Player'}.issubset(scores.columns)
+        else pd.DataFrame(columns=['Date', 'Player'])
+    )
+    handicap_keys = (
+        handicaps[['Date', 'Player']].drop_duplicates()
+        if not handicaps.empty and {'Date', 'Player'}.issubset(handicaps.columns)
+        else pd.DataFrame(columns=['Date', 'Player'])
+    )
+
+    missing_snapshots = score_keys.merge(
+        handicap_keys,
+        on=['Date', 'Player'],
+        how='left',
+        indicator=True,
+    )
+    missing_snapshots = missing_snapshots[missing_snapshots['_merge'] == 'left_only'][['Date', 'Player']]
+    missing_snapshots = missing_snapshots.sort_values(['Date', 'Player']).reset_index(drop=True)
+
+    orphan_snapshots = handicap_keys.merge(
+        score_keys,
+        on=['Date', 'Player'],
+        how='left',
+        indicator=True,
+    )
+    orphan_snapshots = orphan_snapshots[orphan_snapshots['_merge'] == 'left_only'][['Date', 'Player']]
+    orphan_snapshots = orphan_snapshots.sort_values(['Date', 'Player']).reset_index(drop=True)
+
+    financial_keys = (
+        financials[['Date', 'Player']].drop_duplicates()
+        if not financials.empty and {'Date', 'Player'}.issubset(financials.columns)
+        else pd.DataFrame(columns=['Date', 'Player'])
+    )
+    orphan_financials = financial_keys.merge(
+        score_keys,
+        on=['Date', 'Player'],
+        how='left',
+        indicator=True,
+    )
+    orphan_financials = orphan_financials[orphan_financials['_merge'] == 'left_only'][['Date', 'Player']]
+    orphan_financials = orphan_financials.sort_values(['Date', 'Player']).reset_index(drop=True)
+
+    incomplete_report_rows = len(missing_snapshots)
+    return {
+        'duplicate_issues': issues,
+        'missing_snapshots': missing_snapshots,
+        'orphan_snapshots': orphan_snapshots,
+        'orphan_financials': orphan_financials,
+        'incomplete_report_rows': incomplete_report_rows,
+    }
+
+
+def print_canonical_audit(audit):
+    print("\n📋 Canonical Data Audit")
+    print(f"   - Duplicate key issues: {len(audit['duplicate_issues'])}")
+    print(f"   - Scores missing handicap snapshots: {len(audit['missing_snapshots'])}")
+    print(f"   - Handicap snapshots without score rows: {len(audit['orphan_snapshots'])}")
+    print(f"   - Financial rows without score rows: {len(audit['orphan_financials'])}")
+    print(f"   - Report rows with blank handicap-dependent fields: {audit['incomplete_report_rows']}")
+
+    if audit['duplicate_issues']:
+        print("   Duplicate details:")
+        for issue in audit['duplicate_issues']:
+            print(f"     * {issue}")
+
+    if not audit['missing_snapshots'].empty:
+        print("   Missing snapshot details:")
+        for row in audit['missing_snapshots'].itertuples(index=False):
+            print(f"     * {row.Date} | {row.Player}")
+
+    if not audit['orphan_snapshots'].empty:
+        sample = audit['orphan_snapshots'].head(25)
+        print("   Review-only handicap snapshots without score rows:")
+        for row in sample.itertuples(index=False):
+            print(f"     * {row.Date} | {row.Player}")
+        if len(audit['orphan_snapshots']) > len(sample):
+            print(f"     * ... and {len(audit['orphan_snapshots']) - len(sample)} more")
+
+    if not audit['orphan_financials'].empty:
+        sample = audit['orphan_financials'].head(25)
+        print("   Financial rows without score rows:")
+        for row in sample.itertuples(index=False):
+            print(f"     * {row.Date} | {row.Player}")
+        if len(audit['orphan_financials']) > len(sample):
+            print(f"     * ... and {len(audit['orphan_financials']) - len(sample)} more")
+
+
+def audit_has_fatal_issues(audit):
+    return (
+        bool(audit['duplicate_issues'])
+        or not audit['missing_snapshots'].empty
+        or not audit['orphan_snapshots'].empty
+    )
+
 def get_handicap_review_flags(data, current_handicaps):
     review_flags = []
     handicap_entries = data.get('handicaps', [])
-
-    if not handicap_entries and data.get('scores'):
-        handicap_entries = [
-            {'Player': row.get('Player'), 'Handicap_Index': row.get('Round_Handicap')}
-            for row in data.get('scores', [])
-            if row.get('Player') is not None and row.get('Round_Handicap') is not None
-        ]
 
     if current_handicaps.empty or not handicap_entries:
         return review_flags
@@ -294,7 +567,22 @@ def upsert_handicaps(current_handicaps, df_hcp):
     combined = combined.drop_duplicates(subset=key_cols, keep='last').reset_index(drop=True)
     return combined, added, updated, payload_duplicates
 
-def process_entry(data, current_scores, current_financials, current_handicaps):
+
+def missing_score_snapshot_players(date_str, score_df, current_handicaps, incoming_handicaps=None):
+    if score_df.empty:
+        return []
+
+    available = current_handicaps.copy()
+    if incoming_handicaps is not None and not incoming_handicaps.empty:
+        available = pd.concat([available, incoming_handicaps], ignore_index=True)
+        available = available.drop_duplicates(subset=['Date', 'Player'], keep='last')
+
+    day_snapshots = available[available['Date'].astype(str) == str(date_str)]
+    available_players = set(day_snapshots['Player'].astype(str))
+    score_players = set(score_df['Player'].astype(str))
+    return sorted(score_players - available_players)
+
+def process_entry(data, current_scores, current_financials, current_handicaps, allow_incomplete=False):
     date_str = data.get('date')
     if not date_str:
         print("❌ Error: Entry missing 'date' field.")
@@ -304,9 +592,15 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
     
     # 1. Process Scores
     new_scores = data.get('scores', [])
+    df_new = pd.DataFrame()
+    score_snapshot_df = pd.DataFrame()
     if new_scores:
         df_new = pd.DataFrame(new_scores)
         df_new['Date'] = date_str
+        df_new = ensure_scores_columns(df_new)
+        if 'Round_Handicap' in df_new.columns:
+            df_new = df_new.drop(columns=['Round_Handicap'])
+        score_snapshot_df = df_new.copy()
         
         if not current_scores.empty:
             # Ensure index columns exist
@@ -353,9 +647,11 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
 
     # 3. Process Handicaps
     new_hcp = data.get('handicaps', [])
+    df_hcp = pd.DataFrame()
     if new_hcp:
         df_hcp = pd.DataFrame(new_hcp)
         df_hcp['Date'] = date_str
+        df_hcp = ensure_handicap_columns(df_hcp)
         current_handicaps, added_hcp, updated_hcp, payload_duplicates = upsert_handicaps(current_handicaps, df_hcp)
         print(
             "   ✅ Handicaps: Added {added} new, updated {updated} existing, collapsed {collapsed} duplicate payload rows.".format(
@@ -364,14 +660,38 @@ def process_entry(data, current_scores, current_financials, current_handicaps):
                 collapsed=payload_duplicates,
             )
         )
+
+    missing_players = missing_score_snapshot_players(date_str, score_snapshot_df, current_handicaps)
+    if missing_players:
+        print("❌ Missing handicap snapshots for scored players:")
+        for player in missing_players:
+            print(f"   - {player}")
+        if not allow_incomplete:
+            print("\n❌ Aborting before writing scores without matching handicap snapshots.")
+            return current_scores, current_financials, current_handicaps, False
+        print("\n⚠️ Continuing because --allow-incomplete was provided.")
             
     return current_scores, current_financials, current_handicaps, True
 
-def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_update=False, dry_run=False):
+def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_update=False, dry_run=False, allow_incomplete=False):
     print(f"📥 Ingesting {json_file}...")
 
     with open(json_file, 'r') as f:
         data = json.load(f)
+
+    player_aliases = load_player_aliases()
+    data, alias_rewrites = normalize_payload_names(data, player_aliases)
+    if alias_rewrites:
+        print("🪪 Normalized player aliases:")
+        for rewrite in alias_rewrites:
+            print(
+                "   - {section}.{field}: {from_name} -> {to_name}".format(
+                    section=rewrite['section'],
+                    field=rewrite['field'],
+                    from_name=rewrite['from'],
+                    to_name=rewrite['to'],
+                )
+            )
 
     # Validation
     if not skip_validation:
@@ -416,19 +736,30 @@ def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_updat
                 )
             )
 
+    entries = data['update_batch'] if 'update_batch' in data else [data]
+    approximation_notes = []
+    for entry in entries:
+        metadata = entry.get('metadata') or {}
+        for note in metadata.get('approximations', []) or []:
+            approximation_notes.append((entry.get('date'), note))
+    if approximation_notes:
+        print("📝 Approximation notes:")
+        for date_str, note in approximation_notes:
+            print(f"   - {date_str}: {note}")
+
     archive_label = build_archive_label(data)
 
     if 'update_batch' in data:
         print(f"📦 Batch Update Detected: {len(data['update_batch'])} entries.")
         for entry in data['update_batch']:
             current_scores, current_financials, current_handicaps, processed = process_entry(
-                entry, current_scores, current_financials, current_handicaps
+                entry, current_scores, current_financials, current_handicaps, allow_incomplete=allow_incomplete
             )
             if not processed:
                 return False
     else:
         current_scores, current_financials, current_handicaps, processed = process_entry(
-            data, current_scores, current_financials, current_handicaps
+            data, current_scores, current_financials, current_handicaps, allow_incomplete=allow_incomplete
         )
         if not processed:
             return False
@@ -440,6 +771,14 @@ def ingest(json_file, skip_validation=False, skip_archive=False, skip_site_updat
             print(f"   - {issue}")
         print("\n❌ Aborting before writing canonical files.")
         return False
+
+    audit = build_canonical_audit(current_scores, current_financials, current_handicaps)
+    print_canonical_audit(audit)
+    if audit_has_fatal_issues(audit) and not allow_incomplete:
+        print("\n❌ Aborting before writing canonical files because the audit found blocking issues.")
+        return False
+    if audit_has_fatal_issues(audit) and allow_incomplete:
+        print("\n⚠️ Audit found blocking issues, but continuing because --allow-incomplete was provided.")
 
     if dry_run:
         print("🧪 Dry run complete. No CSVs, archives, or website files were modified.")
@@ -470,6 +809,8 @@ if __name__ == "__main__":
     parser.add_argument("--skip-archive", action="store_true", help="Skip JSON archiving")
     parser.add_argument("--skip-site-update", action="store_true", help="Skip regenerating website files")
     parser.add_argument("--dry-run", action="store_true", help="Validate and simulate ingestion without writing files")
+    parser.add_argument("--allow-incomplete", action="store_true",
+                        help="Allow writes even when score/handicap coverage audit is incomplete")
     args = parser.parse_args()
 
     if not os.path.exists(args.input_file):
@@ -482,5 +823,6 @@ if __name__ == "__main__":
         skip_archive=args.skip_archive,
         skip_site_update=args.skip_site_update,
         dry_run=args.dry_run,
+        allow_incomplete=args.allow_incomplete,
     )
     sys.exit(0 if success else 1)

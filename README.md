@@ -25,6 +25,8 @@ This is the main operator guide for updating the SG@SG data and website.
    - skins and payouts
 3. Build or update:
    `input/tournament_data.json`
+   Start from:
+   `docs/tournament_data.template.json`
 4. Run validation and present handicap readings that are more than 1 standard deviation above or below that player's historical mean.
 5. Run automated post-ingest key validation so canonical files cannot be written with duplicate score, financial, or handicap keys.
 6. Wait for your review if anything looks questionable.
@@ -67,6 +69,19 @@ Before final processing, review:
 - individual in-the-money results
 - payout amounts
 - any player name that looks new or inconsistent
+
+For repeatable payload structure, use:
+- `docs/tournament_data.template.json`
+
+Template notes:
+- keep handicap data in `handicaps[]`, not in `scores[]`
+- `scores[]` should carry gross totals, partners, and ranks
+- `metadata` should always include:
+  - `full_scorecard_available`
+  - `handicap_list_available`
+  - `screenshots`
+  - `source_notes`
+  - `approximations`
 
 ## Canonical Files
 

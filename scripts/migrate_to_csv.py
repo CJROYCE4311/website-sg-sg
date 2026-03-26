@@ -8,6 +8,10 @@ from datetime import datetime
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 DB_DIR = os.path.join(DATA_DIR)
+COURSE_RATING = 70.5
+SLOPE_RATING = 124
+BASE_SLOPE = 113
+COURSE_PAR = 72
 
 def clean_df(df, default_date=None):
     if df.empty: return df
@@ -34,6 +38,18 @@ def to_numeric_safe(df, cols):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col].astype(str).str.replace('$', '').str.replace(',', '').str.strip(), errors='coerce').fillna(0.0)
     return df
+
+
+def calculate_differential(score):
+    if pd.isna(score):
+        return pd.NA
+    return round((float(score) - COURSE_RATING) * BASE_SLOPE / SLOPE_RATING, 1)
+
+
+def calculate_course_handicap(index_value):
+    if pd.isna(index_value):
+        return pd.NA
+    return round(float(index_value) * SLOPE_RATING / BASE_SLOPE + (COURSE_RATING - COURSE_PAR), 1)
 
 def migrate():
     print("🚀 Starting Migration to CSV Database...")
@@ -63,33 +79,18 @@ def migrate():
         # Pre-clean sheets with file_date fallback
         cleaned_sheets = {k: clean_df(v, default_date=file_date) for k, v in xls.items()}
         
-        # 1. SCORES & ROUND-LEVEL HANDICAPS
+        # 1. SCORES
         if 'RawScores' in cleaned_sheets:
             df = cleaned_sheets['RawScores']
             # Ensure H1-H18 and Gross_Score
             score_cols = [f'H{i}' for i in range(1, 19)] + ['Gross_Score']
             df = to_numeric_safe(df, score_cols)
-            
-            # Get Handicap used for the round
-            if 'Handicaps' in cleaned_sheets:
-                h_val = cleaned_sheets['Handicaps']
-                if 'Player' in df.columns and 'Player' in h_val.columns:
-                    h_col = next((c for c in h_val.columns if c in ['Handicap', 'HI', 'Handicap_Index']), None)
-                    if h_col:
-                        h_val_subset = h_val.rename(columns={h_col: 'Round_Handicap'})
-                        h_val_subset = to_numeric_safe(h_val_subset, ['Round_Handicap'])
-                        
-                        merge_cols = ['Player']
-                        if 'Date' in h_val_subset.columns and 'Date' in df.columns:
-                            merge_cols.append('Date')
-                        
-                        df = df.merge(h_val_subset[merge_cols + ['Round_Handicap']], on=merge_cols, how='left')
+            df['Differential'] = df['Gross_Score'].apply(calculate_differential)
 
             # Only keep rows that have a Date and Player
             if 'Date' in df.columns and 'Player' in df.columns:
                 cols_to_keep = ['Date', 'Player'] + [c for c in score_cols if c in df.columns]
-                if 'Round_Handicap' in df.columns:
-                    cols_to_keep.append('Round_Handicap')
+                cols_to_keep.append('Differential')
                 all_scores.append(df[cols_to_keep])
 
         # 2. FINANCIALS (Consolidate all earning types)
@@ -122,8 +123,9 @@ def migrate():
             if h_col:
                 df = df.rename(columns={h_col: 'Handicap_Index'})
                 df = to_numeric_safe(df, ['Handicap_Index'])
+                df['Course_Handicap'] = df['Handicap_Index'].apply(calculate_course_handicap)
                 if 'Date' in df.columns and 'Player' in df.columns:
-                    all_handicaps.append(df[['Date', 'Player', 'Handicap_Index']])
+                    all_handicaps.append(df[['Date', 'Player', 'Handicap_Index', 'Course_Handicap']])
 
     # Consolidate and Save
     if all_scores:

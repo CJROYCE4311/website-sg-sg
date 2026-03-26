@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG@SG Workflow Visual</title>
+    <style>
+        :root {
+            --bg: #f6f6f0;
+            --panel: #fffdf7;
+            --panel-strong: #fff8e8;
+            --line: #d8d1bf;
+            --text: #223127;
+            --muted: #5d6b61;
+            --green: #2f6b46;
+            --green-soft: #dfeedd;
+            --blue: #2f5f7a;
+            --blue-soft: #dcebf4;
+            --gold: #9a6a17;
+            --gold-soft: #f7e8c8;
+            --red: #8f3b2e;
+            --red-soft: #f6ddd7;
+            --shadow: 0 18px 40px rgba(34, 49, 39, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            background:
+                radial-gradient(circle at top left, rgba(247, 232, 200, 0.7), transparent 28%),
+                linear-gradient(180deg, #fbfaf5 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .hero,
+        .section,
+        .legend {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            padding: 28px;
+            margin-bottom: 22px;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--green);
+            font-size: 0.88rem;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3, h4, p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: clamp(2rem, 4vw, 3.3rem);
+            line-height: 1.05;
+        }
+
+        .hero p {
+            max-width: 880px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .command-grid,
+        .legend-grid,
+        .test-grid,
+        .artifact-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .command-grid {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            margin-top: 22px;
+        }
+
+        .command-card,
+        .legend-card,
+        .test-card,
+        .artifact-card {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px 18px;
+            background: var(--panel-strong);
+        }
+
+        .command-card code {
+            display: block;
+            margin-top: 8px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #233328;
+            color: #f5f5ed;
+            font-size: 0.88rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .section {
+            padding: 24px;
+            margin-bottom: 22px;
+        }
+
+        .section h2 {
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+
+        .section > p {
+            color: var(--muted);
+            line-height: 1.55;
+            max-width: 960px;
+        }
+
+        .swimlane {
+            overflow-x: auto;
+            margin-top: 20px;
+            padding-bottom: 8px;
+        }
+
+        .swimlane-grid {
+            min-width: 1180px;
+            display: grid;
+            grid-template-columns: 210px repeat(7, 1fr);
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .lane-head,
+        .step-head,
+        .lane-label,
+        .cell {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: white;
+        }
+
+        .lane-head,
+        .step-head {
+            padding: 14px 16px;
+            background: #f8f4e7;
+            font-weight: bold;
+        }
+
+        .step-head span {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            font-weight: normal;
+            line-height: 1.4;
+        }
+
+        .lane-label {
+            padding: 18px 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .lane-user {
+            background: var(--gold-soft);
+        }
+
+        .lane-agent {
+            background: var(--blue-soft);
+        }
+
+        .lane-script {
+            background: var(--green-soft);
+        }
+
+        .cell {
+            position: relative;
+            padding: 14px;
+            min-height: 168px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cell h4 {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .cell p {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .outputs,
+        .checks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: #f8f7f2;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .chip.output {
+            background: #edf6ec;
+            border-color: #b9d2bc;
+            color: #214a2f;
+        }
+
+        .chip.check {
+            background: #eef4f8;
+            border-color: #bfd1dd;
+            color: #274f66;
+        }
+
+        .chip.warn {
+            background: #fbebe6;
+            border-color: #dfb5a7;
+            color: #7a3429;
+        }
+
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .flow-card {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 18px;
+            background: white;
+            position: relative;
+            min-height: 210px;
+        }
+
+        .flow-card::after {
+            content: "→";
+            position: absolute;
+            right: -12px;
+            top: calc(50% - 12px);
+            font-size: 1.8rem;
+            color: var(--line);
+        }
+
+        .flow-card:last-child::after {
+            display: none;
+        }
+
+        .flow-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.08rem;
+        }
+
+        .flow-card ul {
+            padding-left: 18px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .flow-card code,
+        .artifact-card code {
+            font-size: 0.9rem;
+        }
+
+        .legend {
+            padding: 20px 22px;
+            margin-bottom: 22px;
+        }
+
+        .legend-grid {
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        }
+
+        .legend-card h3,
+        .test-card h3,
+        .artifact-card h3 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .legend-card p,
+        .test-card p,
+        .artifact-card p {
+            margin-bottom: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .test-grid {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            margin-top: 18px;
+        }
+
+        .artifact-grid {
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            margin-top: 18px;
+        }
+
+        .artifact-card ul {
+            margin: 10px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 1100px) {
+            .flow-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-card::after {
+                content: "↓";
+                right: calc(50% - 7px);
+                top: auto;
+                bottom: -26px;
+            }
+
+            .flow-card:last-child::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <p class="eyebrow">SG@SG Tournament Dashboard</p>
+            <h1>Workflow Visual for Local Tournament Processing</h1>
+            <p>
+                This page turns the operating docs into a testable sequence. The swim lane shows responsibility and
+                handoffs. The file flow shows what enters the system, what gets transformed, and what files should exist
+                after each major step. Use this while you validate each stage before we streamline the directory.
+            </p>
+            <div class="command-grid">
+                <div class="command-card">
+                    <strong>Validate only</strong>
+                    <code>./venv/bin/python scripts/process_tournament.py input/tournament_data.json --dry-run</code>
+                </div>
+                <div class="command-card">
+                    <strong>Process locally</strong>
+                    <code>./venv/bin/python scripts/process_tournament.py input/tournament_data.json</code>
+                </div>
+                <div class="command-card">
+                    <strong>Rebuild site only</strong>
+                    <code>./venv/bin/python scripts/update_site.py</code>
+                </div>
+                <div class="command-card">
+                    <strong>Canonical audit</strong>
+                    <code>./venv/bin/python scripts/audit_canonical_data.py</code>
+                </div>
+            </div>
+        </section>
+
+        <section class="legend">
+            <h2>How to Read This</h2>
+            <div class="legend-grid">
+                <div class="legend-card">
+                    <h3>Swim Lane</h3>
+                    <p>Best for seeing who does what and where the review gates happen.</p>
+                </div>
+                <div class="legend-card">
+                    <h3>File Flow</h3>
+                    <p>Best for seeing how screenshots become JSON, canonical CSVs, and generated website outputs.</p>
+                </div>
+                <div class="legend-card">
+                    <h3>Output Chips</h3>
+                    <p>Expected artifacts you should see at that step.</p>
+                </div>
+                <div class="legend-card">
+                    <h3>Check Chips</h3>
+                    <p>Validation points worth testing before removing or consolidating files.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Swim Lane Workflow</h2>
+            <p>
+                A swim lane is the clearest view for this repo because the important friction points are cross-lane:
+                screenshots handed to Codex, JSON handed to scripts, and script outputs handed back for review.
+            </p>
+
+            <div class="swimlane">
+                <div class="swimlane-grid">
+                    <div class="lane-head">Role / Stage</div>
+                    <div class="step-head">1. Capture<span>Collect screenshots from Squabbit and place them in the local drop zone.</span></div>
+                    <div class="step-head">2. Extract<span>Read screenshots in stages so scorecards, ranks, payouts, and handicap lists are separated cleanly.</span></div>
+                    <div class="step-head">3. Review JSON<span>Consolidate the batch into a reviewed payload before any canonical write.</span></div>
+                    <div class="step-head">4. Validate<span>Run dry-run validation and audit checks without mutating canonical files.</span></div>
+                    <div class="step-head">5. Ingest<span>Upsert canonical rows, enforce key rules, then archive the reviewed payload.</span></div>
+                    <div class="step-head">6. Rebuild Site<span>Generate the local HTML outputs and derived methodology data from canonical CSVs.</span></div>
+                    <div class="step-head">7. Review / Publish<span>Review generated pages locally and publish only if explicitly requested.</span></div>
+
+                    <div class="lane-label lane-user">User / Operator</div>
+                    <div class="cell">
+                        <h4>Capture source screens</h4>
+                        <p>Drop complete screenshots for gross scores, partners, payouts, skins, and handicap snapshots into the working area.</p>
+                        <div class="outputs">
+                            <span class="chip output">input/screenshots/*.png</span>
+                        </div>
+                        <div class="checks">
+                            <span class="chip check">Every scored player visible</span>
+                            <span class="chip check">Payout screens preserved</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Answer spot checks</h4>
+                        <p>Confirm ambiguous OCR names, pairings, or payout details when the extraction needs human confirmation.</p>
+                        <div class="checks">
+                            <span class="chip check">Name variants resolved</span>
+                            <span class="chip check">Partners confirmed</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Review payload</h4>
+                        <p>Inspect the reviewed JSON for completeness, metadata, and any approximation notes before validation.</p>
+                        <div class="outputs">
+                            <span class="chip output">input/tournament_data.json</span>
+                            <span class="chip output">docs/tournament_data.template.json</span>
+                        </div>
+                        <div class="checks">
+                            <span class="chip check">metadata block present</span>
+                            <span class="chip check">approximations documented</span>
+                            <span class="chip check">handicaps live in handicaps[]</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Read validation feedback</h4>
+                        <p>Use the dry run and audit output to decide whether to correct the payload or proceed.</p>
+                        <div class="checks">
+                            <span class="chip check">No blocking validation errors</span>
+                            <span class="chip check">Outlier handicaps reviewed</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Approve local write</h4>
+                        <p>Once validation is clean, run the real local process or have Codex run it.</p>
+                        <div class="checks">
+                            <span class="chip check">Ready to upsert canonical data</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Inspect generated pages</h4>
+                        <p>Open the local HTML outputs and compare them to the tournament source data.</p>
+                        <div class="checks">
+                            <span class="chip check">Results recap matches source</span>
+                            <span class="chip check">Money list updated</span>
+                            <span class="chip check">Handicap pages updated</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Optional publish</h4>
+                        <p>Publish only when you explicitly want this clone to stage, commit, and push generated site output.</p>
+                        <div class="checks">
+                            <span class="chip warn">Do not publish by default</span>
+                        </div>
+                    </div>
+
+                    <div class="lane-label lane-agent">Codex / Review Layer</div>
+                    <div class="cell">
+                        <h4>Set the batch boundary</h4>
+                        <p>Determine which screenshots belong to the current tournament and whether the event needs staged extraction.</p>
+                        <div class="checks">
+                            <span class="chip check">One date or update_batch identified</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Stage extraction</h4>
+                        <p>Extract scores, partners, skins, payouts, and handicap indexes in smaller passes to reduce OCR or context errors.</p>
+                        <div class="outputs">
+                            <span class="chip output">Reviewed extracted fields</span>
+                        </div>
+                        <div class="checks">
+                            <span class="chip check">Aliases normalized</span>
+                            <span class="chip check">Best-ball split correctly</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Assemble reviewed payload</h4>
+                        <p>Build a single JSON artifact with `scores`, `financials`, `handicaps`, and `metadata` for each entry.</p>
+                        <div class="outputs">
+                            <span class="chip output">input/tournament_data.json</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Surface warnings clearly</h4>
+                        <p>Present validation failures, duplicate-key issues, missing snapshots, and 1-SD handicap outliers before writing.</p>
+                        <div class="outputs">
+                            <span class="chip output">Dry-run console report</span>
+                            <span class="chip output">Canonical audit report</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Run ingest path</h4>
+                        <p>Send the payload through `process_tournament.py`, which delegates to ingest, archiving, and site update steps.</p>
+                        <div class="outputs">
+                            <span class="chip output">Archived JSON</span>
+                            <span class="chip output">Processed screenshots folder</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Refresh derived outputs</h4>
+                        <p>Rebuild the site and methodology bundle so every downstream page is driven by the canonical CSV model.</p>
+                        <div class="outputs">
+                            <span class="chip output">website/index.html: Latest Results</span>
+                            <span class="chip output">website/index.html: Results Log</span>
+                            <span class="chip output">website/MoneyList2025.html</span>
+                            <span class="chip output">website/MoneyList2026.html</span>
+                            <span class="chip output">website/HandicapAnalysis.html</span>
+                            <span class="chip output">website/Handicap_Detail.html</span>
+                            <span class="chip output">website/PlayerStats.html</span>
+                            <span class="chip output">website/AverageScore.html</span>
+                            <span class="chip output">website/HoleIndex.html</span>
+                            <span class="chip output">website/results_2025-11-15.html</span>
+                            <span class="chip output">website/results_2025-12-20.html</span>
+                            <span class="chip output">website/results_2026-01-17.html</span>
+                            <span class="chip output">website/results_2026-02-21.html</span>
+                            <span class="chip output">website/results_2026-03-21.html</span>
+                            <span class="chip output">website/data/methodology_data.json</span>
+                            <span class="chip output">website/data/methodology_data.js</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Hold the guardrails</h4>
+                        <p>Only publish when explicitly requested, and only if unrelated repo files are not dirty.</p>
+                        <div class="checks">
+                            <span class="chip check">Publish scope limited to data/ and website/</span>
+                        </div>
+                    </div>
+
+                    <div class="lane-label lane-script">Scripts / Filesystem</div>
+                    <div class="cell">
+                        <h4>Input zone</h4>
+                        <p>The working area receives screenshots and later stores the reviewed JSON plus archived history.</p>
+                        <div class="outputs">
+                            <span class="chip output">input/screenshots/</span>
+                            <span class="chip output">input/history/</span>
+                            <span class="chip output">input/processed/</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>No canonical writes yet</h4>
+                        <p>Extraction remains pre-write. This is where errors should be fixed before anything touches `data/`.</p>
+                        <div class="checks">
+                            <span class="chip warn">Canonical CSVs unchanged</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Payload ready</h4>
+                        <p>The JSON now becomes the single reviewed handoff into the automated validation and ingest path.</p>
+                        <div class="outputs">
+                            <span class="chip output">input/tournament_data.json</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Validation commands</h4>
+                        <p>`process_tournament.py --dry-run` and `audit_canonical_data.py` enforce canonical integrity before write.</p>
+                        <div class="outputs">
+                            <span class="chip output">No duplicate canonical keys</span>
+                            <span class="chip output">No score/handicap coverage gaps</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Canonical write</h4>
+                        <p>`ingest_data.py` upserts by canonical keys and preserves the intended exception for payout-only financial rows.</p>
+                        <div class="outputs">
+                            <span class="chip output">data/scores.csv</span>
+                            <span class="chip output">data/financials.csv</span>
+                            <span class="chip output">data/handicaps.csv</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Generated site outputs</h4>
+                        <p>`update_site.py` rebuilds report pages, money lists, analysis pages, tournament recaps, and methodology data.</p>
+                        <div class="outputs">
+                            <span class="chip output">website/index.html: Latest Results</span>
+                            <span class="chip output">website/index.html: Results Log + links</span>
+                            <span class="chip output">website/MoneyList2025.html</span>
+                            <span class="chip output">website/MoneyList2026.html</span>
+                            <span class="chip output">website/HandicapAnalysis.html</span>
+                            <span class="chip output">website/Handicap_Detail.html</span>
+                            <span class="chip output">website/PlayerStats.html</span>
+                            <span class="chip output">website/AverageScore.html</span>
+                            <span class="chip output">website/HoleIndex.html</span>
+                            <span class="chip output">website/results_2025-11-15.html</span>
+                            <span class="chip output">website/results_2025-12-20.html</span>
+                            <span class="chip output">website/results_2026-01-17.html</span>
+                            <span class="chip output">website/results_2026-02-21.html</span>
+                            <span class="chip output">website/results_2026-03-21.html</span>
+                            <span class="chip output">Results links live on index.html</span>
+                            <span class="chip output">Latest Results card lives on index.html</span>
+                            <span class="chip output">website/data/methodology_data.json</span>
+                            <span class="chip output">website/data/methodology_data.js</span>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <h4>Optional publish step</h4>
+                        <p>`update_site.py --publish` stages only `data/` and `website/` and refuses to run if unrelated files are dirty.</p>
+                        <div class="checks">
+                            <span class="chip warn">Explicit publish only</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>File Flow Diagram</h2>
+            <p>
+                This view is better than a pure swim lane for cleanup work because it makes the file lifecycle obvious.
+                It shows which artifacts are canonical, which are reviewed intermediates, and which are generated outputs.
+            </p>
+            <div class="flow-grid">
+                <div class="flow-card">
+                    <h3>1. Raw Inputs</h3>
+                    <ul>
+                        <li><code>input/screenshots/</code></li>
+                        <li>Gross scorecards</li>
+                        <li>Leaderboard / partner screens</li>
+                        <li>Skins / payout screens</li>
+                        <li>Handicap list screens</li>
+                    </ul>
+                </div>
+                <div class="flow-card">
+                    <h3>2. Reviewed Intermediate</h3>
+                    <ul>
+                        <li><code>docs/tournament_data.template.json</code> starting point</li>
+                        <li><code>input/tournament_data.json</code></li>
+                        <li><code>scores[]</code></li>
+                        <li><code>financials[]</code></li>
+                        <li><code>handicaps[]</code></li>
+                        <li><code>metadata</code> and approximations</li>
+                    </ul>
+                </div>
+                <div class="flow-card">
+                    <h3>3. Validation Layer</h3>
+                    <ul>
+                        <li><code>scripts/process_tournament.py --dry-run</code></li>
+                        <li><code>scripts/audit_canonical_data.py</code></li>
+                        <li>Duplicate-key checks</li>
+                        <li>Score / handicap coverage checks</li>
+                        <li>Handicap outlier checks</li>
+                    </ul>
+                </div>
+                <div class="flow-card">
+                    <h3>4. Canonical Data</h3>
+                    <ul>
+                        <li><code>data/scores.csv</code></li>
+                        <li><code>data/financials.csv</code></li>
+                        <li><code>data/handicaps.csv</code></li>
+                        <li><code>data/player_aliases.json</code></li>
+                        <li><code>data/course_info.csv</code></li>
+                    </ul>
+                </div>
+                <div class="flow-card">
+                    <h3>5. Generated Website</h3>
+                    <ul>
+                        <li><code>website/index.html</code> latest results block</li>
+                        <li><code>website/index.html</code> results log and tournament links</li>
+                        <li><code>website/MoneyList2025.html</code> and <code>website/MoneyList2026.html</code></li>
+                        <li><code>website/HandicapAnalysis.html</code></li>
+                        <li><code>website/Handicap_Detail.html</code></li>
+                        <li><code>website/PlayerStats.html</code></li>
+                        <li><code>website/AverageScore.html</code> and <code>website/HoleIndex.html</code></li>
+                        <li><code>website/results_2025-11-15.html</code></li>
+                        <li><code>website/results_2025-12-20.html</code></li>
+                        <li><code>website/results_2026-01-17.html</code></li>
+                        <li><code>website/results_2026-02-21.html</code></li>
+                        <li><code>website/results_2026-03-21.html</code></li>
+                        <li><code>website/data/methodology_data.*</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Outputs to Verify Before Cleanup</h2>
+            <p>
+                These checks are the safest way to decide what is redundant later. If a file is never produced, never read,
+                or is superseded by a newer generated artifact, it becomes a cleanup candidate.
+            </p>
+            <div class="artifact-grid">
+                <div class="artifact-card">
+                    <h3>Reviewed Intermediate</h3>
+                    <p><code>input/tournament_data.json</code> should be the only reviewed handoff into the ingest path.</p>
+                    <ul>
+                        <li>Start from <code>docs/tournament_data.template.json</code></li>
+                        <li>Contains one entry or an <code>update_batch</code></li>
+                        <li>Includes metadata and source notes when needed</li>
+                        <li>Keeps handicap snapshots in <code>handicaps[]</code>, not <code>scores[]</code></li>
+                        <li>Can be dry-run without canonical writes</li>
+                    </ul>
+                </div>
+                <div class="artifact-card">
+                    <h3>Canonical Files</h3>
+                    <p>The canonical layer should remain the source of truth for all rebuilds.</p>
+                    <ul>
+                        <li><code>scores.csv</code> stores round performance and differential</li>
+                        <li><code>handicaps.csv</code> stores handicap snapshots by date and player</li>
+                        <li><code>financials.csv</code> stores payouts by date, player, and category</li>
+                    </ul>
+                </div>
+                <div class="artifact-card">
+                    <h3>Generated Files</h3>
+                    <p>Everything under <code>website/</code> should be reproducible from canonical data.</p>
+                    <ul>
+                        <li>HTML reports refresh from <code>scripts/update_site.py</code></li>
+                        <li><code>index.html</code> gets both the latest results section and the results log links</li>
+                        <li>Current recap pages exist for 2025-11-15, 2025-12-20, 2026-01-17, 2026-02-21, and 2026-03-21</li>
+                        <li>Methodology bundle refreshes during the same local build</li>
+                        <li>No manual edits should be required for generated outputs</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Step-by-Step Test Checklist</h2>
+            <p>
+                Run these in order while you validate the pipeline. Once you know which outputs are authoritative at each
+                stage, we can confidently remove redundant scripts, stale generated artifacts, or legacy workflow files.
+            </p>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Test 1</h3>
+                    <p>Put a small screenshot batch in <code>input/screenshots/</code> and confirm the batch boundary is obvious.</p>
+                </div>
+                <div class="test-card">
+                    <h3>Test 2</h3>
+                    <p>Start from <code>docs/tournament_data.template.json</code>, then create or review <code>input/tournament_data.json</code> and confirm every needed field exists before running scripts.</p>
+                </div>
+                <div class="test-card">
+                    <h3>Test 3</h3>
+                    <p>Run the dry run and verify you get validation feedback without any canonical file mutations.</p>
+                </div>
+                <div class="test-card">
+                    <h3>Test 4</h3>
+                    <p>Run the canonical audit and confirm duplicate issues stay at zero and score-to-handicap coverage is complete.</p>
+                </div>
+                <div class="test-card">
+                    <h3>Test 5</h3>
+                    <p>Run the real local process and verify the canonical CSVs update only where the payload intended.</p>
+                </div>
+                <div class="test-card">
+                    <h3>Test 6</h3>
+                    <p>Open the affected pages in <code>website/</code> and verify that the same canonical change appears everywhere it should.</p>
+                </div>
+            </div>
+            <p class="footer-note">
+                Suggested next phase after testing: list which files are canonical, reviewed intermediates, generated outputs,
+                one-off migration utilities, or historical references. That classification will make the cleanup pass much safer.
+            </p>
+        </section>
+    </div>
+</body>
+</html>
