@@ -42,4 +42,4 @@ For a tournament or multi-round analysis:
 ---
 
 ## Python Implementation
-(See accompanying script `tournament_analyzer.py` for the code to run this on your tournament data).
+(The accompanying prototype script used for this analysis has been retired from the active repo because it is not part of the current workflow.)

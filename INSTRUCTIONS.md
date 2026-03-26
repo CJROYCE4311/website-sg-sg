@@ -1,82 +1,18 @@
-# After Tournament: How to Update the Site
+# Tool Compatibility Instructions
 
-## Step 1: Collect Screenshots from Squabbit
+This repo keeps one shared operating workflow so different assistants can point to the same source of truth.
 
-Take screenshots of these screens (in any order):
+Use these documents in this order:
 
-| Screenshot | What to Capture |
-|------------|-----------------|
-| **Scorecards** | Each player's hole-by-hole scores (may need multiple screenshots if many players) |
-| **Leaderboard** | Shows rankings, gross/net scores |
-| **Payouts** | Best Ball, Quota, Net Medal amounts |
-| **Skins** | Gross Skins and Net Skins winners/amounts |
-| **Teams** | Partner pairings (if team game) |
+1. [README.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/README.md)
+2. [AGENTS.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/AGENTS.md)
+3. [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md)
+4. [docs/WORKFLOW_VISUAL.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/WORKFLOW_VISUAL.html)
 
-**Tip:** Make sure player names and their handicap index (the number in parentheses) are visible.
+Reviewed payload starting point:
 
----
+- [docs/tournament_data.template.json](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/tournament_data.template.json)
 
-## Step 2: Drop Screenshots in the Folder
+Operator validation page:
 
-Move all screenshots to:
-```
-website-sg-sg/input/screenshots/
-```
-
----
-
-## Step 3: Build the Weekly JSON
-
-Use Codex to extract the screenshots in manageable batches:
-
-- scorecards
-- leaderboard / placements
-- payouts / skins
-- partner pairings and handicap indices
-
-Consolidate the reviewed result into:
-
-```
-input/tournament_data.json
-```
-
----
-
-## Step 4: Validate First
-
-Run:
-
-```bash
-./venv/bin/python scripts/process_tournament.py input/tournament_data.json --dry-run
-```
-
-If anything looks wrong, fix the JSON and rerun the dry run.
-
----
-
-## Step 5: Done
-
-Run:
-
-```bash
-./venv/bin/python scripts/process_tournament.py input/tournament_data.json
-```
-
-This will:
-- Validates the data
-- Updates the database
-- Regenerates the website
-- Archives everything
-
-It does not commit or deploy unless you explicitly request that later.
-
----
-
-## Quick Reference
-
-| What | Where |
-|------|-------|
-| Drop screenshots | `input/screenshots/` |
-| Archived screenshots | `input/processed/YYYY-MM-DD/` |
-| Archived JSON | `input/history/YYYY-MM-DD.json` |
-| Tournament date | Format as `YYYY-MM-DD` (e.g., `2026-02-21`) |
+- [website/DataAudit.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/website/DataAudit.html)
