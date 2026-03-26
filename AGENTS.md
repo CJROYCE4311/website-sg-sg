@@ -16,6 +16,12 @@ Generated site output lives in `website/`.
 
 Codex is the primary driver for this repo. Keep the workflow LLM-agnostic where possible and avoid tool-specific assumptions in the operating docs.
 
+Document roles:
+- `README.md`: shortest operator quick start
+- `AGENTS.md`: repo policy, guardrails, and runbook
+- `docs/CODEX_WORKFLOW.md`: compact detailed workflow
+- `docs/WORKFLOW_VISUAL.html`: swim-lane and output map
+
 ## Local Workflow
 
 ```
@@ -50,7 +56,10 @@ This clone is intended to run locally in parallel with the production deployment
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.json
    ```
-6. Review the affected pages in `website/`.
+6. Review the affected pages in `website/`, especially:
+   - `website/DataAudit.html`
+   - `website/index.html`
+   - the latest `website/results_*.html`
 7. Only publish from this clone if you explicitly choose to:
    ```bash
    ./venv/bin/python scripts/update_site.py --publish
@@ -86,4 +95,5 @@ This clone is intended to run locally in parallel with the production deployment
 - Tournament year rolls November and December rounds into the following year.
 - Repeat runs for the same payout payload do not duplicate `financials.csv`, and corrected reruns replace the prior value for that date/player/category key.
 - `input/` is a local working area and is intentionally ignored by git.
-- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md) for the shorter operating summary.
+- Use [website/DataAudit.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/website/DataAudit.html) as the operator cross-check page for payouts, handicaps, and gross scores by player/date.
+- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md) for the compact operating summary.

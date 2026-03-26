@@ -1,6 +1,11 @@
-# SG@SG Monthly Processing
+# SG@SG Operator Quick Start
 
-This is the main operator guide for updating the SG@SG data and website.
+This is the shortest operator guide for updating SG@SG data and rebuilding the website locally.
+
+For the full repo policy and workflow details, also see:
+- [AGENTS.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/AGENTS.md)
+- [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md)
+- [docs/WORKFLOW_VISUAL.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/WORKFLOW_VISUAL.html)
 
 ## What You Do
 
@@ -41,7 +46,7 @@ This is the main operator guide for updating the SG@SG data and website.
    - player metric pages
    - tournament recap pages
 
-## Monthly Processing Commands
+## Processing Commands
 
 Validate only:
 
@@ -68,6 +73,8 @@ Before final processing, review:
 - team pairings
 - individual in-the-money results
 - payout amounts
+- gross score totals by player
+- [website/DataAudit.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/website/DataAudit.html) for payouts, handicaps, and gross totals by date/player
 - any player name that looks new or inconsistent
 
 For repeatable payload structure, use:
@@ -94,6 +101,9 @@ The source-of-truth files are:
 The generated website files are under:
 - `website/`
 
+The main operator validation page is:
+- `website/DataAudit.html`
+
 ## Notes
 
 - Stableford individual results currently roll into the money list through the `NetMedal` category, but the recap display can still show `Stableford`.
@@ -101,4 +111,4 @@ The generated website files are under:
 - The ingest step now aborts before writing if it detects duplicate canonical keys in scores, financials, or handicaps.
 - Publish commands now stage only `data/` and `website/`, and they abort if unrelated repo files are dirty.
 - By default this repo works locally only. Commit, push, and deploy happen only when explicitly requested.
-- The main local workflow docs are also in `AGENTS.md`.
+- `README.md` is the quick start, `AGENTS.md` is the repo policy/runbook, and `docs/CODEX_WORKFLOW.md` is the compact detailed workflow.

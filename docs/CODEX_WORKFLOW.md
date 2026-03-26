@@ -25,6 +25,7 @@ Canonical notes:
 - `2025-01-04` is a known event with financial and handicap data but no gross scorecard data.
 
 Generated:
+- `website/DataAudit.html`
 - `website/index.html`
 - `website/MoneyList2025.html`
 - `website/MoneyList2026.html`
@@ -76,6 +77,8 @@ Working area:
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.json
    ```
 7. Review local site output under `website/`.
+   - Start with `website/DataAudit.html` to cross-check payouts, handicaps, and gross totals by date/player.
+   - Then review `website/index.html` and the latest `website/results_*.html`.
 
 ## Safety Model
 
