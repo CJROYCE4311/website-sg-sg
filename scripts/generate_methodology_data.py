@@ -5,6 +5,7 @@ import pandas as pd
 
 
 BASE_SLOPE = 113
+GROSS_SCORE_HOLE_TOTAL_ISSUE = "gross_score_hole_total_mismatch"
 
 
 def normalize_course_columns(course_df):
@@ -42,6 +43,31 @@ def normalize_scores_columns(scores_df):
     if 'Round_Handicap' in normalized.columns and 'Differential' not in normalized.columns:
         normalized = normalized.rename(columns={'Round_Handicap': 'Differential'})
     return normalized
+
+
+def load_score_analysis_exclusions(base_dir):
+    exceptions_path = os.path.join(base_dir, 'data', 'score_audit_exceptions.csv')
+    if not os.path.exists(exceptions_path):
+        return set()
+
+    exceptions = pd.read_csv(exceptions_path)
+    required_cols = {'Date', 'Player', 'Issue'}
+    if exceptions.empty or not required_cols.issubset(exceptions.columns):
+        return set()
+
+    issue_mask = exceptions['Issue'].astype(str) == GROSS_SCORE_HOLE_TOTAL_ISSUE
+    if 'Status' in exceptions.columns:
+        issue_mask &= exceptions['Status'].astype(str).str.lower().ne('resolved')
+
+    return set(
+        map(
+            tuple,
+            exceptions.loc[issue_mask, ['Date', 'Player']]
+            .fillna('')
+            .astype(str)
+            .itertuples(index=False, name=None),
+        )
+    )
 
 
 def strokes_received_for_hole(course_handicap, hole_si):
@@ -85,6 +111,19 @@ def main():
 
     scores_df['Date'] = pd.to_datetime(scores_df['Date'])
     handicaps_df['Date'] = pd.to_datetime(handicaps_df['Date'])
+    exclusions = load_score_analysis_exclusions(base_dir)
+    if exclusions:
+        keep_mask = ~scores_df.apply(
+            lambda row: (
+                row['Date'].strftime('%Y-%m-%d'),
+                str(row['Player']),
+            ) in exclusions,
+            axis=1,
+        )
+        excluded_count = int((~keep_mask).sum())
+        scores_df = scores_df[keep_mask].copy()
+        if excluded_count:
+            print(f"Excluded {excluded_count} unresolved historical score row(s) from methodology analysis.")
     if 'Handicap_Index' in handicaps_df.columns:
         handicaps_df['Handicap_Index'] = pd.to_numeric(handicaps_df['Handicap_Index'], errors='coerce')
     if 'Course_Handicap' in handicaps_df.columns:

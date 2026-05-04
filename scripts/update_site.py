@@ -24,12 +24,14 @@ SCORES_FILE = os.path.join(DATA_DIR, "scores.csv")
 FINANCIALS_FILE = os.path.join(DATA_DIR, "financials.csv")
 HANDICAPS_FILE = os.path.join(DATA_DIR, "handicaps.csv")
 COURSE_FILE = os.path.join(DATA_DIR, "course_info.csv")
+SCORE_AUDIT_EXCEPTIONS_FILE = os.path.join(DATA_DIR, "score_audit_exceptions.csv")
 
 # Constants
 COURSE_RATING, SLOPE_RATING = 70.5, 124
 COURSE_PAR = 72
 BASE_SLOPE = 113
 MONTHS_LOOKBACK = 13
+GROSS_SCORE_HOLE_TOTAL_ISSUE = "gross_score_hole_total_mismatch"
 FORMAT_DISPLAY_OVERRIDES = {
     "2026-03-21": {
         "format_name": "Stableford",
@@ -102,6 +104,47 @@ def ensure_scores_columns(df):
         df['Differential'] = pd.to_numeric(df['Differential'], errors='coerce')
 
     return df
+
+
+def load_score_analysis_exclusions():
+    if not os.path.exists(SCORE_AUDIT_EXCEPTIONS_FILE):
+        return set()
+
+    exceptions = pd.read_csv(SCORE_AUDIT_EXCEPTIONS_FILE)
+    required_cols = {'Date', 'Player', 'Issue'}
+    if exceptions.empty or not required_cols.issubset(exceptions.columns):
+        return set()
+
+    issue_mask = exceptions['Issue'].astype(str) == GROSS_SCORE_HOLE_TOTAL_ISSUE
+    if 'Status' in exceptions.columns:
+        issue_mask &= exceptions['Status'].astype(str).str.lower().ne('resolved')
+
+    return set(
+        map(
+            tuple,
+            exceptions.loc[issue_mask, ['Date', 'Player']]
+            .fillna('')
+            .astype(str)
+            .itertuples(index=False, name=None),
+        )
+    )
+
+
+def flag_score_analysis_exclusions(scores_df):
+    scores = scores_df.copy()
+    exclusions = load_score_analysis_exclusions()
+    if not exclusions or scores.empty or not {'Date', 'Player'}.issubset(scores.columns):
+        scores['_Score_Analysis_Excluded'] = False
+        return scores
+
+    scores['_Score_Analysis_Excluded'] = scores.apply(
+        lambda row: (
+            pd.to_datetime(row['Date']).strftime('%Y-%m-%d'),
+            str(row['Player']),
+        ) in exclusions,
+        axis=1,
+    )
+    return scores
 
 def get_barstool_writeup(date_str, format_name, winners_html):
     seeded_random = random.Random(f"{date_str}|{format_name}")
@@ -433,6 +476,8 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
     categories = ['BestBall', 'Quota', 'NetMedal', 'GrossSkins', 'NetSkins']
 
     score_cols = ['Date', 'Player', 'Gross_Score', 'Differential']
+    if '_Score_Analysis_Excluded' in scores_df.columns:
+        score_cols.append('_Score_Analysis_Excluded')
     score_base = scores_df[score_cols].copy() if not scores_df.empty else pd.DataFrame(columns=score_cols)
 
     handicap_cols = ['Date', 'Player', 'Handicap_Index', 'Course_Handicap']
@@ -477,6 +522,15 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
             notes.append('Payout-only row')
         if pd.notna(row.get('Gross_Score')) and pd.isna(row.get('Handicap_Index')):
             notes.append('Missing handicap snapshot')
+        excluded_value = row.get('_Score_Analysis_Excluded', False)
+        if isinstance(excluded_value, str):
+            excluded = excluded_value.lower() == 'true'
+        elif pd.isna(excluded_value):
+            excluded = False
+        else:
+            excluded = bool(excluded_value)
+        if excluded:
+            notes.append('Excluded from gross-score analysis')
         return '; '.join(notes)
 
     base['Review_Notes'] = base.apply(build_note, axis=1)
@@ -802,6 +856,8 @@ def run_pipeline():
     course = pd.read_csv(COURSE_FILE) if os.path.exists(COURSE_FILE) else pd.DataFrame()
 
     scores = ensure_scores_columns(scores)
+    scores = flag_score_analysis_exclusions(scores)
+    score_analysis_scores = scores[~scores['_Score_Analysis_Excluded']].copy()
     if not handicaps.empty:
         handicaps = ensure_handicap_columns(handicaps)
     
@@ -850,12 +906,16 @@ def run_pipeline():
         base['Course_Handicap_Used'] = pd.NA
 
     base['Tournament_Year'] = base['Date'].apply(lambda x: x.year + 1 if x.month >= 11 else x.year)
+    score_analysis_base = base[~base['_Score_Analysis_Excluded']].copy()
+    excluded_score_count = int(base['_Score_Analysis_Excluded'].sum())
+    if excluded_score_count:
+        print(f"ℹ️ Excluded {excluded_score_count} unresolved historical score row(s) from scoring analytics.")
 
     # 3. Handicap Analysis (Best 3/6)
     analysis_data_best3 = []
     analysis_data_best6 = []
     analysis_data_last2 = []
-    analysis_base = base[base['Date'] >= cutoff_date].copy()
+    analysis_base = score_analysis_base[score_analysis_base['Date'] >= cutoff_date].copy()
 
     for player, group in analysis_base.groupby('Player'):
         if group['Course_Handicap_Used'].dropna().empty:
@@ -908,9 +968,9 @@ def run_pipeline():
 
     # 4. Handicap Detail (Drilldown)
     detail_lines = ["Player\tDate\tGross Score\tCourse HCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
-    rounds_map = base.groupby('Player').size().to_dict()
+    rounds_map = score_analysis_base.groupby('Player').size().to_dict()
     
-    for _, row in base.sort_values(['Player', 'Date'], ascending=[True, False]).iterrows():
+    for _, row in score_analysis_base.sort_values(['Player', 'Date'], ascending=[True, False]).iterrows():
         d_str = row['Date'].strftime('%Y-%m-%d')
         hcp = row.get('Course_Handicap_Used', pd.NA)
         gross = row['Gross_Score']
@@ -950,7 +1010,7 @@ def run_pipeline():
 
     # 6. Hole Averages
     score_cols = [f'H{i}' for i in range(1, 19)]
-    melted = scores.melt(id_vars=['Player', 'Date'], value_vars=score_cols, var_name='hole', value_name='score')
+    melted = score_analysis_scores.melt(id_vars=['Player', 'Date'], value_vars=score_cols, var_name='hole', value_name='score')
     melted['hole'] = pd.to_numeric(melted['hole'].str.replace('H', ''), errors='coerce')
     
     hole_avg = melted.groupby('hole')['score'].mean().round(2).reset_index()
@@ -973,7 +1033,7 @@ def run_pipeline():
     inject_to_html("HoleIndex.html", "rawData", hole_index_data, is_json=True)
 
     # 8. Player Stats
-    stats_df = base.copy()
+    stats_df = score_analysis_base.copy()
     stats_df['Net_Score'] = stats_df['Gross_Score'] - stats_df['Course_Handicap_Used']
     stats_df['Net_to_Par'] = stats_df['Net_Score'] - 72
     

@@ -95,5 +95,5 @@ This clone is intended to run locally in parallel with the production deployment
 - Tournament year rolls November and December rounds into the following year.
 - Repeat runs for the same payout payload do not duplicate `financials.csv`, and corrected reruns replace the prior value for that date/player/category key.
 - `input/` is a local working area and is intentionally ignored by git.
-- Use [website/DataAudit.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/website/DataAudit.html) as the operator cross-check page for payouts, handicaps, and gross scores by player/date.
-- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md) for the compact operating summary.
+- Use [website/DataAudit.html](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/website/DataAudit.html) as the operator cross-check page for payouts, handicaps, and gross scores by player/date.
+- See [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/docs/CODEX_WORKFLOW.md) for the compact operating summary.

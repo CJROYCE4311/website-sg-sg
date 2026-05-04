@@ -3,9 +3,9 @@
 This is the shortest operator guide for updating SG@SG data and rebuilding the website locally.
 
 For the full repo policy and workflow details, also see:
-- [AGENTS.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/AGENTS.md)
-- [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/CODEX_WORKFLOW.md)
-- [docs/WORKFLOW_VISUAL.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/docs/WORKFLOW_VISUAL.html)
+- [AGENTS.md](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/AGENTS.md)
+- [docs/CODEX_WORKFLOW.md](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/docs/CODEX_WORKFLOW.md)
+- [docs/WORKFLOW_VISUAL.html](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/docs/WORKFLOW_VISUAL.html)
 
 ## What You Do
 
@@ -74,7 +74,7 @@ Before final processing, review:
 - individual in-the-money results
 - payout amounts
 - gross score totals by player
-- [website/DataAudit.html](/Users/chrisroyce/Developer/Personal_Projects/website-sg-sg/website/DataAudit.html) for payouts, handicaps, and gross totals by date/player
+- [website/DataAudit.html](/Users/chrisroyce/Golf/Tournaments/website-sg-sg/website/DataAudit.html) for payouts, handicaps, and gross totals by date/player
 - any player name that looks new or inconsistent
 
 For repeatable payload structure, use:

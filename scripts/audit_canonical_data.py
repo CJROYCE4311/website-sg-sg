@@ -5,6 +5,7 @@ import os
 import sys
 
 from ingest_data import (
+    audit_has_fatal_issues,
     build_canonical_audit,
     load_db,
     load_player_aliases,
@@ -65,7 +66,7 @@ def main():
         print()
         audit_payload(args.json_file)
 
-    fatal = bool(audit['duplicate_issues']) or not audit['missing_snapshots'].empty
+    fatal = audit_has_fatal_issues(audit)
     sys.exit(1 if fatal else 0)
 
 

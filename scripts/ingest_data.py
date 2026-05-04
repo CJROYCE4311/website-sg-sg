@@ -18,6 +18,7 @@ SCORES_FILE = os.path.join(DB_DIR, "scores.csv")
 FINANCIALS_FILE = os.path.join(DB_DIR, "financials.csv")
 HANDICAPS_FILE = os.path.join(DB_DIR, "handicaps.csv")
 ALIASES_FILE = os.path.join(DB_DIR, "player_aliases.json")
+SCORE_AUDIT_EXCEPTIONS_FILE = os.path.join(DB_DIR, "score_audit_exceptions.csv")
 
 # Validation constants
 HOLE_COLS = [f'H{i}' for i in range(1, 19)]
@@ -30,6 +31,7 @@ COURSE_SLOPE = 124
 COURSE_RATING = 70.5
 COURSE_PAR = 72
 KNOWN_PARTIAL_SCORE_DATES = {"2025-01-04"}
+GROSS_SCORE_HOLE_TOTAL_ISSUE = "gross_score_hole_total_mismatch"
 
 
 def calculate_differential(gross_score):
@@ -374,8 +376,70 @@ def validate_canonical_state(scores, financials, handicaps):
     return issues
 
 
+def load_score_audit_exceptions():
+    if not os.path.exists(SCORE_AUDIT_EXCEPTIONS_FILE):
+        return set()
+
+    exceptions = pd.read_csv(SCORE_AUDIT_EXCEPTIONS_FILE)
+    required_cols = {'Date', 'Player', 'Issue'}
+    if exceptions.empty or not required_cols.issubset(exceptions.columns):
+        return set()
+
+    return set(
+        map(
+            tuple,
+            exceptions[['Date', 'Player', 'Issue']]
+            .fillna('')
+            .astype(str)
+            .itertuples(index=False, name=None),
+        )
+    )
+
+
+def score_total_mismatches(scores):
+    columns = ['Date', 'Player', 'Gross_Score', 'Hole_Total', 'Delta']
+    required_cols = set(['Date', 'Player', 'Gross_Score'] + HOLE_COLS)
+    if scores.empty or not required_cols.issubset(scores.columns):
+        return pd.DataFrame(columns=columns)
+
+    score_check = scores.copy()
+    for col in HOLE_COLS + ['Gross_Score']:
+        score_check[col] = pd.to_numeric(score_check[col], errors='coerce')
+
+    complete_holes = score_check[HOLE_COLS].notna().all(axis=1)
+    known_partial = score_check['Date'].astype(str).isin(KNOWN_PARTIAL_SCORE_DATES)
+    score_check['Hole_Total'] = score_check[HOLE_COLS].sum(axis=1)
+    mismatches = score_check[
+        complete_holes
+        & ~known_partial
+        & score_check['Gross_Score'].notna()
+        & (score_check['Hole_Total'] != score_check['Gross_Score'])
+    ].copy()
+    if mismatches.empty:
+        return pd.DataFrame(columns=columns)
+
+    mismatches['Delta'] = mismatches['Gross_Score'] - mismatches['Hole_Total']
+    return mismatches[columns].sort_values(['Date', 'Player']).reset_index(drop=True)
+
+
 def build_canonical_audit(scores, financials, handicaps):
     issues = validate_canonical_state(scores, financials, handicaps)
+    gross_total_mismatches = score_total_mismatches(scores)
+    score_exceptions = load_score_audit_exceptions()
+    if not gross_total_mismatches.empty:
+        exception_mask = gross_total_mismatches.apply(
+            lambda row: (
+                str(row['Date']),
+                str(row['Player']),
+                GROSS_SCORE_HOLE_TOTAL_ISSUE,
+            ) in score_exceptions,
+            axis=1,
+        )
+        known_gross_total_mismatches = gross_total_mismatches[exception_mask].reset_index(drop=True)
+        unapproved_gross_total_mismatches = gross_total_mismatches[~exception_mask].reset_index(drop=True)
+    else:
+        known_gross_total_mismatches = gross_total_mismatches.copy()
+        unapproved_gross_total_mismatches = gross_total_mismatches.copy()
 
     score_keys = (
         scores[['Date', 'Player']].drop_duplicates()
@@ -426,6 +490,9 @@ def build_canonical_audit(scores, financials, handicaps):
         'missing_snapshots': missing_snapshots,
         'orphan_snapshots': orphan_snapshots,
         'orphan_financials': orphan_financials,
+        'gross_total_mismatches': gross_total_mismatches,
+        'known_gross_total_mismatches': known_gross_total_mismatches,
+        'unapproved_gross_total_mismatches': unapproved_gross_total_mismatches,
         'incomplete_report_rows': incomplete_report_rows,
     }
 
@@ -436,6 +503,14 @@ def print_canonical_audit(audit):
     print(f"   - Scores missing handicap snapshots: {len(audit['missing_snapshots'])}")
     print(f"   - Handicap snapshots without score rows: {len(audit['orphan_snapshots'])}")
     print(f"   - Financial rows without score rows: {len(audit['orphan_financials'])}")
+    print(
+        "   - Gross scores not matching hole totals: {total} "
+        "({known} known exceptions, {unapproved} unapproved)".format(
+            total=len(audit['gross_total_mismatches']),
+            known=len(audit['known_gross_total_mismatches']),
+            unapproved=len(audit['unapproved_gross_total_mismatches']),
+        )
+    )
     print(f"   - Report rows with blank handicap-dependent fields: {audit['incomplete_report_rows']}")
 
     if audit['duplicate_issues']:
@@ -464,12 +539,29 @@ def print_canonical_audit(audit):
         if len(audit['orphan_financials']) > len(sample):
             print(f"     * ... and {len(audit['orphan_financials']) - len(sample)} more")
 
+    if not audit['unapproved_gross_total_mismatches'].empty:
+        sample = audit['unapproved_gross_total_mismatches'].head(25)
+        print("   Unapproved gross score / hole total mismatches:")
+        for row in sample.itertuples(index=False):
+            print(f"     * {row.Date} | {row.Player}: gross {row.Gross_Score:g}, holes {row.Hole_Total:g}, delta {row.Delta:+g}")
+        if len(audit['unapproved_gross_total_mismatches']) > len(sample):
+            print(f"     * ... and {len(audit['unapproved_gross_total_mismatches']) - len(sample)} more")
+
+    if not audit['known_gross_total_mismatches'].empty:
+        sample = audit['known_gross_total_mismatches'].head(25)
+        print("   Known gross score / hole total exceptions:")
+        for row in sample.itertuples(index=False):
+            print(f"     * {row.Date} | {row.Player}: gross {row.Gross_Score:g}, holes {row.Hole_Total:g}, delta {row.Delta:+g}")
+        if len(audit['known_gross_total_mismatches']) > len(sample):
+            print(f"     * ... and {len(audit['known_gross_total_mismatches']) - len(sample)} more")
+
 
 def audit_has_fatal_issues(audit):
     return (
         bool(audit['duplicate_issues'])
         or not audit['missing_snapshots'].empty
         or not audit['orphan_snapshots'].empty
+        or not audit['unapproved_gross_total_mismatches'].empty
     )
 
 def get_handicap_review_flags(data, current_handicaps):

@@ -1,0 +1,3 @@
+Date,Player,Issue,Reason,Reviewed_On,Status
+2025-04-05,Greg Funk,gross_score_hole_total_mismatch,"Canonical gross is 79 and H1-H18 sum to 76. No April 5 Squabbit CSV, reviewed JSON, or source screenshot was available locally; retain in canonical history but exclude from gross-score analytics until source is recovered.",2026-05-04,unresolved
+2025-04-05,Todd Densley,gross_score_hole_total_mismatch,"Canonical gross is 73 and H1-H18 sum to 77. No April 5 Squabbit CSV, reviewed JSON, or source screenshot was available locally; retain in canonical history but exclude from gross-score analytics until source is recovered.",2026-05-04,unresolved
