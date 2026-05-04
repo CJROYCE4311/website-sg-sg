@@ -10,8 +10,8 @@ This document classifies the current repo contents by operational importance so 
   - Required for ingest, validation, rebuild, or current runbooks.
 - **Keep: Static Site Support**
   - User-facing site pages that are not regenerated from data each run.
-- **Keep: Compatibility Pointer**
-  - Tool-specific entry documents that intentionally point back to the shared repo workflow.
+- **Keep: Shared Agent Policy**
+  - One tool-agnostic entry point for agent behavior and repo workflow.
 - **Keep: Generated Output**
   - Reproducible from canonical data and scripts.
 - **Keep: Historical Reference**
@@ -27,6 +27,9 @@ These are the operational source-of-truth files.
 - `data/financials.csv`
 - `data/handicaps.csv`
 - `data/course_info.csv`
+- `data/tournaments.csv`
+- `data/team_pairings.csv`
+- `data/score_audit_exceptions.csv`
 - `data/player_aliases.json`
 
 ## Keep: Active Pipeline
@@ -35,10 +38,12 @@ These drive the current local workflow.
 
 - `AGENTS.md`
 - `README.md`
+- `INSTRUCTIONS.md`
+- `docs/SGSG_Monthly_Tournament_Runbook.docx`
+- `docs/SQUABBIT_CSV_IMPORT.md`
 - `docs/CODEX_WORKFLOW.md`
-- `docs/SOP_SG-SG.md`
-- `docs/WORKFLOW_VISUAL.html`
 - `docs/tournament_data.template.json`
+- `scripts/import_squabbit_csv.py`
 - `scripts/ingest_data.py`
 - `scripts/process_tournament.py`
 - `scripts/update_site.py`
@@ -60,13 +65,11 @@ These are active site shells or support pages and are linked from current pages.
 - `website/assets/SG-SG Map.png`
 - `website/assets/IMG_Sign-Ups.png`
 
-## Keep: Compatibility Pointer
+## Keep: Shared Agent Policy
 
-These should stay lean and tool-agnostic so future assistants can find the same shared workflow.
+Use one shared, tool-agnostic repo policy instead of separate assistant-specific runbooks.
 
-- `CLAUDE.md`
-- `gemini.md`
-- `INSTRUCTIONS.md`
+- `AGENTS.md`
 
 ## Keep: Generated Output
 
@@ -103,6 +106,8 @@ These still provide useful context, especially for model rationale and handoff h
 - `archive/Tournament_Analysis_Methodology.md`
 - `archive/2025-12-27_Legacy_Python1.md`
 - `archive/2025-12-27_Legacy_Python2.md`
+- `docs/SOP_SG-SG.md`
+- `docs/WORKFLOW_VISUAL.html`
 
 Recommended action:
 
@@ -122,7 +127,7 @@ Future policy decisions may still include:
 These are important operationally but should remain local rather than being treated as durable repo assets.
 
 - `input/`
-  - Working area for screenshots, reviewed payloads, and archives.
+  - Working area for Squabbit reconciliation reports, reviewed payloads, local WHS identity maps, raw CSV archives, screenshot fallbacks, and ingest history.
 - `venv/`
   - Local Python environment.
 - `SESSION_HANDOFF.md`
@@ -149,12 +154,12 @@ This is the safest order for cleanup.
      - `archive/Tournament_Analysis_Methodology.md`
    - Suggested destination: `archive/` or `docs/history/`
 
-3. **Keep tool-specific entry docs lean**
-   - Keep:
-     - `CLAUDE.md`
-     - `gemini.md`
-     - `INSTRUCTIONS.md`
-   - Use them only as compatibility shims that point back to the shared workflow docs.
+3. **Retire tool-specific entry docs**
+   - Completed:
+     - removed `CLAUDE.md`
+     - removed `gemini.md`
+   - Current policy:
+     - use `AGENTS.md` as the canonical agent policy and workflow pointer.
 
 4. **Retire legacy utilities**
    - Completed:

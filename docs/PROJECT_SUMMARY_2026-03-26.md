@@ -202,15 +202,14 @@ Moved to `archive/`:
 - `archive/2026_Handicap_Model_Report.pdf`
 - `archive/Tournament_Analysis_Methodology.md`
 
-### Tool-specific documents retained as compatibility shims
+### Tool-specific documents retired
 
-These were intentionally kept, but reduced to lean pointer docs:
+Current repo policy uses `AGENTS.md` as the shared source of truth. The old tool-specific pointer files were later removed:
 
 - `CLAUDE.md`
 - `gemini.md`
-- `INSTRUCTIONS.md`
 
-They now point back to the shared repo workflow instead of carrying separate operational logic.
+`INSTRUCTIONS.md` remains only as a generic compatibility pointer back to the shared workflow docs.
 
 ### Legacy utilities retired
 
