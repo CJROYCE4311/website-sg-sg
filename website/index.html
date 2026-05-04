@@ -4,83 +4,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saturday Game at Sterling Grove monthly tournament dashboard.">
     <title>Saturday Game at Sterling Grove</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="sgsg.css">
 </head>
 
-<body class="bg-gray-50 text-gray-900 font-sans antialiased">
-
-    <!-- Header Section -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="assets/SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
-                <a href="Index.html"
-                    class="text-xl font-bold tracking-tight text-gray-900 hover:text-green-700 transition">SG@SG </a>
-                <img src="assets/Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="#home" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
             </div>
 
-            <nav class="hidden md:flex space-x-8 text-sm font-medium">
-                <a href="#home" class="text-gray-500 hover:text-green-700 transition">Home</a>
-                <a href="#events" class="text-gray-500 hover:text-green-700 transition">Events</a>
-                <a href="#leaderboard" class="text-gray-500 hover:text-green-700 transition">Leaderboard</a>
-                <a href="#contact" class="text-gray-500 hover:text-green-700 transition">Contact</a>
+            <nav class="nav-menu">
+                <a class="nav-btn active" href="#home">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="#events">
+                    <i data-lucide="trophy" aria-hidden="true"></i>
+                    <span>Latest Results</span>
+                </a>
+                <a class="nav-btn" href="#leaderboard">
+                    <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+                    <span>Dashboards</span>
+                </a>
+                <a class="nav-btn" href="#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
+                <a class="nav-btn" href="#calendar">
+                    <i data-lucide="calendar-days" aria-hidden="true"></i>
+                    <span>Calendar</span>
+                </a>
+                <a class="nav-btn" href="#contact">
+                    <i data-lucide="messages-square" aria-hidden="true"></i>
+                    <span>Contact</span>
+                </a>
             </nav>
 
-            <button class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
-                    </path>
-                </svg>
-            </button>
-        </div>
-    </header>
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
+            </div>
+        </aside>
 
-    <!-- Hero Section -->
-    <section id="home" class="relative bg-gray-900 h-[400px] flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <img src="assets/IMGGolfCourse.jpeg" alt="Course" class="w-full h-full object-cover opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
-        </div>
-
-        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight drop-shadow-md">
-                Saturday Game at <span class="text-green-400">Sterling Grove</span>
-            </h1>
-            <p class="text-lg text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Connect, compete, and enjoy the game. A monthly tournament created by members, for members.
-            </p>
-            <a href="#events"
-                class="inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition duration-200 shadow-lg hover:shadow-green-500/30">
-                View Upcoming Events
-            </a>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-6 py-12 space-y-16">
-
-        <!-- Main Grid -->
-        <section id="events" class="grid lg:grid-cols-2 gap-8">
-
-            
-            <!-- 1. Latest Results (Top Left) -->
-            <div id="announcements" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-8">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="p-2 bg-green-100 text-green-700 rounded-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Latest Results</h2>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Tournament Dashboard</p>
+                        <h2>Saturday Game at Sterling Grove</h2>
+                        <p>Monthly member competition, season standings, payouts, results, and tournament archives.</p>
                     </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
+                </div>
+            </header>
 
-                    <div class="prose prose-green max-w-none text-gray-600 space-y-4">
+            <div class="content-wrapper">
+                <section id="home" class="brand-band">
+                    <div class="brand-copy">
+                        <p class="eyebrow">SG@SG Monthly Tournament</p>
+                        <h1>Golf, skins, standings, and Sterling Grove bragging rights.</h1>
+                        <p class="brand-summary">A member-run Saturday game with canonical scoring, payout tables, standings, and tournament recaps in one place.</p>
+                        <div class="hero-actions">
+                            <a class="primary-action" href="MoneyList2026.html">
+                                <i data-lucide="wallet-cards" aria-hidden="true"></i>
+                                2026 Money List
+                            </a>
+                            <a class="secondary-action" href="#results">
+                                <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                                Results Log
+                            </a>
+                        </div>
+                    </div>
+                    <div class="brand-logo-panel">
+                        <img src="assets/sgsg-tournament-logo.png" alt="SG@SG tournament logo">
+                    </div>
+                </section>
+
+                <section class="stats-grid" aria-label="Tournament quick stats">
+                    <div class="stat-card glass-panel">
+                        <h3>Latest Tournament</h3>
+                        <p class="stat-value">Mar 21</p>
+                        <p class="stat-sub">2026 Stableford recap</p>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <h3>Next Date</h3>
+                        <p class="stat-value">May 23</p>
+                        <p class="stat-sub">2026 calendar slot</p>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <h3>Primary View</h3>
+                        <p class="stat-value">Money</p>
+                        <p class="stat-sub">Payouts by player and year</p>
+                    </div>
+                    <div class="stat-card glass-panel accent-card">
+                        <h3>Signups</h3>
+                        <p class="stat-value">Squabbit</p>
+                        <p class="stat-sub">Tournament entry and field updates</p>
+                    </div>
+                </section>
+
+                <section id="events" class="section-grid">
+                    <article class="card glass-panel latest-results">
+                        <div class="card-header">
+                            <div>
+                                <p class="eyebrow">Latest Results</p>
+                                <h2 class="section-title">Tournament Recap</h2>
+                            </div>
+                            <a class="small-link" href="results_2026-03-21.html">Open recap</a>
+                        </div>
+                        <div class="prose prose-green max-w-none text-gray-600 space-y-4">
     <div class="mb-4 space-y-1">
         <h4 class="font-bold text-gray-900 text-lg m-0">Latest Tournament Recap</h4>
         <p class="text-sm m-0">Results for 2026-03-21.</p>
@@ -88,115 +135,85 @@
     <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
         <div class="space-y-4">
     <div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Best Ball</h5><ul class='list-none pl-0 m-0 space-y-1'><li class='m-0'>1: Jon Vrolyks & Nick Rucci - $144</li><li class='m-0'>T2: Jeff De Laveaga & Paul Benga - $48</li><li class='m-0'>T2: Michael Falagrady & Nate Adams - $48</li></ul></div><div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Stableford</h5><ul class='list-none pl-0 m-0 space-y-1'><li class='m-0'>T1: Jeff De Laveaga - $77</li><li class='m-0'>T1: Jon Vrolyks - $77</li><li class='m-0'>T1: Nick Rucci - $77</li></ul></div></div><div class='space-y-4'><div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Gross Skins</h5><ul class='list-none pl-0 m-0 space-y-1'><li class='m-0'>Nate Adams - $75</li><li class='m-0'>James Feutz - $50</li><li class='m-0'>Hans Anderson - $25</li><li class='m-0'>Jeff De Laveaga - $25</li><li class='m-0'>Travis Ingram - $25</li></ul></div><div><h5 class='font-bold text-gray-900 mb-1 mt-0'>Net Skins</h5><ul class='list-none pl-0 m-0 space-y-1'><li class='m-0'>Patrick Schueppert - $230</li></ul></div></div></div><p class='text-xs text-gray-400 mt-6 mb-0 italic'>Latest Tournament: 2026-03-21</p>
+                        </div>
+                    </article>
+
+                    <article id="calendar" class="card glass-panel image-card">
+                        <div class="image-card-media">
+                            <img src="assets/IMG_Sign-Ups.png" alt="SG@SG tournament sign-up board">
+                        </div>
+                        <div class="image-card-body">
+                            <div class="card-header compact">
+                                <div>
+                                    <p class="eyebrow">2026 Calendar</p>
+                                    <h2 class="section-title">Tournament Dates</h2>
+                                </div>
+                                <a class="small-link" href="https://www.squabbitgolf.com" target="_blank" rel="noopener noreferrer">Squabbit</a>
+                            </div>
+                            <div class="date-grid">
+                                <span>Nov 15, 2025</span>
+                                <span>Dec 20, 2025</span>
+                                <span>Jan 17, 2026</span>
+                                <span>Feb 21, 2026</span>
+                                <span>Mar 21, 2026</span>
+                                <span class="date-next" data-date="2026-05-23">May 23, 2026</span>
+                                <span>Jun 20, 2026</span>
+                                <span>Jul 25, 2026</span>
+                                <span>Aug 15, 2026</span>
+                                <span>Sep 12, 2026</span>
+                                <span>Oct 10, 2026</span>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <section id="leaderboard" class="dashboard-section">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Dashboards</p>
+                            <h2 class="section-title">Standings and Analysis</h2>
+                        </div>
+                        <p>Season-long tables for payouts, player performance, and course trends.</p>
                     </div>
-                </div>
-            </div>
 
-<!-- 2. Dashboards (Top Right) -->
-            <div id="leaderboard"
-                class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900">Dashboards</h3>
-                </div>
-                <p class="text-sm text-gray-500 mb-6">Track payouts, player statistics, and season standings.</p>
-
-                <div class="space-y-3">
-                    <a href="MoneyList2026.html"
-                        class="block w-full text-center bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200">
-                        2026 Money List
-                    </a>
-                    <a href="PlayerStats.html"
-                        class="block w-full text-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition duration-200">
-                        Player Statistics
-                    </a>
-                    <a href="AverageScore.html"
-                        class="block w-full text-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition duration-200">
-                        Average Score
-                    </a>
-                    <a href="HoleIndex.html"
-                        class="block w-full text-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition duration-200">
-                        Hole Index
-                    </a>
-                    <a href="MoneyList2025.html"
-                        class="block w-full text-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition duration-200">
-                        2025 Money List
-                    </a>
-                </div>
-            </div>
-
-            <!-- 3. Upcoming Tournaments (Bottom Left) -->
-            <div
-                class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-md transition">
-                <div class="relative h-48 bg-gray-100 overflow-hidden">
-                    <img src="assets/IMG_Sign-Ups.png" alt="Sign Ups"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                        <h3 class="text-white font-bold text-xl">Upcoming Tournaments</h3>
-                    </div>
-                </div>
-
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <a href="https://www.squabbitgolf.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center text-green-600 font-semibold hover:text-green-700">
-                            Signup via Squabbit
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
+                    <div class="link-grid">
+                        <a class="link-card glass-panel primary-link" href="MoneyList2026.html">
+                            <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                            <span>2026 Money List</span>
+                            <small>Current season payouts</small>
+                        </a>
+                        <a class="link-card glass-panel" href="PlayerStats.html">
+                            <i data-lucide="users" aria-hidden="true"></i>
+                            <span>Player Statistics</span>
+                            <small>Gross, net, and player averages</small>
+                        </a>
+                        <a class="link-card glass-panel" href="AverageScore.html">
+                            <i data-lucide="line-chart" aria-hidden="true"></i>
+                            <span>Average Score</span>
+                            <small>Hole-by-hole scoring profile</small>
+                        </a>
+                        <a class="link-card glass-panel" href="HoleIndex.html">
+                            <i data-lucide="flag" aria-hidden="true"></i>
+                            <span>Hole Index</span>
+                            <small>Difficulty by Sterling Grove hole</small>
+                        </a>
+                        <a class="link-card glass-panel" href="MoneyList2025.html">
+                            <i data-lucide="archive" aria-hidden="true"></i>
+                            <span>2025 Money List</span>
+                            <small>Prior season payouts</small>
                         </a>
                     </div>
+                </section>
 
-                    <div class="grid sm:grid-cols-2 gap-6 text-sm">
-                        <div class="space-y-3">
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Nov 15, 2025</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Dec 20, 2025</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Jan 17, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Feb 21, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Mar 21, 2026</div>
+                <section id="results" class="dashboard-section">
+                    <article class="card glass-panel">
+                        <div class="card-header">
+                            <div>
+                                <p class="eyebrow">Archive</p>
+                                <h2 class="section-title">2026 Results Log</h2>
+                            </div>
                         </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Apr 4, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>May 9, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Jul 25, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Aug 15, 2026</div>
-                            <div class="flex items-center text-gray-700"><span
-                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Sep 12, 2026</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. 2026 Results Log (Bottom Right) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 bg-purple-100 text-purple-600 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-gray-900">2026 Results Log</h3>
-                </div>
-                <p class="text-sm text-gray-500 mb-6">Recaps and results from every 2026 tournament.</p>
-                <div id="results-log-container" class="space-y-3 text-sm">
+                        <div id="results-log-container" class="results-log">
                     <!-- RESULTS-LOG-START -->
                     <a href="results_2026-03-21.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
                         <div class="flex items-center">
@@ -234,106 +251,65 @@
                         <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
                     </a>
                     <!-- RESULTS-LOG-END -->
-                </div>
+                        </div>
+                    </article>
+                </section>
+
+                <section id="contact" class="contact-band">
+                    <div>
+                        <p class="eyebrow">Sterling Grove Golf & Country Club</p>
+                        <h2>11440 North Greenwich Boulevard<br>Surprise, AZ 85388</h2>
+                    </div>
+                    <div class="contact-list">
+                        <a href="https://wa.me/14806202088">Paul Benga</a>
+                        <a href="https://wa.me/17024996923">Patrick Schueppert</a>
+                        <a href="https://wa.me/17195104311">Chris Royce</a>
+                    </div>
+                </section>
+
+                <footer class="quiet-footer">
+                    <a href="AdminPortal.html">Admin and review</a>
+                </footer>
             </div>
+        </main>
+    </div>
 
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer id="contact" class="bg-white border-t border-gray-200 mt-20">
-        <div class="container mx-auto px-6 py-12">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div class="col-span-2">
-                    <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <img src="assets/Sterling Grove Flag.png" alt="Logo" class="h-6 w-6">
-                        Sterling Grove Golf & Country Club
-                    </h4>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        11440 North Greenwich Boulevard<br>
-                        Surprise, AZ 85388
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-gray-900 mb-4">Contact</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li>Paul Benga: <a href="https://wa.me/14806202088"
-                                class="text-green-600 hover:underline">WhatsApp</a></li>
-                        <li>Patrick Schueppert: <a href="https://wa.me/17024996923"
-                                class="text-green-600 hover:underline">WhatsApp</a></li>
-                        <li>Chris Royce: <a href="https://wa.me/17195104311"
-                                class="text-green-600 hover:underline">WhatsApp</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-gray-900 mb-4">Quick Links</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="#home" class="hover:text-green-600">Home</a></li>
-                        <li><a href="#events" class="hover:text-green-600">Events</a></li>
-                        <li><a href="#leaderboard" class="hover:text-green-600">Leaderboard</a></li>
-                        <li><a href="AdminPortal.html" class="hover:text-green-600">SG@SG Administrators</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div
-                class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
-                <p>&copy; 2026 SG@SG. Member Driven.</p>
-                <div class="flex gap-4">
-                    <a href="DataAudit.html" class="text-xs text-gray-400 hover:text-gray-600 transition">Data Audit</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Custom Styles (Inlined) -->
-    <style>
-        /* Custom Alert Animation */
-        .alert-banner {
-            animation: flash-alert 1.2s linear infinite;
-        }
-
-        @keyframes flash-alert {
-
-            0%,
-            50% {
-                background-color: #991b1b;
-                color: #fff;
-            }
-
-            51%,
-            100% {
-                background-color: #f87171;
-                color: #1f2937;
-            }
-        }
-    </style>
-
-    <!-- Main Script (Inlined) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
-        // Handle mobile menu toggle
         document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuButton = document.querySelector('button.md\:hidden');
-            const nav = document.querySelector('nav');
-
-            if (mobileMenuButton && nav) {
-                mobileMenuButton.addEventListener('click', () => {
-                    nav.classList.toggle('hidden');
-                    nav.classList.toggle('flex');
-                    nav.classList.toggle('flex-col');
-                    nav.classList.toggle('absolute');
-                    nav.classList.toggle('top-16');
-                    nav.classList.toggle('left-0');
-                    nav.classList.toggle('w-full');
-                    nav.classList.toggle('bg-white');
-                    nav.classList.toggle('p-4');
-                    nav.classList.toggle('shadow-lg');
-                    nav.classList.toggle('z-50');
-                });
+            if (window.lucide) {
+                window.lucide.createIcons();
             }
+
+            const navLinks = Array.from(document.querySelectorAll('.nav-menu a[href^="#"]'));
+            const sections = navLinks
+                .map((link) => document.querySelector(link.getAttribute('href')))
+                .filter(Boolean);
+
+            navLinks.forEach((link) => {
+                link.addEventListener('click', () => {
+                    navLinks.forEach((item) => item.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                const visibleEntry = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+
+                if (!visibleEntry) {
+                    return;
+                }
+
+                const activeLink = navLinks.find((link) => link.getAttribute('href') === `#${visibleEntry.target.id}`);
+                if (activeLink) {
+                    navLinks.forEach((item) => item.classList.remove('active'));
+                    activeLink.classList.add('active');
+                }
+            }, { rootMargin: '-20% 0px -55% 0px', threshold: [0.2, 0.4, 0.6] });
+
+            sections.forEach((section) => observer.observe(section));
         });
     </script>
 </body>

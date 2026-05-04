@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SG@SG Money List 2026</title>
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
     <!-- Vite will handle this in development, but for direct linking we point to src -->
     <!-- Mobile Menu Script (Inlined) -->
     <script>
@@ -29,7 +30,7 @@
             }
         });
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Keep page-specific styles if needed, but prefer utility classes */
@@ -57,36 +58,28 @@
             border-top: 6px solid #1f2937;
         }
     </style>
+    <link rel="stylesheet" href="dashboard-theme.css">
 </head>
 
 <body class="bg-gray-50 text-gray-800">
 
-    <!-- Header Section (Duplicate for now, will be componentized later if needed) -->
-    <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="assets/SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
-                <a href="index.html" class="text-xl font-bold text-gray-900 hover:text-green-700 transition">SG@SG</a>
-                <img src="assets/Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
-            </div>
-            <nav class="hidden md:flex space-x-8 text-sm font-medium">
-                <a href="index.html" class="text-gray-500 hover:text-green-700 transition">Home</a>
-                <a href="index.html#events" class="text-gray-500 hover:text-green-700 transition">Events</a>
-                <a href="index.html#leaderboard"
-                    class="text-gray-900 font-bold hover:text-green-700 transition">Leaderboard</a>
-                <a href="index.html#contact" class="text-gray-500 hover:text-green-700 transition">Contact</a>
+    <header class="sgsg-dashboard-header">
+        <div class="sgsg-dashboard-nav">
+            <a class="sgsg-dashboard-brand" href="index.html">
+                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG tournament logo">
+                <span><span class="sgsg-dashboard-title">SG@SG</span><span class="sgsg-dashboard-subtitle">Money List 2026</span></span>
+            </a>
+            <nav class="sgsg-dashboard-links" aria-label="Dashboard navigation">
+                <a href="index.html">Home</a>
+                <a href="index.html#leaderboard" aria-current="page">Dashboards</a>
+                <a href="MoneyList2025.html">2025</a>
+                <a href="index.html#contact">Contact</a>
             </nav>
-            <button class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
-                    </path>
-                </svg>
-            </button>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="container mx-auto px-6 py-12 min-h-screen">
+    <main class="container sgsg-dashboard-shell mx-auto px-6 py-12 min-h-screen">
         <section id="money-list" class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <h2 class="text-3xl font-bold text-gray-900">Money List 2026</h2>
@@ -136,17 +129,10 @@
     </main>
 
     <!-- Footer Section -->
-    <footer id="contact" class="bg-gray-800 text-white mt-auto">
-        <div class="container mx-auto px-6 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="font-bold text-lg mb-4">Sterling Grove Golf Club</h3>
-                    <p class="text-gray-400 text-sm">11440 North Greenwich Blvd<br>Surprise, AZ 85388</p>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
-                <p>&copy; 2026 SG@SG. All Rights Reserved.</p>
-            </div>
+    <footer id="contact" class="sgsg-dashboard-footer">
+        <div class="sgsg-dashboard-footer-inner">
+            <p>Sterling Grove Golf & Country Club · Surprise, AZ</p>
+            <a href="index.html">Back to SG@SG</a>
         </div>
     </footer>
 

@@ -1,0 +1,163 @@
+:root {
+    --sgsg-green: #00351f;
+    --sgsg-green-2: #005936;
+    --sgsg-gold: #d4a437;
+    --sgsg-paper: #fbfbf7;
+    --sgsg-border: rgba(0, 89, 54, 0.16);
+}
+
+body {
+    background:
+        linear-gradient(180deg, rgba(0, 89, 54, 0.05), transparent 320px),
+        var(--sgsg-paper) !important;
+    letter-spacing: 0;
+}
+
+.sgsg-dashboard-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--sgsg-border);
+    box-shadow: 0 8px 24px rgba(0, 53, 31, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.sgsg-dashboard-nav {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.85rem 1.5rem;
+}
+
+.sgsg-dashboard-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: #111827;
+    text-decoration: none;
+}
+
+.sgsg-dashboard-brand img {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border: 1px solid var(--sgsg-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.sgsg-dashboard-title {
+    display: block;
+    color: var(--sgsg-green);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.55rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.sgsg-dashboard-subtitle {
+    display: block;
+    margin-top: 0.15rem;
+    color: #5f6b7a;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.sgsg-dashboard-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.sgsg-dashboard-links a {
+    min-width: 0;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.72rem;
+    border-radius: 8px;
+    color: #4b5563;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.sgsg-dashboard-links a:hover,
+.sgsg-dashboard-links a[aria-current="page"] {
+    color: var(--sgsg-green);
+    background: #e8f3ec;
+}
+
+.sgsg-dashboard-shell {
+    max-width: 1240px;
+}
+
+.sgsg-dashboard-shell > section,
+.sgsg-dashboard-shell > .bg-white {
+    border-color: var(--sgsg-border) !important;
+    box-shadow: 0 12px 28px rgba(0, 53, 31, 0.08) !important;
+}
+
+.sgsg-dashboard-shell h1,
+.sgsg-dashboard-shell h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    letter-spacing: 0;
+}
+
+.sgsg-dashboard-footer {
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: var(--sgsg-green);
+    border-top: 3px solid var(--sgsg-gold);
+}
+
+.sgsg-dashboard-footer-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+}
+
+.sgsg-dashboard-footer a {
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.sgsg-dashboard-footer a:hover {
+    color: var(--sgsg-gold);
+}
+
+@media (max-width: 760px) {
+    .sgsg-dashboard-nav,
+    .sgsg-dashboard-footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sgsg-dashboard-links {
+        width: calc(100vw - 3rem);
+        max-width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sgsg-dashboard-links a {
+        width: 100%;
+        padding-inline: 0.35rem;
+        text-align: center;
+        white-space: normal;
+    }
+}

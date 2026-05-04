@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>SG@SG Admin and Review</title>
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .gate-hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-stone-50 text-gray-900 antialiased min-h-screen">
+    <header class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+            <a href="index.html" class="flex items-center gap-3 text-gray-900 no-underline">
+                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG logo" class="h-12 w-12 object-contain rounded-lg border border-gray-200">
+                <div>
+                    <p class="text-xs font-bold uppercase text-green-700">SG@SG</p>
+                    <h1 class="text-xl font-bold">Admin and Review</h1>
+                </div>
+            </a>
+            <a href="index.html" class="text-sm text-gray-500 hover:text-green-700 transition">Public site</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10">
+        <section id="accessRequired" class="gate-hidden max-w-xl mx-auto bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900">Administrator access required</h2>
+            <p class="mt-3 text-gray-600">Open this page through the administrator passcode screen.</p>
+            <a href="AdminPortal.html" class="mt-6 inline-flex items-center justify-center rounded-lg bg-green-700 px-5 py-3 text-white font-bold no-underline hover:bg-green-800 transition">Go to administrator access</a>
+        </section>
+
+        <section id="reviewContent" class="gate-hidden max-w-5xl mx-auto">
+            <div class="mb-8">
+                <p class="text-sm font-bold uppercase text-green-700">Private Operator Hub</p>
+                <h2 class="mt-1 text-4xl font-bold text-gray-900" style="font-family: 'Playfair Display', Georgia, serif;">Admin and Review</h2>
+                <p class="mt-3 max-w-3xl text-gray-600">Operator-only audit, handicap, methodology, and review pages for tournament processing and internal validation.</p>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+                <a href="DataAudit.html" class="block rounded-lg border border-green-200 bg-green-900 p-6 text-white no-underline shadow-sm hover:bg-green-800 transition">
+                    <p class="text-sm font-bold uppercase text-green-100">Canonical Review</p>
+                    <h3 class="mt-2 text-2xl font-bold">Data Audit</h3>
+                    <p class="mt-2 text-green-50">Cross-check payouts, gross scores, and handicap snapshots by player/date.</p>
+                </a>
+
+                <a href="HandicapAnalysis.html" class="block rounded-lg border border-gray-200 bg-white p-6 no-underline shadow-sm hover:border-green-500 hover:bg-green-50 transition">
+                    <p class="text-sm font-bold uppercase text-green-700">Handicap Model</p>
+                    <h3 class="mt-2 text-2xl font-bold text-gray-900">Handicap Analysis Audit</h3>
+                    <p class="mt-2 text-gray-600">Review best-round models, trend views, and handicap adjustment evidence.</p>
+                </a>
+
+                <a href="Handicap_Detail.html" class="block rounded-lg border border-gray-200 bg-white p-6 no-underline shadow-sm hover:border-green-500 hover:bg-green-50 transition">
+                    <p class="text-sm font-bold uppercase text-green-700">Round Detail</p>
+                    <h3 class="mt-2 text-2xl font-bold text-gray-900">Handicap Detail</h3>
+                    <p class="mt-2 text-gray-600">Player-by-player round history and differential detail.</p>
+                </a>
+
+                <a href="MethodologyReport.html" class="block rounded-lg border border-gray-200 bg-white p-6 no-underline shadow-sm hover:border-green-500 hover:bg-green-50 transition">
+                    <p class="text-sm font-bold uppercase text-green-700">Methodology</p>
+                    <h3 class="mt-2 text-2xl font-bold text-gray-900">Methodology & Performance Report</h3>
+                    <p class="mt-2 text-gray-600">Internal notes on model logic, assumptions, and performance review.</p>
+                </a>
+
+                <a href="HandicapProbability.html" class="block rounded-lg border border-gray-200 bg-white p-6 no-underline shadow-sm hover:border-green-500 hover:bg-green-50 transition">
+                    <p class="text-sm font-bold uppercase text-green-700">Reference</p>
+                    <h3 class="mt-2 text-2xl font-bold text-gray-900">USGA Odds Table</h3>
+                    <p class="mt-2 text-gray-600">Probability reference for exceptional scoring and handicap review.</p>
+                </a>
+
+                <a href="HandicapProposal.html" class="block rounded-lg border border-gray-200 bg-white p-6 no-underline shadow-sm hover:border-green-500 hover:bg-green-50 transition">
+                    <p class="text-sm font-bold uppercase text-green-700">Proposal</p>
+                    <h3 class="mt-2 text-2xl font-bold text-gray-900">Read Proposal: Fairer Competition</h3>
+                    <p class="mt-2 text-gray-600">Internal proposal notes for competition and handicap policy changes.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const hasAccess = sessionStorage.getItem('sgsgAdminAccess') === 'granted';
+        document.getElementById(hasAccess ? 'reviewContent' : 'accessRequired').classList.remove('gate-hidden');
+    </script>
+</body>
+
+</html>

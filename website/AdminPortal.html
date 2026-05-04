@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SG@SG Administrator Portal</title>
+    <meta name="robots" content="noindex,nofollow">
+    <title>SG@SG Administrator Access</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,10 +17,9 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="assets/SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
+                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG logo" class="h-10 w-10 object-contain">
                 <a href="index.html"
                     class="text-xl font-bold tracking-tight text-gray-900 hover:text-green-700 transition">SG@SG </a>
-                <img src="assets/Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
             </div>
 
             <nav class="hidden md:flex space-x-8 text-sm font-medium">
@@ -41,7 +41,7 @@
                         </svg>
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900">Administrator Access</h2>
-                    <p class="text-gray-500 text-sm mt-2">Please enter the passcode to continue.</p>
+                    <p class="text-gray-500 text-sm mt-2">Please enter the administrator passcode to continue.</p>
                 </div>
 
                 <div id="loginForm" class="space-y-6">
@@ -67,58 +67,8 @@
 
                 <div id="successContent" class="hidden text-center space-y-6 animate-fade-in">
                     <div class="p-4 bg-green-50 rounded-lg border border-green-100 text-green-800">
-                        <p class="font-medium">Access Granted</p>
+                        <p class="font-medium">Access granted. Opening admin and review.</p>
                     </div>
-
-                    <a href="HandicapAnalysis.html"
-                        class="block w-full py-4 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-between group">
-                        <span>Handicap Analysis Audit</span>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
-
-                    <a href="MethodologyReport.html"
-                        class="block w-full py-4 px-6 bg-white border border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-800 font-bold rounded-xl shadow-sm hover:shadow-md transition transform hover:-translate-y-1 flex items-center justify-between group">
-                        <span>Methodology & Performance Report</span>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 transition" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
-
-                    <a href="HandicapProposal.html"
-                        class="block w-full py-4 px-6 bg-white border border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-800 font-bold rounded-xl shadow-sm hover:shadow-md transition transform hover:-translate-y-1 flex items-center justify-between group">
-                        <span>Read Proposal: Fairer Competition</span>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 transition" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
-
-                    <a href="Handicap_Detail.html"
-                        class="block w-full py-4 px-6 bg-white border border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-800 font-bold rounded-xl shadow-sm hover:shadow-md transition transform hover:-translate-y-1 flex items-center justify-between group">
-                        <span>Handicap Detail</span>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 transition" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
-
-                    <a href="HandicapProbability.html"
-                        class="block w-full py-4 px-6 bg-white border border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-800 font-bold rounded-xl shadow-sm hover:shadow-md transition transform hover:-translate-y-1 flex items-center justify-between group">
-                        <span>USGA Odds Table</span>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-green-600 transition" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </a>
                 </div>
             </div>
             <div class="bg-gray-50 px-8 py-4 border-t border-gray-100 text-center">
@@ -144,6 +94,10 @@
                 errorMsg.classList.add('hidden');
                 form.classList.add('hidden');
                 success.classList.remove('hidden');
+                sessionStorage.setItem('sgsgAdminAccess', 'granted');
+                window.setTimeout(() => {
+                    window.location.href = 'AdminReview.html';
+                }, 300);
             } else {
                 errorMsg.classList.remove('hidden');
                 input.classList.add('border-red-300', 'focus:ring-red-500', 'focus:border-red-500');
