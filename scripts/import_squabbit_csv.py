@@ -11,6 +11,7 @@ import csv
 import json
 import os
 import re
+import shutil
 from collections import defaultdict
 from datetime import datetime
 
@@ -24,6 +25,8 @@ DEFAULT_IDENTITY_MAP = os.path.join(PROJECT_ROOT, "input", "identity", "squabbit
 DEFAULT_OUTPUT = os.path.join(PROJECT_ROOT, "input", "tournament_data.from_squabbit.json")
 DEFAULT_REPORT_JSON = os.path.join(PROJECT_ROOT, "input", "squabbit_reconciliation_report.json")
 DEFAULT_REPORT_MD = os.path.join(PROJECT_ROOT, "input", "squabbit_reconciliation_report.md")
+DEFAULT_TEAM_PAIRINGS = os.path.join(DATA_DIR, "team_pairings.csv")
+DEFAULT_SOURCE_ARCHIVE = os.path.join(PROJECT_ROOT, "input", "raw_exports")
 
 SCORES_FILE = os.path.join(DATA_DIR, "scores.csv")
 FINANCIALS_FILE = os.path.join(DATA_DIR, "financials.csv")
@@ -94,6 +97,11 @@ def calculate_differential(gross_score):
 
 def calculate_course_handicap(index_value):
     return round(float(index_value) * COURSE_SLOPE / BASE_SLOPE + (COURSE_RATING - COURSE_PAR), 1)
+
+
+def tournament_season(date_str):
+    date_value = datetime.strptime(date_str, "%Y-%m-%d")
+    return date_value.year + 1 if date_value.month >= 11 else date_value.year
 
 
 def load_aliases():
@@ -543,6 +551,31 @@ def infer_format_name(team_section, stableford_section):
     return "Tournament"
 
 
+def build_team_pairing_rows(date_str, format_name, teams, team_labels, team_payouts, source_file):
+    rows = []
+    season = tournament_season(date_str)
+    for team in teams:
+        players = team["players"][:4]
+        row = {
+            "Date": date_str,
+            "Season": season,
+            "Format": format_name,
+            "Team_Key": team["key"],
+            "Team_Label": team["label"],
+            "Team_Rank": team_labels.get(team["key"], ""),
+            "Team_Score": "" if team.get("rank_value") is None else team["rank_value"],
+            "Team_Payout_Total": format_amount(team_payouts.get(team["key"], 0.0)),
+            "Player_Count": len(team["players"]),
+            "Player_1": players[0] if len(players) > 0 else "",
+            "Player_2": players[1] if len(players) > 1 else "",
+            "Player_3": players[2] if len(players) > 2 else "",
+            "Player_4": players[3] if len(players) > 3 else "",
+            "Source_File": source_file,
+        }
+        rows.append(row)
+    return rows
+
+
 def parse_squabbit_csv(path, aliases, canonical_case_map, identity_map, reconcile_canonical=False):
     reports = defaultdict(list)
     rows = read_csv_rows(path)
@@ -619,6 +652,8 @@ def parse_squabbit_csv(path, aliases, canonical_case_map, identity_map, reconcil
     team_category = "Quota" if team_section and team_section["title"] == "Team Quota" else "BestBall"
     team_pool = sum(len(team["players"]) for team in teams) * TEAM_BUY_IN
     team_payouts = payout_by_rank(ranked_teams, team_pool)
+    format_name = infer_format_name(team_section, stableford_section)
+    team_pairings = build_team_pairing_rows(date_str, format_name, teams, team_labels, team_payouts, source_file)
     financials = build_financials(
         players,
         team_category,
@@ -650,7 +685,8 @@ def parse_squabbit_csv(path, aliases, canonical_case_map, identity_map, reconcil
             "source": "squabbit_csv",
             "source_file": source_file,
             "tournament_name": tournament_name,
-            "format_name": infer_format_name(team_section, stableford_section),
+            "format_name": format_name,
+            "_team_pairings": team_pairings,
             "screenshots": [],
             "source_notes": [
                 "Generated from Squabbit CSV export.",
@@ -699,7 +735,7 @@ def write_tournaments_file(path, entries):
 
     for entry in entries:
         date = datetime.strptime(entry["date"], "%Y-%m-%d")
-        season = date.year + 1 if date.month >= 11 else date.year
+        season = tournament_season(entry["date"])
         rows_by_date[entry["date"]] = {
             "Tournament_ID": f"{season}-{date:%m%d}",
             "Date": entry["date"],
@@ -714,6 +750,84 @@ def write_tournaments_file(path, entries):
         writer.writeheader()
         for row in sorted(rows_by_date.values(), key=lambda item: item["Date"]):
             writer.writerow(row)
+
+
+def team_pairing_rows_for_entry(entry):
+    return entry.get("metadata", {}).get("_team_pairings", [])
+
+
+def write_team_pairings_file(path, entries, reports):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fieldnames = [
+        "Date",
+        "Season",
+        "Format",
+        "Team_Key",
+        "Team_Label",
+        "Team_Rank",
+        "Team_Score",
+        "Team_Payout_Total",
+        "Player_Count",
+        "Player_1",
+        "Player_2",
+        "Player_3",
+        "Player_4",
+        "Source_File",
+    ]
+    rows_by_key = {}
+    existing_dates = set()
+    if os.path.exists(path):
+        with open(path, newline="") as input_file:
+            for row in csv.DictReader(input_file):
+                date = row.get("Date", "")
+                team_key = row.get("Team_Key", "")
+                if date and team_key:
+                    rows_by_key[(date, team_key)] = {field: row.get(field, "") for field in fieldnames}
+                    existing_dates.add(date)
+
+    for entry in entries:
+        rows = team_pairing_rows_for_entry(entry)
+        if not rows:
+            continue
+        if entry["date"] in existing_dates:
+            reports["team_pairings_preserved"].append({
+                "date": entry["date"],
+                "existing_rows": len([key for key in rows_by_key if key[0] == entry["date"]]),
+                "incoming_rows": len(rows),
+            })
+            continue
+        for row in rows:
+            rows_by_key[(row["Date"], row["Team_Key"])] = {field: row.get(field, "") for field in fieldnames}
+
+    with open(path, "w", newline="") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in sorted(rows_by_key.values(), key=lambda item: (item["Date"], item["Team_Key"])):
+            writer.writerow(row)
+
+
+def archive_source_csvs(csv_files, entries, archive_root):
+    archived = []
+    for csv_file, entry in zip(csv_files, entries):
+        source = os.path.abspath(csv_file)
+        date_dir = os.path.join(archive_root, entry["date"])
+        os.makedirs(date_dir, exist_ok=True)
+
+        filename = os.path.basename(source)
+        destination = os.path.join(date_dir, filename)
+        base, ext = os.path.splitext(filename)
+        counter = 1
+        while os.path.exists(destination):
+            destination = os.path.join(date_dir, f"{base}_{counter}{ext}")
+            counter += 1
+
+        if os.path.abspath(destination) == source:
+            archived.append(destination)
+            continue
+
+        shutil.move(source, destination)
+        archived.append(destination)
+    return archived
 
 
 def print_report(reports):
@@ -733,6 +847,7 @@ def print_report(reports):
         "canonical_added",
         "canonical_overrides",
         "incoming_not_in_canonical",
+        "team_pairings_preserved",
     ]:
         values = reports.get(key, [])
         print(f"  {key}: {len(values)}")
@@ -802,6 +917,7 @@ def write_reconciliation_reports(json_path, md_path, reports):
         "canonical_added",
         "canonical_overrides",
         "incoming_not_in_canonical",
+        "team_pairings_preserved",
     ]
 
     lines = [
@@ -859,6 +975,9 @@ def main():
     parser.add_argument("--identity-map", default=DEFAULT_IDENTITY_MAP, help="Local WHS/Squabbit identity map path")
     parser.add_argument("--no-reconcile-canonical", action="store_true", help="Do not prefer existing canonical rows for matching dates")
     parser.add_argument("--tournaments-out", help="Optional tournaments.csv output path")
+    parser.add_argument("--team-pairings-out", default=DEFAULT_TEAM_PAIRINGS, help="Team pairings CSV output path")
+    parser.add_argument("--archive-source-csvs", action="store_true", help="Move source CSV files to input/raw_exports/YYYY-MM-DD after a successful import")
+    parser.add_argument("--source-archive-dir", default=DEFAULT_SOURCE_ARCHIVE, help="Archive directory for --archive-source-csvs")
     parser.add_argument("--dry-run", action="store_true", help="Parse and report without writing files")
     args = parser.parse_args()
 
@@ -894,6 +1013,12 @@ def main():
     write_reconciliation_reports(args.report_output, args.report_md_output, all_reports)
     if args.tournaments_out:
         write_tournaments_file(args.tournaments_out, entries)
+    if args.team_pairings_out:
+        write_team_pairings_file(args.team_pairings_out, entries, all_reports)
+        write_reconciliation_reports(args.report_output, args.report_md_output, all_reports)
+    archived_sources = []
+    if args.archive_source_csvs:
+        archived_sources = archive_source_csvs(args.csv_files, entries, args.source_archive_dir)
     print(f"Wrote {args.output}")
     print(f"Wrote {args.identity_map}")
     if args.report_output:
@@ -902,6 +1027,10 @@ def main():
         print(f"Wrote {args.report_md_output}")
     if args.tournaments_out:
         print(f"Wrote {args.tournaments_out}")
+    if args.team_pairings_out:
+        print(f"Wrote {args.team_pairings_out}")
+    for archived_source in archived_sources:
+        print(f"Archived source CSV to {archived_source}")
 
 
 if __name__ == "__main__":

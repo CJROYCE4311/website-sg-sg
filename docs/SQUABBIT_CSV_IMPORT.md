@@ -12,7 +12,7 @@ Use Squabbit CSV exports as the raw source for completed tournaments. The import
 2. Import the exact downloaded CSV. Use the single new file for normal monthly updates:
 
    ```bash
-   ./venv/bin/python scripts/import_squabbit_csv.py "/Users/chrisroyce/Downloads/SG@SG(<event>).csv" --tournaments-out data/tournaments.csv
+   ./venv/bin/python scripts/import_squabbit_csv.py "/Users/chrisroyce/Downloads/SG@SG(<event>).csv" --tournaments-out data/tournaments.csv --archive-source-csvs
    ```
 
    Batch imports are supported when rebuilding a season from multiple exports:
@@ -68,6 +68,7 @@ Use Squabbit CSV exports as the raw source for completed tournaments. The import
 - WHS IDs are stored only in the local ignored identity map at `input/identity/squabbit_players.csv`.
 - If a tournament date already exists in canonical CSVs, canonical rows win over the export. This protects against players unregistering, deleting themselves, changing nicknames, or later editing Squabbit data after the event.
 - For new dates, the Squabbit export is used as the source of scores, handicaps, team placements, skins, and payout categories.
+- Team pairings are stored in `data/team_pairings.csv`. Once a date exists there, later imports preserve the existing team rows and report `team_pairings_preserved` instead of replacing them.
 - Gross score must equal the sum of holes. New mismatches fail validation or the post-ingest audit unless explicitly listed in `data/score_audit_exceptions.csv`.
 - Unresolved gross-score exceptions stay in canonical history and DataAudit, but are excluded from scoring analytics such as handicap analysis, player stats, average score, hole index, and methodology data.
 
@@ -75,9 +76,11 @@ Use Squabbit CSV exports as the raw source for completed tournaments. The import
 
 - `input/tournament_data.from_squabbit.json`: reviewed JSON payload for the existing ingest workflow.
 - `input/identity/squabbit_players.csv`: local-only WHS/name identity map.
+- `input/raw_exports/YYYY-MM-DD/`: local-only archive for source Squabbit CSV downloads when `--archive-source-csvs` is used.
 - `input/squabbit_reconciliation_report.md`: human-readable import reconciliation report.
 - `input/squabbit_reconciliation_report.json`: machine-readable import reconciliation report.
 - `data/tournaments.csv`: safe event metadata by date and season.
+- `data/team_pairings.csv`: safe team-pairing history by tournament date, team, rank, score, and players.
 
 ## Reconciliation Gates
 
@@ -88,6 +91,7 @@ Before ingesting a new monthly tournament, stop and resolve these items from `in
 - `players_missing_from_players_section`: scorecard data names a player not present in the Players section.
 - `incomplete_team_rows`: Squabbit exported a team row without complete players/results.
 - `won_reconciliation_issues`: derived category payouts do not reconcile to Squabbit's player `Won` total.
+- `team_pairings_preserved`: the date already had team-pairing history, so incoming team rows were not allowed to rewrite it.
 - Any validation failure from `process_tournament.py --dry-run`, especially gross score not equal to the H1-H18 total.
 
 For a date that already exists in canonical CSVs, the importer reports canonical differences and keeps canonical. For a new date, the report is the review queue before data becomes canonical.
