@@ -28,7 +28,7 @@ Document roles:
 ## Local Workflow
 
 ```
-Squabbit CSV in Downloads -> CSV import/reconciliation -> reviewed JSON -> audit/dry-run -> canonical CSV upsert -> local site rebuild -> publish after approval
+Authenticated Squabbit tournament in Chrome -> CSV export to Downloads -> CSV import/reconciliation -> reviewed JSON -> audit/dry-run -> canonical CSV upsert -> local site rebuild -> publish after approval
 ```
 
 This clone is intended to run locally in parallel with the production deployment workflow.
@@ -47,25 +47,26 @@ This clone is intended to run locally in parallel with the production deployment
 
 ## Monthly Operating Pattern
 
-1. Chris downloads the completed Squabbit CSV export and leaves it in `/Users/chrisroyce/Downloads/`.
-2. Codex imports the CSV, writes reconciliation reports, captures team pairings, and archives the source CSV locally:
+1. Chris logs into Squabbit in Chrome and opens the completed SG@SG tournament.
+2. Codex uses the authenticated Chrome session to export the completed Squabbit CSV from `Advanced` -> `Other` -> `Export as CSV`.
+3. Codex imports the downloaded CSV, writes reconciliation reports, captures team pairings, and archives the source CSV locally:
    ```bash
    ./venv/bin/python scripts/import_squabbit_csv.py "/Users/chrisroyce/Downloads/SG@SG(<event>).csv" --tournaments-out data/tournaments.csv --archive-source-csvs
    ```
-3. Review `input/squabbit_reconciliation_report.md` before ingest. Stop on unresolved identity conflicts, missing handicaps, incomplete team rows, payout reconciliation issues, or unexpected incoming-vs-canonical differences.
-4. Run the canonical audit against the reviewed JSON:
+4. Review `input/squabbit_reconciliation_report.md` before ingest. Stop on unresolved identity conflicts, missing handicaps, incomplete team rows, payout reconciliation issues, or unexpected incoming-vs-canonical differences.
+5. Run the canonical audit against the reviewed JSON:
    ```bash
    ./venv/bin/python scripts/audit_canonical_data.py --json-file input/tournament_data.from_squabbit.json
    ```
-5. Validate without writing:
+6. Validate without writing:
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.from_squabbit.json --dry-run
    ```
-6. Run the local update:
+7. Run the local update:
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.from_squabbit.json
    ```
-7. Review the affected pages and data outputs, especially:
+8. Review the affected pages and data outputs, especially:
    - `website/DataAudit.html`
    - `website/index.html`
    - the latest `website/results_*.html`
@@ -73,7 +74,7 @@ This clone is intended to run locally in parallel with the production deployment
    - `website/PlayerStats.html`
    - `website/AverageScore.html`
    - `data/team_pairings.csv`
-8. Only publish from this clone if Chris explicitly approves:
+9. Only publish from this clone if Chris explicitly approves:
    ```bash
    ./venv/bin/python scripts/update_site.py --publish
    ```

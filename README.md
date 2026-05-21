@@ -10,36 +10,38 @@ For the full repo policy and workflow details, also see:
 
 ## What You Do
 
-1. Open the completed tournament in Squabbit.
-2. Download the tournament CSV export from Advanced -> Other -> Export as CSV.
-3. Leave the downloaded CSV in `/Users/chrisroyce/Downloads/`.
-4. Tell Codex the tournament date and that the Squabbit CSV is ready to process.
-5. Review any reconciliation questions and approve publish only after the local website review.
+1. Log into Squabbit in Chrome.
+2. Open the completed SG@SG tournament.
+3. Tell Codex the tournament date and ask it to download and process the Squabbit CSV.
+4. Review any reconciliation questions and approve publish only after the local website review.
+
+First scheduled use of this Chrome-assisted export flow: Saturday, May 23, 2026.
 
 ## What Codex Will Do
 
-1. Find the target SG@SG CSV in Downloads.
-2. Import it with `scripts/import_squabbit_csv.py`.
-3. Write:
+1. Use the authenticated Chrome session to export the tournament CSV from Squabbit via `Advanced` -> `Other` -> `Export as CSV`.
+2. Find the downloaded SG@SG CSV in `/Users/chrisroyce/Downloads/`.
+3. Import it with `scripts/import_squabbit_csv.py`.
+4. Write:
    - `input/tournament_data.from_squabbit.json`
    - `input/squabbit_reconciliation_report.md`
    - `data/tournaments.csv`
    - `data/team_pairings.csv`
-4. Archive the raw Squabbit CSV under `input/raw_exports/YYYY-MM-DD/`.
-5. Normalize Squabbit display names and preserve canonical rows for existing dates.
-6. Run the canonical audit and dry run before writing.
-7. Wait for your review if anything looks questionable.
-8. Update the canonical files:
+5. Archive the raw Squabbit CSV under `input/raw_exports/YYYY-MM-DD/`.
+6. Normalize Squabbit display names and preserve canonical rows for existing dates.
+7. Run the canonical audit and dry run before writing.
+8. Wait for your review if anything looks questionable.
+9. Update the canonical files:
    - `data/scores.csv`
    - `data/financials.csv`
    - `data/handicaps.csv`
-9. Rebuild the local website output, including:
+10. Rebuild the local website output, including:
    - `website/index.html`
    - money list pages
    - handicap analysis pages
    - player metric pages
    - tournament recap pages
-10. Publish only after explicit approval.
+11. Publish only after explicit approval.
 
 ## Processing Commands
 

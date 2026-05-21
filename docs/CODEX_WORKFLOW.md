@@ -59,39 +59,42 @@ Working area:
 
 ## Monthly Operating Pattern
 
-1. Chris downloads the completed Squabbit CSV export and leaves it in `/Users/chrisroyce/Downloads/`.
-2. Import the exact Squabbit CSV:
+1. Chris logs into Squabbit in Chrome and opens the completed SG@SG tournament.
+2. Codex exports the completed Squabbit CSV through the authenticated Chrome session using `Advanced` -> `Other` -> `Export as CSV`.
+3. Import the exact Squabbit CSV:
    ```bash
    ./venv/bin/python scripts/import_squabbit_csv.py "/Users/chrisroyce/Downloads/SG@SG(<event>).csv" --tournaments-out data/tournaments.csv --archive-source-csvs
    ```
-3. Review `input/squabbit_reconciliation_report.md`.
+4. Review `input/squabbit_reconciliation_report.md`.
    - Stop on unresolved identity conflicts.
    - Stop on missing handicaps for scored players.
    - Stop on incomplete team rows unless resolved from Squabbit/canonical data.
    - Review payout reconciliation issues before ingest.
    - For already-canonical dates, canonical rows remain authoritative.
-4. Run the canonical audit against the reviewed import:
+5. Run the canonical audit against the reviewed import:
    ```bash
    ./venv/bin/python scripts/audit_canonical_data.py --json-file input/tournament_data.from_squabbit.json
    ```
-5. Run a dry run:
+6. Run a dry run:
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.from_squabbit.json --dry-run
    ```
-6. Run the standalone audit whenever you want a quick canonical health check:
+7. Run the standalone audit whenever you want a quick canonical health check:
    ```bash
    ./venv/bin/python scripts/audit_canonical_data.py
    ```
-7. Run the local ingest:
+8. Run the local ingest:
    ```bash
    ./venv/bin/python scripts/process_tournament.py input/tournament_data.from_squabbit.json
    ```
-8. Review local site output under `website/`.
+9. Review local site output under `website/`.
    - Start with `website/DataAudit.html` to cross-check payouts, handicaps, and gross totals by date/player.
    - Then review `website/index.html` and the latest `website/results_*.html`.
    - Review `website/MoneyList2026.html`, `website/PlayerStats.html`, `website/AverageScore.html`, and `data/team_pairings.csv`.
 
 Screenshots remain a fallback source only if the CSV export is unavailable or a specific Squabbit screen needs manual verification. For screenshot fallback payloads, start from `docs/tournament_data.template.json` and keep handicap data in `handicaps[]`.
+
+First scheduled use of the Chrome-assisted export flow is Saturday, May 23, 2026.
 
 ## Safety Model
 

@@ -4,10 +4,11 @@ Use Squabbit CSV exports as the raw source for completed tournaments. The import
 
 ## Monthly Website Update Flow
 
-1. Download the completed tournament CSV from Squabbit:
-   - Open the tournament in Squabbit.
-   - Open the gear/settings menu.
-   - Go to `Advanced` -> `Other` -> `Export as CSV`.
+1. Export the completed tournament CSV from Squabbit:
+   - Chris logs into Squabbit in Chrome and opens the completed SG@SG tournament.
+   - Codex uses the authenticated Chrome session to open the gear/settings menu.
+   - Codex goes to `Advanced` -> `Other` -> `Export as CSV`.
+   - The export downloads to `/Users/chrisroyce/Downloads/`.
 
 2. Import the exact downloaded CSV. Use the single new file for normal monthly updates:
 
