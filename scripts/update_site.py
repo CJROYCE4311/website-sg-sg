@@ -446,7 +446,82 @@ def inject_results_log(links):
     else:
         print("⚠️ Could not find RESULTS-LOG markers in index.html")
 
-def update_index_html(writeup_html):
+def format_short_date(date_value):
+    date_value = pd.to_datetime(date_value)
+    return f"{date_value.strftime('%b')} {date_value.day}"
+
+
+def refresh_calendar_highlight(html, latest_date):
+    date_grid_pattern = r'(<div class="date-grid">)(.*?)(</div>)'
+    match = re.search(date_grid_pattern, html, flags=re.DOTALL)
+    if not match:
+        return html
+
+    latest_date = pd.to_datetime(latest_date)
+    span_pattern = r'<span(?:\s+class="date-next"\s+data-date="[^"]+")?>(.*?)</span>'
+    spans = re.findall(span_pattern, match.group(2), flags=re.DOTALL)
+
+    parsed_dates = []
+    for label in spans:
+        clean_label = re.sub(r'\s+', ' ', label.strip())
+        try:
+            parsed_dates.append((pd.to_datetime(clean_label), clean_label))
+        except Exception:
+            continue
+
+    next_dates = [date for date, _ in parsed_dates if date > latest_date]
+    next_date = min(next_dates) if next_dates else None
+
+    def replace_span(span_match):
+        label = re.sub(r'\s+', ' ', span_match.group(1).strip())
+        try:
+            date_value = pd.to_datetime(label)
+        except Exception:
+            return span_match.group(0)
+
+        if next_date is not None and date_value == next_date:
+            date_attr = date_value.strftime('%Y-%m-%d')
+            return f'<span class="date-next" data-date="{date_attr}">{label}</span>'
+        return f'<span>{label}</span>'
+
+    updated_grid = re.sub(span_pattern, replace_span, match.group(2), flags=re.DOTALL)
+    return html[:match.start(2)] + updated_grid + html[match.end(2):]
+
+
+def refresh_home_stats(html, latest_label, latest_sub, next_label, next_sub):
+    stats_pattern = r'(<section class="stats-grid" aria-label="Tournament quick stats">).*?(</section>)'
+    stats_html = f"""
+                    <div class="stat-card glass-panel">
+                        <h3>Latest Tournament</h3>
+                        <p class="stat-value">{escape(latest_label)}</p>
+                        <p class="stat-sub">{escape(latest_sub)}</p>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <h3>Next Date</h3>
+                        <p class="stat-value">{escape(next_label)}</p>
+                        <p class="stat-sub">{escape(next_sub)}</p>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <h3>Primary View</h3>
+                        <p class="stat-value">Money</p>
+                        <p class="stat-sub">Payouts by player and year</p>
+                    </div>
+                    <div class="stat-card glass-panel accent-card">
+                        <h3>Signups</h3>
+                        <p class="stat-value">Squabbit</p>
+                        <p class="stat-sub">Tournament entry and field updates</p>
+                    </div>
+                """
+    return re.sub(
+        stats_pattern,
+        lambda match: f"{match.group(1)}{stats_html}{match.group(2)}",
+        html,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+
+def update_index_html(writeup_html, latest_date=None, latest_format=None):
     filepath = os.path.join(WEBSITE_DIR, 'index.html')
     if not os.path.exists(filepath): return
     with open(filepath, 'r') as f: html = f.read()
@@ -455,6 +530,30 @@ def update_index_html(writeup_html):
     pattern = r'(<div class="prose prose-green max-w-none text-gray-600 space-y-4">).*?(<p class=\'text-xs text-gray-400 mt-6 mb-0 italic\'>.*?</p>)'
     if re.search(pattern, html, flags=re.DOTALL):
         html = re.sub(pattern, r'\1' + writeup_html, html, flags=re.DOTALL)
+
+    if latest_date is not None:
+        latest_date = pd.to_datetime(latest_date)
+        latest_date_str = latest_date.strftime('%Y-%m-%d')
+        latest_label = format_short_date(latest_date)
+        latest_sub = f"2026 {latest_format or 'Tournament'} recap"
+        html = re.sub(
+            r'(<article class="card glass-panel latest-results">.*?<a class="small-link" href=")results_[^"]+\.html(">)',
+            rf'\1results_{latest_date_str}.html\2',
+            html,
+            flags=re.DOTALL,
+        )
+
+        before_calendar = html
+        html = refresh_calendar_highlight(html, latest_date)
+
+        next_match = re.search(r'class="date-next" data-date="([^"]+)">([^<]+)</span>', html)
+        if next_match:
+            next_date = pd.to_datetime(next_match.group(1))
+            next_label = format_short_date(next_date)
+            next_sub = f"{next_date.year} calendar slot"
+            html = refresh_home_stats(html, latest_label, latest_sub, next_label, next_sub)
+        elif before_calendar != html:
+            print("⚠️ Calendar highlight updated, but no next date was found.")
     
     with open(filepath, 'w') as f: f.write(html)
     print("✅ Updated Latest Results in index.html")
@@ -1046,7 +1145,10 @@ def run_pipeline():
     # 9. Latest Results Writeup
     writeup = get_latest_results_writeup(financials, scores)
     if writeup:
-        update_index_html(writeup)
+        latest_date = financials['Date'].max()
+        latest_cats = financials[financials['Date'] == latest_date]['Category'].unique()
+        latest_format = get_format_name(latest_date, latest_cats)
+        update_index_html(writeup, latest_date, latest_format)
 
     # 10. Generate Tournament Pages & Update Log
     links = generate_tournament_pages(financials, scores)
