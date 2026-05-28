@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>WHS Exceptional Analysis | SG@SG</title>
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard-theme.css">
+    <style>
+        .gate-hidden {
+            display: none;
+        }
+
+        .sgsg-data-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #f9fafb;
+        }
+
+        .sgsg-data-table tbody tr:nth-child(even) {
+            background: rgba(249, 250, 251, 0.72);
+        }
+
+        .sgsg-data-table tbody tr:hover {
+            background: #ecfdf5;
+        }
+
+        .method-pill {
+            border: 1px solid rgba(0, 89, 54, 0.16);
+            background: rgba(232, 243, 236, 0.62);
+        }
+    </style>
+</head>
+
+<body class="bg-stone-50 text-gray-900 antialiased min-h-screen">
+    <header class="sgsg-dashboard-header">
+        <nav class="sgsg-dashboard-nav">
+            <a class="sgsg-dashboard-brand" href="index.html">
+                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG logo">
+                <span>
+                    <span class="sgsg-dashboard-title">SG@SG</span>
+                    <span class="sgsg-dashboard-subtitle">WHS Exceptional Analysis</span>
+                </span>
+            </a>
+            <div class="sgsg-dashboard-links">
+                <a href="AdminReview.html">Admin Hub</a>
+                <a href="MethodologyReport.html">Methodology</a>
+                <a href="HandicapProposal.html">Fair Competition</a>
+                <a href="HandicapProbability.html">Odds Table</a>
+                <a href="index.html">Public Site</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="sgsg-dashboard-shell mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <section id="accessRequired" class="gate-hidden max-w-xl mx-auto bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
+            <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                <i class="fa-solid fa-lock text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900">Administrator access required</h1>
+            <p class="mt-3 text-gray-600">Open this page through the administrator passcode screen.</p>
+            <a href="AdminPortal.html" class="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-lg bg-green-700 px-5 py-3 text-white font-bold no-underline hover:bg-green-800 transition">Go to administrator access</a>
+        </section>
+
+        <section id="analysisContent" class="gate-hidden space-y-8">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8">
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="max-w-3xl">
+                        <p class="text-sm font-bold uppercase text-green-700">Private Operator View</p>
+                        <h1 class="mt-1 text-4xl font-bold text-gray-900">WHS Exceptional Score Review</h1>
+                        <p class="mt-3 text-gray-600 leading-7">
+                            2026 season tournament rounds, newest first, sorted by net score within each tournament.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span id="seasonPill" class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 font-semibold text-gray-700">Season</span>
+                        <span id="coursePill" class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 font-semibold text-gray-700">Course</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid gap-3 md:grid-cols-4">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p class="text-xs font-bold uppercase text-gray-500">Tournaments</p>
+                        <p id="summaryTournaments" class="mt-1 text-3xl font-bold text-gray-900">-</p>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p class="text-xs font-bold uppercase text-gray-500">Player Rounds</p>
+                        <p id="summaryRounds" class="mt-1 text-3xl font-bold text-gray-900">-</p>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p class="text-xs font-bold uppercase text-gray-500">With HI</p>
+                        <p id="summaryHandicaps" class="mt-1 text-3xl font-bold text-gray-900">-</p>
+                    </div>
+                    <div class="rounded-lg border border-red-100 bg-red-50 p-4">
+                        <p class="text-xs font-bold uppercase text-red-700">Exceptional Flags</p>
+                        <p id="summaryExceptional" class="mt-1 text-3xl font-bold text-red-700">-</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid gap-3 lg:grid-cols-3">
+                    <div class="method-pill rounded-lg p-4">
+                        <p class="text-xs font-bold uppercase text-green-800">Target Differential</p>
+                        <p class="mt-1 font-mono text-sm text-gray-800">(113 / slope) * (gross - rating)</p>
+                    </div>
+                    <div class="method-pill rounded-lg p-4">
+                        <p class="text-xs font-bold uppercase text-green-800">Strokes Better</p>
+                        <p class="mt-1 font-mono text-sm text-gray-800">handicap index - target differential</p>
+                    </div>
+                    <div class="method-pill rounded-lg p-4">
+                        <p class="text-xs font-bold uppercase text-green-800">Exceptional Threshold</p>
+                        <p class="mt-1 font-mono text-sm text-gray-800">7.0 strokes better than index</p>
+                    </div>
+                </div>
+
+                <p id="generatedAt" class="mt-5 text-xs text-gray-500"></p>
+            </div>
+
+            <section class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Tournament Dates</h2>
+                        <p class="text-sm text-gray-500">Newest SG@SG 2026-season tournaments appear first.</p>
+                    </div>
+                    <div id="tournamentNav" class="flex flex-wrap gap-2"></div>
+                </div>
+            </section>
+
+            <div id="tournamentSections" class="space-y-8"></div>
+        </section>
+    </main>
+
+    <footer class="sgsg-dashboard-footer">
+        <div class="sgsg-dashboard-footer-inner">
+            <span>&copy; 2026 SG@SG.</span>
+            <a href="AdminReview.html">Back to Admin Hub</a>
+        </div>
+    </footer>
+
+    <script src="data/whs_exceptional_analysis.js"></script>
+    <script>
+        const hasAccess = sessionStorage.getItem('sgsgAdminAccess') === 'granted';
+        document.getElementById(hasAccess ? 'analysisContent' : 'accessRequired').classList.remove('gate-hidden');
+
+        if (hasAccess) {
+            renderWHSAnalysis();
+        }
+
+        function renderWHSAnalysis() {
+            if (typeof whsExceptionalAnalysis === 'undefined') {
+                document.getElementById('tournamentSections').innerHTML = emptyState('WHS analysis data has not been generated yet.');
+                return;
+            }
+
+            const data = whsExceptionalAnalysis;
+            const summary = data.summary || {};
+            const course = data.course || {};
+
+            document.getElementById('seasonPill').textContent = `${data.season} season`;
+            document.getElementById('coursePill').textContent = `Par ${course.par} | ${course.course_rating} / ${course.slope}`;
+            document.getElementById('summaryTournaments').textContent = formatInteger(summary.tournaments);
+            document.getElementById('summaryRounds').textContent = formatInteger(summary.player_rounds);
+            document.getElementById('summaryHandicaps').textContent = formatInteger(summary.with_handicap);
+            document.getElementById('summaryExceptional').textContent = formatInteger(summary.exceptional_rounds);
+            document.getElementById('generatedAt').textContent = data.generated_at ? `Generated ${formatGeneratedAt(data.generated_at)}` : '';
+
+            renderTournamentNav(data.tournaments || []);
+            renderTournamentSections(data.tournaments || []);
+        }
+
+        function renderTournamentNav(tournaments) {
+            const nav = document.getElementById('tournamentNav');
+            nav.innerHTML = tournaments.map(tournament => `
+                <a href="#whs-${escapeHtml(tournament.date)}" class="min-h-[38px] inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-bold text-gray-700 no-underline hover:border-green-600 hover:text-green-800 transition">
+                    ${escapeHtml(tournament.date)}
+                </a>
+            `).join('');
+        }
+
+        function renderTournamentSections(tournaments) {
+            const container = document.getElementById('tournamentSections');
+            if (!tournaments.length) {
+                container.innerHTML = emptyState('No completed 2026-season tournament rounds found.');
+                return;
+            }
+
+            container.innerHTML = tournaments.map(tournament => {
+                const rows = tournament.rows || [];
+                return `
+                    <section id="whs-${escapeHtml(tournament.date)}" class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden scroll-mt-28">
+                        <div class="border-b border-gray-100 bg-gray-50 p-5 sm:p-6">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                                <div>
+                                    <p class="text-sm font-bold uppercase text-green-700">${escapeHtml(tournament.format)}</p>
+                                    <h2 class="mt-1 text-2xl font-bold text-gray-900">${escapeHtml(tournament.name)}</h2>
+                                    <p class="mt-1 text-sm text-gray-500">${escapeHtml(tournament.date)} | Net order, best to worst</p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-sm">
+                                    <span class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-700">Players: ${formatInteger(tournament.players)}</span>
+                                    <span class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-700">With HI: ${formatInteger(tournament.with_handicap)}</span>
+                                    <span class="rounded-lg border border-red-100 bg-red-50 px-3 py-2 font-semibold text-red-700">Exceptional: ${formatInteger(tournament.exceptional_rounds)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="sgsg-data-table min-w-full border-collapse text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-200 text-xs uppercase text-gray-500">
+                                        <th class="px-3 py-3 text-left">Net Rank</th>
+                                        <th class="px-3 py-3 text-left">Player</th>
+                                        <th class="px-3 py-3 text-right">Gross</th>
+                                        <th class="px-3 py-3 text-right">Course HCP</th>
+                                        <th class="px-3 py-3 text-right">Net</th>
+                                        <th class="px-3 py-3 text-right">Net +/-</th>
+                                        <th class="px-3 py-3 text-right">HI</th>
+                                        <th class="px-3 py-3 text-right">Target Diff</th>
+                                        <th class="px-3 py-3 text-right">Better/Worse</th>
+                                        <th class="px-3 py-3 text-left">Round Probability</th>
+                                        <th class="px-3 py-3 text-left">Flag</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows.map(row => renderPlayerRow(row, rows)).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                `;
+            }).join('');
+        }
+
+        function renderPlayerRow(row, rows) {
+            const tied = rows.filter(candidate => candidate.net_score === row.net_score).length > 1;
+            const rank = row.net_rank ? `${tied ? 'T' : ''}${row.net_rank}` : '-';
+            const flagClass = flagClasses(row);
+            const probability = row.probability || {};
+
+            return `
+                <tr class="border-b border-gray-100">
+                    <td class="px-3 py-3 font-semibold text-gray-700">${escapeHtml(rank)}</td>
+                    <td class="px-3 py-3 font-bold text-gray-900 whitespace-nowrap">${escapeHtml(row.player)}</td>
+                    <td class="px-3 py-3 text-right tabular-nums">${formatNumber(row.gross_score, 0)}</td>
+                    <td class="px-3 py-3 text-right tabular-nums">${formatNumber(row.course_handicap, 1)}</td>
+                    <td class="px-3 py-3 text-right font-bold tabular-nums">${formatNumber(row.net_score, 1)}</td>
+                    <td class="px-3 py-3 text-right tabular-nums">${formatSigned(row.net_to_par, 1)}</td>
+                    <td class="px-3 py-3 text-right tabular-nums">${formatNumber(row.handicap_index, 1)}</td>
+                    <td class="px-3 py-3 text-right tabular-nums">${formatNumber(row.target_differential, 1)}</td>
+                    <td class="px-3 py-3 text-right font-semibold tabular-nums ${betterWorseClass(row.strokes_better_than_index)}">${formatSigned(row.strokes_better_than_index, 1)}</td>
+                    <td class="px-3 py-3 text-left">
+                        <span class="font-semibold text-gray-900">${escapeHtml(probability.display || '-')}</span>
+                        <span class="block text-xs text-gray-500">${escapeHtml(probability.handicap_band || '')}</span>
+                    </td>
+                    <td class="px-3 py-3 text-left">
+                        <span class="inline-flex min-h-[28px] items-center rounded-lg px-2.5 py-1 text-xs font-bold ${flagClass}">
+                            ${escapeHtml(row.classification || '-')}
+                        </span>
+                        ${row.notes ? `<span class="mt-1 block text-xs text-gray-500">${escapeHtml(row.notes)}</span>` : ''}
+                    </td>
+                </tr>
+            `;
+        }
+
+        function flagClasses(row) {
+            const value = Number(row.strokes_better_than_index);
+            if (row.exceptional || value >= 7) return 'bg-red-100 text-red-800';
+            if (value >= 5) return 'bg-orange-100 text-orange-800';
+            if (value >= 3) return 'bg-amber-100 text-amber-800';
+            if (value >= 0) return 'bg-emerald-100 text-emerald-800';
+            return 'bg-gray-100 text-gray-600';
+        }
+
+        function betterWorseClass(value) {
+            const number = Number(value);
+            if (Number.isNaN(number)) return 'text-gray-400';
+            if (number >= 7) return 'text-red-700';
+            if (number >= 5) return 'text-orange-700';
+            if (number >= 3) return 'text-amber-700';
+            if (number >= 0) return 'text-emerald-700';
+            return 'text-gray-500';
+        }
+
+        function emptyState(message) {
+            return `
+                <div class="rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
+                    ${escapeHtml(message)}
+                </div>
+            `;
+        }
+
+        function formatInteger(value) {
+            return Number(value || 0).toLocaleString();
+        }
+
+        function formatNumber(value, digits) {
+            if (value === null || value === undefined || value === '') return '-';
+            const number = Number(value);
+            if (Number.isNaN(number)) return '-';
+            return number.toFixed(digits);
+        }
+
+        function formatSigned(value, digits) {
+            if (value === null || value === undefined || value === '') return '-';
+            const number = Number(value);
+            if (Number.isNaN(number)) return '-';
+            if (number === 0) return '0.0';
+            return `${number > 0 ? '+' : ''}${number.toFixed(digits)}`;
+        }
+
+        function formatGeneratedAt(value) {
+            const dateValue = new Date(value);
+            if (Number.isNaN(dateValue.getTime())) return value;
+            return dateValue.toLocaleString([], {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[character]));
+        }
+    </script>
+</body>
+
+</html>

@@ -40,10 +40,11 @@ Generated:
 - `website/PlayerStats.html`
 - `website/AverageScore.html`
 - `website/HoleIndex.html`
-- `website/HandicapAnalysis.html`
-- `website/Handicap_Detail.html`
+- `website/WHSExceptionalAnalysis.html`
 - `website/data/methodology_data.json`
 - `website/data/methodology_data.js`
+- `website/data/whs_exceptional_analysis.json`
+- `website/data/whs_exceptional_analysis.js`
 - `website/results_*.html`
 
 Working area:
@@ -89,6 +90,7 @@ Working area:
    ```
 9. Review local site output under `website/`.
    - Start with `website/DataAudit.html` to cross-check payouts, handicaps, and gross totals by date/player.
+   - Review `website/WHSExceptionalAnalysis.html` for the current internal fair-competition screen.
    - Then review `website/index.html` and the latest `website/results_*.html`.
    - Review `website/MoneyList2026.html`, `website/PlayerStats.html`, `website/AverageScore.html`, and `data/team_pairings.csv`.
 
@@ -99,7 +101,7 @@ First scheduled use of the Chrome-assisted export flow is Saturday, May 23, 2026
 ## Safety Model
 
 - `scripts/update_site.py` is local-only unless `--publish` is passed.
-- `scripts/update_site.py` refreshes derived methodology data under `website/data/` as part of the local build.
+- `scripts/update_site.py` refreshes derived methodology and WHS exceptional-score data under `website/data/` as part of the local build.
 - `scripts/import_squabbit_csv.py --archive-source-csvs` moves successfully imported source CSVs into ignored local archives under `input/raw_exports/YYYY-MM-DD/`.
 - WHS IDs stay only in the ignored local identity map at `input/identity/squabbit_players.csv`.
 - Squabbit player nicknames are normalized before ingest.

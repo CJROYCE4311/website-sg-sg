@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SG@SG Methodology Report</title>
+    <title>SG@SG WHS Methodology Report</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
@@ -44,48 +44,72 @@
             
             <!-- Intro / Methodology Section -->
             <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-6">Golf Performance Analysis Methodology</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">SG@SG WHS Review Methodology</h1>
                 <div class="prose prose-green max-w-none text-gray-600 space-y-4">
-                    <p class="font-medium text-lg text-gray-800">Purpose: To evaluate player performance relative to their handicap on a hole-by-hole basis.</p>
-                    
-                    <h3 class="text-xl font-semibold text-gray-800 mt-6">The Algorithm</h3>
+                    <p class="font-medium text-lg text-gray-800">
+                        Purpose: give the committee a tournament-by-tournament view of whether a player's gross score,
+                        when converted through rating and slope, materially outperformed their Handicap Index.
+                    </p>
+                    <p>
+                        This methodology is now the primary internal review model. The older best-3/best-6 handicap
+                        audit and handicap detail pages have been archived for reference; they are no longer part of
+                        the live admin dashboard.
+                    </p>
+
+                    <div class="not-prose mt-6">
+                        <a href="WHSExceptionalAnalysis.html" class="inline-flex items-center justify-center rounded-lg bg-green-700 px-5 py-3 text-white font-bold no-underline hover:bg-green-800 transition">
+                            Open WHS Exceptional Score Review
+                        </a>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8">Primary Tournament Round Method</h3>
                     
                     <div class="grid md:grid-cols-2 gap-8 mt-4">
                         <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                            <h4 class="font-bold text-gray-900 mb-2">1. Calculate Course Handicap (CH)</h4>
-                            <p class="text-sm">Determine strokes received based on tees.</p>
-                            <code class="block bg-gray-200 p-2 rounded mt-2 text-xs">CH = (HI * (Slope / 113)) + (Rating - Par)</code>
+                            <h4 class="font-bold text-gray-900 mb-2">1. Convert Gross Score to Target Differential</h4>
+                            <p class="text-sm">Use Sterling Grove rating and slope so every tournament round is measured against course difficulty, not only par.</p>
+                            <code class="block bg-gray-200 p-2 rounded mt-2 text-xs">(113 / slope) * (gross score - course rating)</code>
                         </div>
 
                         <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                            <h4 class="font-bold text-gray-900 mb-2">2. Allocate Strokes (Net Score)</h4>
-                            <p class="text-sm">Distribute CH strokes based on Stroke Index (SI).</p>
-                            <ul class="list-disc list-inside text-sm mt-2 pl-2">
-                                <li>Base: CH // 18 strokes per hole.</li>
-                                <li>Extra: Remaining strokes go to hardest holes (lowest SI).</li>
-                                <li><strong>Net Score = Gross - Strokes Received</strong></li>
-                            </ul>
+                            <h4 class="font-bold text-gray-900 mb-2">2. Compare to Handicap Index</h4>
+                            <p class="text-sm">Measure how many strokes better or worse the round was than the player's potential.</p>
+                            <code class="block bg-gray-200 p-2 rounded mt-2 text-xs">Handicap Index - Target Differential</code>
                         </div>
                     </div>
 
                     <div class="bg-green-50 p-6 rounded-xl border border-green-100 mt-6">
-                        <h4 class="font-bold text-green-900 mb-2">3. Performance Metrics (Net Differential)</h4>
-                        <p class="text-sm text-green-800 mb-2">We compare Avg Net Score to Par.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <h4 class="font-bold text-green-900 mb-2">3. Probability and Flagging</h4>
+                        <p class="text-sm text-green-800 mb-2">
+                            The report uses the USGA Appendix E Exceptional Tournament Score Probability Table and flags
+                            any round that is 7.0 or more strokes better than Handicap Index.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
                             <div class="bg-white p-3 rounded shadow-sm">
-                                <span class="block text-green-600 font-bold text-lg">< -0.5</span>
-                                <span class="text-xs text-gray-500 uppercase tracking-wide">Major Strength</span>
+                                <span class="block text-green-600 font-bold text-lg">0.0+</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">At or Better</span>
                             </div>
                             <div class="bg-white p-3 rounded shadow-sm">
-                                <span class="block text-gray-500 font-bold text-lg">-0.5 to +0.5</span>
-                                <span class="text-xs text-gray-500 uppercase tracking-wide">Neutral / Expected</span>
+                                <span class="block text-yellow-600 font-bold text-lg">3.0+</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Great Round</span>
                             </div>
                             <div class="bg-white p-3 rounded shadow-sm">
-                                <span class="block text-red-600 font-bold text-lg">> +0.5</span>
-                                <span class="text-xs text-gray-500 uppercase tracking-wide">Weakness / Leak</span>
+                                <span class="block text-orange-600 font-bold text-lg">5.0+</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Elite Round</span>
+                            </div>
+                            <div class="bg-white p-3 rounded shadow-sm">
+                                <span class="block text-red-600 font-bold text-lg">7.0+</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wide">Exceptional</span>
                             </div>
                         </div>
                     </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mt-8">Supporting Hole-by-Hole Profile</h3>
+                    <p>
+                        The player selector below remains useful as a secondary coaching-style view. It allocates course
+                        handicap strokes by hole stroke index, then compares average net score to par to show where a
+                        player tends to gain or lose shots. It is not the primary fair-competition flagging model.
+                    </p>
                 </div>
             </section>
 
@@ -93,8 +117,8 @@
             <section class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                 <div class="p-8 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Player Analysis Report</h2>
-                        <p class="text-gray-500 text-sm">Select a player to view their hole-by-hole performance breakdown.</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Supporting Hole-by-Hole Report</h2>
+                        <p class="text-gray-500 text-sm">Select a player to view their average gross, net, and hole-by-hole tendency profile.</p>
                     </div>
                     <div class="w-full md:w-auto">
                         <select id="playerSelect" class="w-full md:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none shadow-sm">

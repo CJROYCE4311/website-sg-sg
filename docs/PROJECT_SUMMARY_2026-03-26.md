@@ -121,13 +121,14 @@ The current workflow documentation now explicitly calls out key regenerated site
 - `website/index.html`
 - `website/MoneyList2025.html`
 - `website/MoneyList2026.html`
-- `website/HandicapAnalysis.html`
-- `website/Handicap_Detail.html`
+- `website/WHSExceptionalAnalysis.html`
 - `website/PlayerStats.html`
 - `website/AverageScore.html`
 - `website/HoleIndex.html`
 - `website/results_*.html`
 - `website/DataAudit.html`
+
+Later update: the old `website/HandicapAnalysis.html` and `website/Handicap_Detail.html` reports were archived under `archive/admin_reports/`; the WHS exceptional-score review is now the active admin analysis surface.
 
 ## Workflow Documentation Added / Updated
 

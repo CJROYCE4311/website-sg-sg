@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SG@SG Handicap Proposal</title>
+    <title>SG@SG Fair Competition Proposal</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,9 +36,9 @@
             <!-- Title -->
             <div class="mb-10 text-center">
                 <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
-                    SG@SG Tournament Handicap Audit
+                    SG@SG Fair Competition Review
                 </h1>
-                <p class="text-xl text-green-700 font-medium">Proposed Methodology for Fairer Competition</p>
+                <p class="text-xl text-green-700 font-medium">Committee Review Framework for Tournament Equity</p>
             </div>
 
             <!-- Content -->
@@ -50,83 +50,82 @@
                     Copper & Rye, fostering a vibrant community atmosphere.
                 </p>
                 <p>
-                    However, as participation has increased, concerns about handicap fairness have emerged—particularly
+                    However, as participation has increased, concerns about handicap fairness have emerged, particularly
                     around the honor-based self-reporting of scores into the GHIN system, which forms the basis of
                     official USGA Handicap Indexes.
                 </p>
                 <div class="bg-green-50 border-l-4 border-green-500 p-6 my-8 rounded-r-lg">
                     <p class="font-medium text-gray-900 m-0">
-                        To address perceived inequities while maintaining the spirit of the game, the admin team is
-                        exploring a tournament-specific handicap adjustment. The goal is to create a more level playing
-                        field for SG@SG events by deriving an “Implied Index” based solely on actual performance in our
-                        tournaments, rather than relying entirely on external GHIN postings.
+                        To address perceived inequities while maintaining the spirit of the game, the admin team is now
+                        using a WHS-style tournament review as the primary internal screen. The goal is to identify
+                        statistically unusual tournament rounds before making any policy decision, not to automatically
+                        punish good play.
                     </p>
                 </div>
 
                 <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">Methodology Overview</h2>
-                <p>The proposed approach recalculates each player’s handicap using only their gross scores from SG@SG
-                    tournaments (limited to the last 13 months):</p>
+                <p>
+                    The current review approach evaluates every completed 2026-season SG@SG tournament round from
+                    November 2025 forward:
+                </p>
 
                 <ol class="list-decimal pl-6 space-y-4 marker:text-green-600 marker:font-bold">
                     <li>
-                        <strong>Identify Best Scores:</strong> For each player, identify their best (lowest) gross
-                        scores in the group’s events.
+                        <strong>Convert each gross score to a target differential:</strong>
+                        Use <code>(113 / slope) * (gross score - course rating)</code> so the round is judged against
+                        course difficulty rather than only net score to par.
                     </li>
                     <li>
-                        <strong>Compute a “Tournament Implied Index” in two variants:</strong>
-                        <ul class="list-disc pl-6 mt-2 space-y-2 marker:text-gray-400">
-                            <li><span class="font-semibold text-gray-900">Best 3 Analysis:</span> Average the player’s 3
-                                lowest gross scores, then convert that average to a Handicap Index using the course’s
-                                standard rating and slope (mirroring the differential formula but based on tournament
-                                performance).</li>
-                            <li><span class="font-semibold text-gray-900">Best 6 Analysis:</span> Average the player’s 6
-                                lowest gross scores for the same calculation (used when players have sufficient rounds
-                                for a more stable sample).</li>
-                        </ul>
+                        <strong>Compare the round to Handicap Index:</strong>
+                        Calculate <code>Handicap Index - Target Differential</code>. Positive values mean the player
+                        performed better than their index; negative values mean the round was worse than index.
                     </li>
                     <li>
-                        <strong>Compare Indices:</strong> Compare the Implied Index to the player’s current GHIN
-                        Handicap Index.
+                        <strong>Assign probability context:</strong>
+                        Use the USGA Appendix E Exceptional Tournament Score Probability Table to show the approximate
+                        odds of that performance level for the player's Handicap Index band.
                     </li>
                     <li>
-                        <strong>Calculate Adjustment:</strong> Calculate a Suggested Adjustment = Implied Index –
-                        Current Index.
+                        <strong>Flag exceptional rounds:</strong>
+                        Use 7.0 strokes better than Handicap Index as the WHS exceptional-score threshold.
                         <ul class="list-disc pl-6 mt-2 space-y-1 marker:text-gray-400">
-                            <li><span class="text-red-600 font-medium">Negative adjustments</span> indicate players
-                                performing significantly better in SG@SG events than their official index suggests
-                                (potential “tournament sharpening” or under-posting elsewhere).</li>
-                            <li><span class="text-green-600 font-medium">Positive or zero adjustments</span> indicate
-                                alignment or over-performance relative to their GHIN index.</li>
+                            <li><span class="text-red-600 font-medium">Exceptional flags</span> are committee review
+                                prompts, not automatic adjustments.</li>
+                            <li><span class="text-green-600 font-medium">Non-flagged low net scores</span> can still win
+                                money while remaining statistically ordinary for the player’s index band.</li>
                         </ul>
                     </li>
                 </ol>
 
                 <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">Interactive Dashboard</h2>
-                <p>This data is visualized in an interactive dashboard that displays:</p>
+                <p>The new internal dashboard displays:</p>
                 <ul class="list-disc pl-6 space-y-2 marker:text-green-600">
-                    <li>Total players and group average gross score</li>
-                    <li>Top 3 largest suggested adjustments</li>
-                    <li>A sortable, filterable table showing each player’s Implied Index, Current Index, Suggested
-                        Adjustment, average gross/net scores, rounds played, and notes (e.g., low round count warnings)
-                    </li>
+                    <li>Only completed 2026-season tournaments, beginning November 2025</li>
+                    <li>Newest tournament first</li>
+                    <li>All players in each tournament, sorted from best net score to worst net score</li>
+                    <li>Gross score, course handicap, net score, Handicap Index, target differential, strokes better or worse than index, and probability</li>
+                    <li>Clear flags for great, elite, and WHS exceptional-score rounds</li>
                 </ul>
                 <p class="mt-4">
-                    The dashboard allows toggling between Best 3 and Best 6 modes, searching players, and filtering by
-                    minimum rounds played, enabling transparent discussion within the group.
+                    The previous best-3/best-6 handicap audit and handicap detail pages have been archived. They remain
+                    available as historical references, but they are no longer the active committee dashboard.
                 </p>
 
                 <div class="mt-12 pt-8 border-t border-gray-200 text-center">
                     <p class="italic text-gray-500">
-                        This tournament-specific adjustment would only apply to SG@SG events and aims to reward
-                        consistent performance in our competitive setting while gently addressing discrepancies. It
-                        preserves the honor system but supplements it with empirical data from our own field, promoting
-                        fairness as the event continues to grow.
+                        Any future tournament-specific adjustment should be based on repeated evidence, committee review,
+                        and transparent criteria. The current WHS report is a diagnostic tool for fairness discussions,
+                        not an automatic penalty system.
                     </p>
                 </div>
             </div>
 
             <!-- Action Button -->
             <div class="mt-10 flex justify-center">
+                <a href="WHSExceptionalAnalysis.html"
+                    class="inline-flex items-center justify-center px-6 py-3 border border-green-700 shadow-sm text-base font-medium rounded-md text-white bg-green-700 hover:bg-green-800 transition mr-3">
+                    Open WHS Review
+                </a>
                 <a href="AdminPortal.html"
                     class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
                     Back to Admin Portal

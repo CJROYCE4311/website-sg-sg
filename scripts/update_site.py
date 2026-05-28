@@ -1061,9 +1061,13 @@ def run_pipeline():
         analysis_data_best6.append({**common, 'implied': round(implied_6, 1), 'adjustment': round(adj_6, 1)})
         analysis_data_last2.append({**common, 'implied': round(implied_2, 1), 'adjustment': round(adj_2, 1)})
     
-    inject_to_html("HandicapAnalysis.html", "dataBest3", analysis_data_best3, is_json=True)
-    inject_to_html("HandicapAnalysis.html", "dataBest6", analysis_data_best6, is_json=True)
-    inject_to_html("HandicapAnalysis.html", "dataLast2", analysis_data_last2, is_json=True)
+    handicap_analysis_path = os.path.join(WEBSITE_DIR, "HandicapAnalysis.html")
+    if os.path.exists(handicap_analysis_path):
+        inject_to_html("HandicapAnalysis.html", "dataBest3", analysis_data_best3, is_json=True)
+        inject_to_html("HandicapAnalysis.html", "dataBest6", analysis_data_best6, is_json=True)
+        inject_to_html("HandicapAnalysis.html", "dataLast2", analysis_data_last2, is_json=True)
+    else:
+        print("ℹ️ Skipped archived HandicapAnalysis.html")
 
     # 4. Handicap Detail (Drilldown)
     detail_lines = ["Player\tDate\tGross Score\tCourse HCP Used\tNet Score\tRound Differential\tTotal_Rounds_Available\tNotes"]
@@ -1089,6 +1093,8 @@ def run_pipeline():
         new_html = re.sub(pattern, r'\1\n' + new_content + r'\n\3', html, flags=re.DOTALL)
         with open(detail_path, 'w') as f: f.write(new_html)
         print("✅ Updated Handicap_Detail.html")
+    else:
+        print("ℹ️ Skipped archived Handicap_Detail.html")
 
     # 5. Money Lists
     for year in [2025, 2026]:
@@ -1160,6 +1166,7 @@ def run_pipeline():
 
     run_auxiliary_script("generate_methodology_data.py")
     run_auxiliary_script("convert_json_to_js.py")
+    run_auxiliary_script("generate_whs_exceptional_analysis.py")
     return True
 
 def get_repo_changes():

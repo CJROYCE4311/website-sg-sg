@@ -49,6 +49,7 @@ These drive the current local workflow.
 - `scripts/update_site.py`
 - `scripts/audit_canonical_data.py`
 - `scripts/generate_methodology_data.py`
+- `scripts/generate_whs_exceptional_analysis.py`
 - `scripts/convert_json_to_js.py`
 
 ## Keep: Static Site Support
@@ -60,6 +61,7 @@ These are active site shells or support pages and are linked from current pages.
 - `website/MethodologyReport.html`
 - `website/HandicapProposal.html`
 - `website/HandicapProbability.html`
+- `website/WHSExceptionalAnalysis.html`
 - `website/assets/Sterling Grove Flag.png`
 - `website/assets/IMGGolfCourse.jpeg`
 - `website/assets/SG-SG Map.png`
@@ -78,8 +80,6 @@ These are current outputs regenerated from canonical data.
 - `website/DataAudit.html`
 - `website/MoneyList2025.html`
 - `website/MoneyList2026.html`
-- `website/HandicapAnalysis.html`
-- `website/Handicap_Detail.html`
 - `website/PlayerStats.html`
 - `website/AverageScore.html`
 - `website/HoleIndex.html`
@@ -90,6 +90,8 @@ These are current outputs regenerated from canonical data.
 - `website/results_2026-03-21.html`
 - `website/data/methodology_data.json`
 - `website/data/methodology_data.js`
+- `website/data/whs_exceptional_analysis.json`
+- `website/data/whs_exceptional_analysis.js`
 
 Notes:
 
@@ -104,6 +106,8 @@ These still provide useful context, especially for model rationale and handoff h
 - `archive/2026-01-18_Handicap_Model_Analysis.md`
 - `archive/2026_Handicap_Model_Report.pdf`
 - `archive/Tournament_Analysis_Methodology.md`
+- `archive/admin_reports/2026-05-07_HandicapAnalysis.html`
+- `archive/admin_reports/2026-05-07_Handicap_Detail.html`
 - `archive/2025-12-27_Legacy_Python1.md`
 - `archive/2025-12-27_Legacy_Python2.md`
 - `docs/SOP_SG-SG.md`
