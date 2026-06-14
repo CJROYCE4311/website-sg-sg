@@ -246,7 +246,7 @@ def parse_players(rows, aliases, canonical_case_map, identity_map, source_file, 
         whs_id = raw.get("WHS Id", "").strip()
         raw_name = raw.get("Name", "")
         canonical = canonicalize_name(raw_name, aliases, canonical_case_map, whs_id, identity_map)
-        index_value = parse_handicap(raw.get("HDCP"))
+        index_value = parse_handicap(raw.get("HDCP") or raw.get("Handicap"))
         player = {
             "Raw_Name": " ".join(str(raw_name).split()),
             "Player": canonical,
