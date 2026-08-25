@@ -4,108 +4,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sterling Grove versus SG@SG hole stroke index comparison.">
     <title>SG@SG - Hole Index</title>
     <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for script-generated content blocks -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sgsg.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        /* Map the script-generated delta colors onto the palette */
+        .data-table td.text-red-500 { color: var(--gold-500); }
+        .data-table td.text-green-500 { color: var(--pine-600); }
     </style>
-    <link rel="stylesheet" href="dashboard-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
+            </div>
 
-    <header class="sgsg-dashboard-header">
-        <div class="sgsg-dashboard-nav">
-            <a class="sgsg-dashboard-brand" href="index.html">
-                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG tournament logo">
-                <span><span class="sgsg-dashboard-title">SG@SG</span><span class="sgsg-dashboard-subtitle">Hole Index</span></span>
-            </a>
-            <nav class="sgsg-dashboard-links" aria-label="Dashboard navigation">
-                <a href="index.html">Home</a>
-                <a href="index.html#leaderboard" aria-current="page">Dashboards</a>
-                <a href="AverageScore.html">Average Score</a>
-                <a href="index.html#contact">Contact</a>
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn active" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
             </nav>
-        </div>
-    </header>
 
-    <main class="container sgsg-dashboard-shell mx-auto px-6 py-10 max-w-6xl">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Sterling Grove vs. SG@SG Handicap Index</h1>
-                <p class="text-gray-600">Side-by-side comparison of hole stroke index assignments for the SG@SG setup.
-                </p>
-                <p class="text-gray-600 mt-2">The dashed diagonal shows the Sterling Grove stroke index for each hole,
-                    while the colored dots plot SG@SG results—points above the line signal the hole is playing easier
-                    than the baseline, and points below indicate it’s playing tougher.</p>
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
             </div>
-        </div>
+        </aside>
 
-        <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 mb-8">
-            <div class="relative h-[600px] w-full">
-                <canvas id="handicapChart"></canvas>
-            </div>
-
-            <div id="calloutBox" class="mt-6 p-4 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 text-sm">
-            </div>
-
-            <div class="mt-6 p-6 bg-slate-50 rounded-lg border border-slate-100 text-sm text-slate-600">
-                <h3 class="font-bold text-slate-800 text-lg mb-3">Chart Analysis Guide</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
                     <div>
-                        <p class="mb-2">
-                            This scatter plot compares the <strong>Stroke Index (Handicap Ranking)</strong> of each
-                            hole.
-                            The labels above the dots represent the <strong>Hole Number</strong>.
-                        </p>
-                        <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
-                            <li><strong>X-Axis:</strong> Standard Sterling Grove Ranking (1 = Hardest).</li>
-                            <li><strong>Y-Axis:</strong> SG@SG Tournament Ranking.</li>
-                            <li><strong>Diagonal Line:</strong> The "Line of Equality". Points on this line have not
-                                changed ranking.</li>
-                        </ul>
+                        <p class="eyebrow">Dashboards</p>
+                        <h2>Hole Index</h2>
+                        <p>Side-by-side comparison of hole stroke index assignments for the SG@SG setup.</p>
                     </div>
-                    <div>
-                        <p class="mb-2 font-semibold">How to read the data:</p>
-                        <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
-                            <li><span class="font-medium text-slate-900">Above the Line:</span> The hole's index number
-                                is higher in the SG@SG setup (e.g., Hole 2 moved from Index 15 to Index 18).</li>
-                            <li><span class="font-medium text-slate-900">Below the Line:</span> The hole's index number
-                                is lower in the SG@SG setup.</li>
-                            <li><span class="font-medium text-slate-900">Numbers:</span> The number displayed floating
-                                above each dot indicates which Hole it is.</li>
-                        </ul>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
                     </div>
                 </div>
-            </div>
-        </div>
+            </header>
 
-        <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
-            <div class="bg-slate-100 px-6 py-4 border-b border-slate-200">
-                <h2 class="font-semibold text-slate-700">Source Data</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-slate-500 uppercase bg-slate-50">
-                        <tr>
-                            <th class="px-6 py-3">Hole #</th>
-                            <th class="px-6 py-3">Sterling Grove Index</th>
-                            <th class="px-6 py-3">SG@SG Index</th>
-                            <th class="px-6 py-3">Delta</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTableBody" class="divide-y divide-slate-200">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+            <div class="content-wrapper">
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">Course Analysis</p>
+                            <h2 class="section-title">Sterling Grove vs. SG@SG Handicap Index</h2>
+                        </div>
+                    </div>
+                    <p class="text-gray-600" style="margin-top:0;">The dashed diagonal shows the Sterling Grove stroke index for each hole,
+                        while the colored dots plot SG@SG results—points above the line signal the hole is playing easier
+                        than the baseline, and points below indicate it’s playing tougher.</p>
 
+                    <div class="relative h-[600px] w-full">
+                        <canvas id="handicapChart"></canvas>
+                    </div>
+
+                    <div id="calloutBox" class="mt-6 p-4 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 text-sm">
+                    </div>
+
+                    <div class="mt-6 p-6 bg-slate-50 rounded-lg border border-slate-100 text-sm text-slate-600" style="background: var(--ivory-100); border-color: var(--line); color: var(--ink-600);">
+                        <h3 class="font-bold text-slate-800 text-lg mb-3" style="color: var(--ink-900);">Chart Analysis Guide</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="mb-2">
+                                    This scatter plot compares the <strong>Stroke Index (Handicap Ranking)</strong> of each
+                                    hole.
+                                    The labels above the dots represent the <strong>Hole Number</strong>.
+                                </p>
+                                <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
+                                    <li><strong>X-Axis:</strong> Standard Sterling Grove Ranking (1 = Hardest).</li>
+                                    <li><strong>Y-Axis:</strong> SG@SG Tournament Ranking.</li>
+                                    <li><strong>Diagonal Line:</strong> The "Line of Equality". Points on this line have not
+                                        changed ranking.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="mb-2 font-semibold">How to read the data:</p>
+                                <ul class="list-disc list-inside space-y-1 ml-1 text-slate-700">
+                                    <li><span class="font-medium text-slate-900">Above the Line:</span> The hole's index number
+                                        is higher in the SG@SG setup (e.g., Hole 2 moved from Index 15 to Index 18).</li>
+                                    <li><span class="font-medium text-slate-900">Below the Line:</span> The hole's index number
+                                        is lower in the SG@SG setup.</li>
+                                    <li><span class="font-medium text-slate-900">Numbers:</span> The number displayed floating
+                                        above each dot indicates which Hole it is.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">Reference</p>
+                            <h2 class="section-title">Source Data</h2>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Hole #</th>
+                                    <th>Sterling Grove Index</th>
+                                    <th>SG@SG Index</th>
+                                    <th>Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
     <script>
         // Data parsed from your input
         // Hole, Sterling Grove Index (X), SG@SG Index (Y)
@@ -422,13 +488,6 @@
             }
         });
     </script>
-
-    <footer id="contact" class="sgsg-dashboard-footer">
-        <div class="sgsg-dashboard-footer-inner">
-            <p>Sterling Grove Golf & Country Club · Surprise, AZ</p>
-            <a href="index.html">Back to SG@SG</a>
-        </div>
-    </footer>
 </body>
 
 </html>

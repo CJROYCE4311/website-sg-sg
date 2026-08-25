@@ -9,8 +9,10 @@
     <link rel="icon" href="assets/sgsg-tournament-logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for generated content blocks (recap + results log) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="stylesheet" href="sgsg.css">
 </head>
 
@@ -74,6 +76,7 @@
             </header>
 
             <div class="content-wrapper">
+                <!-- HERO -->
                 <section id="home" class="brand-band">
                     <div class="brand-copy">
                         <p class="eyebrow">SG@SG Monthly Tournament</p>
@@ -95,6 +98,7 @@
                     </div>
                 </section>
 
+                <!-- QUICK STATS -->
                 <section class="stats-grid" aria-label="Tournament quick stats">
                     <div class="stat-card glass-panel">
                         <h3>Latest Tournament</h3>
@@ -103,7 +107,7 @@
                     </div>
                     <div class="stat-card glass-panel">
                         <h3>Next Date</h3>
-                        <p class="stat-value">Jul 25</p>
+                        <p class="stat-value">Sep 19</p>
                         <p class="stat-sub">2026 calendar slot</p>
                     </div>
                     <div class="stat-card glass-panel">
@@ -118,6 +122,7 @@
                     </div>
                 </section>
 
+                <!-- LATEST RESULTS + CALENDAR -->
                 <section id="events" class="section-grid">
                     <article class="card glass-panel latest-results">
                         <div class="card-header">
@@ -158,15 +163,14 @@
                                 <span>Mar 21, 2026</span>
                                 <span>May 23, 2026</span>
                                 <span>Jun 13, 2026</span>
-                                <span class="date-next" data-date="2026-07-25">Jul 25, 2026</span>
-                                <span>Aug 15, 2026</span>
-                                <span>Sep 12, 2026</span>
+                                <span class="date-next" data-date="2026-09-19">Sep 19, 2026</span>
                                 <span>Oct 10, 2026</span>
                             </div>
                         </div>
                     </article>
                 </section>
 
+                <!-- DASHBOARDS -->
                 <section id="leaderboard" class="dashboard-section">
                     <div class="section-heading">
                         <div>
@@ -205,6 +209,7 @@
                     </div>
                 </section>
 
+                <!-- RESULTS LOG -->
                 <section id="results" class="dashboard-section">
                     <article class="card glass-panel">
                         <div class="card-header">
@@ -215,63 +220,43 @@
                         </div>
                         <div id="results-log-container" class="results-log">
                     <!-- RESULTS-LOG-START -->
-                    <a href="results_2026-06-13.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2026-06-13</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
+                    <a href="results_2026-06-13.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2026-06-13</span></span>
+                        <span class="row-format">Best Ball</span>
                     </a>
-                    <a href="results_2026-05-23.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2026-05-23</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
+                    <a href="results_2026-05-23.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2026-05-23</span></span>
+                        <span class="row-format">Best Ball</span>
                     </a>
-                    <a href="results_2026-03-21.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2026-03-21</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Stableford</span>
+                    <a href="results_2026-03-21.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2026-03-21</span></span>
+                        <span class="row-format">Stableford</span>
                     </a>
-                    <a href="results_2026-02-21.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2026-02-21</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
+                    <a href="results_2026-02-21.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2026-02-21</span></span>
+                        <span class="row-format">Best Ball</span>
                     </a>
-                    <a href="results_2026-01-17.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2026-01-17</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
+                    <a href="results_2026-01-17.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2026-01-17</span></span>
+                        <span class="row-format">Best Ball</span>
                     </a>
-                    <a href="results_2025-12-20.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2025-12-20</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Team Quota</span>
+                    <a href="results_2025-12-20.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2025-12-20</span></span>
+                        <span class="row-format">Team Quota</span>
                     </a>
-                    <a href="results_2025-11-15.html" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">2025-11-15</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">Best Ball</span>
+                    <a href="results_2025-11-15.html" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">2025-11-15</span></span>
+                        <span class="row-format">Best Ball</span>
                     </a>
                     <!-- RESULTS-LOG-END -->
                         </div>
                     </article>
                 </section>
 
+                <!-- CONTACT -->
                 <section id="contact" class="contact-band">
                     <div>
-                        <p class="eyebrow">Sterling Grove Golf & Country Club</p>
+                        <p class="eyebrow">Sterling Grove Golf &amp; Country Club</p>
                         <h2>11440 North Greenwich Boulevard<br>Surprise, AZ 85388</h2>
                     </div>
                     <div class="contact-list">

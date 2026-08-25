@@ -379,34 +379,113 @@ def generate_tournament_pages(financials_df, scores_df):
         
         page_html = f"""<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SG@SG tournament results for {date_str}.">
     <title>Results: {date_str}</title>
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for the generated recap block -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sgsg.css">
 </head>
-<body class="bg-gray-100 font-sans antialiased text-gray-900">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-gray-500 hover:text-green-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Home
-            </a>
-            <div class="font-black text-xl tracking-tight">SG@SG RESULTS</div>
-        </div>
-    </header>
-    <main class="container mx-auto px-6 py-12 max-w-3xl">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-black mb-4">{format_name} Recap</h1>
-            <p class="text-gray-500 font-medium">{date_str}</p>
-        </div>
-        {content}
-    </main>
-    <footer class="bg-white border-t border-gray-200 mt-12 py-8 text-center text-gray-400 text-sm">
-        &copy; 2026 SG@SG.
-    </footer>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
+            </div>
+
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn active" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Results Archive</p>
+                        <h2>{format_name} Recap</h2>
+                        <p>Tournament results for {date_str}.</p>
+                    </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper" style="max-width: 880px;">
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">{date_str}</p>
+                            <h2 class="section-title">{format_name}</h2>
+                        </div>
+                        <a class="small-link" href="index.html#results">All results</a>
+                    </div>
+                    {content}
+                </section>
+
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {{
+            if (window.lucide) {{
+                window.lucide.createIcons();
+            }}
+        }});
+    </script>
 </body>
+
 </html>"""
         
         with open(full_path, 'w') as f:
@@ -424,15 +503,13 @@ def inject_results_log(links):
 
     with open(filepath, 'r') as f: html = f.read()
 
-    # Generate HTML list
+    # Generate HTML list (.result-row markup from the design system — see
+    # website/DESIGN_SYSTEM.md and the reference rows in index.html)
     list_html = "\n"
     for link in links:
-        list_html += f"""                    <a href="{link['file']}" class="block p-3 rounded-lg bg-gray-50 hover:bg-purple-50 hover:text-purple-700 transition flex items-center justify-between group">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:scale-125 transition-transform"></span>
-                            <span class="font-medium">{link['date']}</span>
-                        </div>
-                        <span class="text-xs text-gray-400 group-hover:text-purple-500">{link['format']}</span>
+        list_html += f"""                    <a href="{link['file']}" class="result-row">
+                        <span style="display:flex;align-items:center;"><span class="dot"></span><span class="row-date">{link['date']}</span></span>
+                        <span class="row-format">{link['format']}</span>
                     </a>
 """
 
@@ -637,7 +714,7 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
 
     if base.empty:
         sections_html = """
-        <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">
+        <div class="card glass-panel" style="text-align: center; color: var(--ink-600);">
             No canonical tournament rows found.
         </div>
         """
@@ -734,7 +811,7 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
 
             section_blocks.append(
                 """
-                <section id="{section_id}" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <section id="{section_id}" class="glass-panel" style="overflow: hidden;">
                     <div class="p-6 border-b border-gray-100 bg-gray-50">
                         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                             <div>
@@ -791,26 +868,87 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
 
     page_html = f"""<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="description" content="SG@SG canonical data audit for manual Squabbit validation.">
     <title>SG@SG Data Audit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for the generated audit tables -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="sgsg.css">
 </head>
-<body class="bg-stone-50 text-gray-900 font-sans antialiased">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div class="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
-            <div>
-                <p class="text-xs uppercase tracking-[0.22em] text-green-700 font-semibold">Operator View</p>
-                <h1 class="text-2xl font-bold text-gray-900">Data Audit</h1>
-            </div>
-            <a href="index.html" class="text-sm text-gray-500 hover:text-green-700 transition">Back to Home</a>
-        </div>
-    </header>
 
-    <main class="container mx-auto px-6 py-10 space-y-8">
-        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
+            </div>
+
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Operator View</p>
+                        <h2>Data Audit</h2>
+                        <p>Canonical review report for manual Squabbit validation.</p>
+                    </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+        <section class="card glass-panel">
             <div class="max-w-4xl">
                 <h2 class="text-3xl font-bold text-gray-900 mb-3">Canonical review report for manual Squabbit validation</h2>
                 <p class="text-gray-600 leading-7">
@@ -851,7 +989,7 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
             </div>
         </section>
 
-        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <section class="card glass-panel">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h2 class="text-lg font-bold text-gray-900">Jump to tournament date</h2>
@@ -864,13 +1002,22 @@ def generate_data_audit_page(scores_df, financials_df, handicaps_df):
         </section>
 
         {sections_html}
-    </main>
 
-    <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
-            &copy; 2026 SG@SG. Data audit view generated from canonical CSVs.
-        </div>
-    </footer>
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {{
+            if (window.lucide) {{
+                window.lucide.createIcons();
+            }}
+        }});
+    </script>
     <script>
         document.querySelectorAll('[data-sort-table]').forEach((table) => {{
             const tbody = table.querySelector('tbody');

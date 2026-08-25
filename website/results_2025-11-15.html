@@ -1,28 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SG@SG tournament results for 2025-11-15.">
     <title>Results: 2025-11-15</title>
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for the generated recap block -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sgsg.css">
 </head>
-<body class="bg-gray-100 font-sans antialiased text-gray-900">
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-gray-500 hover:text-green-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Home
-            </a>
-            <div class="font-black text-xl tracking-tight">SG@SG RESULTS</div>
-        </div>
-    </header>
-    <main class="container mx-auto px-6 py-12 max-w-3xl">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-black mb-4">Best Ball Recap</h1>
-            <p class="text-gray-500 font-medium">2025-11-15</p>
-        </div>
-        
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
+            </div>
+
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn active" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Results Archive</p>
+                        <h2>Best Ball Recap</h2>
+                        <p>Tournament results for 2025-11-15.</p>
+                    </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper" style="max-width: 880px;">
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">2025-11-15</p>
+                            <h2 class="section-title">Best Ball</h2>
+                        </div>
+                        <a class="small-link" href="index.html#results">All results</a>
+                    </div>
+                    
     <div class="prose prose-lg text-gray-700 mx-auto">
         <p class="font-bold text-xl mb-4">If you weren't at the Grove this Saturday, you missed a generational display of grit, grind, and glory.</p>
         <p class="mb-4">We had ourselves a classic <strong>Best Ball</strong> showdown on 2025-11-15. Absolutely disgusting behavior from the leaderboard.</p>
@@ -38,9 +103,23 @@
         <p class="font-bold italic text-right">Go Green. Go White. See you on the next one.</p>
     </div>
     
-    </main>
-    <footer class="bg-white border-t border-gray-200 mt-12 py-8 text-center text-gray-400 text-sm">
-        &copy; 2026 SG@SG.
-    </footer>
+                </section>
+
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
 </body>
+
 </html>

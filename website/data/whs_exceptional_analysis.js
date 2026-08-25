@@ -1,5 +1,5 @@
 const whsExceptionalAnalysis = {
-  "generated_at": "2026-06-13T17:00:12",
+  "generated_at": "2026-08-24T18:47:10",
   "season": 2026,
   "season_start": "2025-11-01",
   "course": {

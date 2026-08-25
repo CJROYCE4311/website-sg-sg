@@ -4,10 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SG@SG WHS review methodology and hole-by-hole performance report.">
     <title>SG@SG WHS Methodology Report</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/sgsg-tournament-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for the page's content blocks -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link rel="stylesheet" href="sgsg.css">
     <style>
         .animate-fade-in {
             animation: fadeIn 0.5s ease-out;
@@ -19,33 +24,79 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
-
-    <!-- Header Section -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="assets/SG-SG Map.png" alt="SG-SG Map" class="h-10 w-10 object-contain">
-                <a href="index.html"
-                    class="text-xl font-bold tracking-tight text-gray-900 hover:text-green-700 transition">SG@SG </a>
-                <img src="assets/Sterling Grove Flag.png" alt="Sterling Grove Flag" class="h-10 w-10 object-contain">
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
             </div>
 
-            <nav class="hidden md:flex space-x-8 text-sm font-medium">
-                <a href="index.html" class="text-gray-500 hover:text-green-700 transition">Home</a>
-                <a href="AdminPortal.html" class="text-green-700 font-bold transition">Admin Portal</a>
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
             </nav>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-6 py-12">
-        <div class="max-w-5xl mx-auto space-y-12">
-            
-            <!-- Intro / Methodology Section -->
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-6">SG@SG WHS Review Methodology</h1>
-                <div class="prose prose-green max-w-none text-gray-600 space-y-4">
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Methodology</p>
+                        <h2>WHS Review Methodology</h2>
+                        <p>Tournament-by-tournament view of whether a round materially outperformed the player&#39;s Handicap Index.</p>
+                    </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Intro / Methodology Section -->
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">Internal Review Model</p>
+                            <h2 class="section-title">SG@SG WHS Review Methodology</h2>
+                        </div>
+                    </div>
+                    <div class="prose prose-green max-w-none text-gray-600 space-y-4">
                     <p class="font-medium text-lg text-gray-800">
                         Purpose: give the committee a tournament-by-tournament view of whether a player's gross score,
                         when converted through rating and slope, materially outperformed their Handicap Index.
@@ -57,7 +108,7 @@
                     </p>
 
                     <div class="not-prose mt-6">
-                        <a href="WHSExceptionalAnalysis.html" class="inline-flex items-center justify-center rounded-lg bg-green-700 px-5 py-3 text-white font-bold no-underline hover:bg-green-800 transition">
+                        <a href="WHSExceptionalAnalysis.html" class="primary-action">
                             Open WHS Exceptional Score Review
                         </a>
                     </div>
@@ -111,10 +162,10 @@
                         player tends to gain or lose shots. It is not the primary fair-competition flagging model.
                     </p>
                 </div>
-            </section>
+                </section>
 
-            <!-- Interactive Report Section -->
-            <section class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                <!-- Interactive Report Section -->
+                <section class="card glass-panel" style="padding: 0; overflow: hidden;">
                 <div class="p-8 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900">Supporting Hole-by-Hole Report</h2>
@@ -173,15 +224,21 @@
                 </div>
             </section>
 
-        </div>
-    </main>
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="container mx-auto px-6 py-6 text-center text-sm text-gray-400">
-            &copy; 2026 SG@SG. Golf Performance Analytics.
-        </div>
-    </footer>
-
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
     <!-- Load Data -->
     <script src="data/methodology_data.js"></script>
 
@@ -264,4 +321,5 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>

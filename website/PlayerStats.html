@@ -4,33 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SG@SG player statistics — net score versus par by player.">
     <title>SG@SG - Player Metrics</title>
     <link rel="icon" href="assets/sgsg-tournament-logo.png">
-    <!-- Vite will handle this in development -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind kept for script-generated content blocks -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sgsg.css">
     <style>
-        /* Custom Grid for the specific 3 rows of 6 columns request on large screens */
-        .stats-grid {
+        /* Player gauge grid (page-specific; renamed from .stats-grid to avoid
+           clashing with the design-system KPI grid) */
+        .gauge-grid {
             display: grid;
             grid-template-columns: repeat(1, 1fr);
             gap: 1.5rem;
         }
 
         @media (min-width: 640px) {
-            .stats-grid {
+            .gauge-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (min-width: 1024px) {
-            .stats-grid {
+            .gauge-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media (min-width: 1400px) {
-            .stats-grid {
+            .gauge-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
         }
@@ -65,58 +70,120 @@
             text-anchor: middle;
             pointer-events: none;
         }
+
+        /* Re-skin the script-generated gauge cards onto the warm palette */
+        #player-grid > div {
+            background: var(--ivory-100);
+            border-color: var(--line);
+            border-radius: var(--radius-md);
+        }
     </style>
-    <link rel="stylesheet" href="dashboard-theme.css">
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body>
+    <div class="app-container">
+        <aside class="sidebar" aria-label="SG@SG site navigation">
+            <div class="logo-box">
+                <a class="logo-icon" href="index.html" aria-label="SG@SG home">
+                    <img src="assets/sgsg-tournament-logo.png" alt="SG@SG Saturday Game at Sterling Grove tournament logo">
+                </a>
+                <h1 class="logo-title">SG@SG</h1>
+                <p class="logo-subtitle">Saturday Game</p>
+                <p class="logo-kicker">Sterling Grove</p>
+            </div>
 
-    <header class="sgsg-dashboard-header">
-        <div class="sgsg-dashboard-nav">
-            <a class="sgsg-dashboard-brand" href="index.html">
-                <img src="assets/sgsg-tournament-logo.png" alt="SG@SG tournament logo">
-                <span><span class="sgsg-dashboard-title">SG@SG</span><span class="sgsg-dashboard-subtitle">Player Metrics</span></span>
-            </a>
-            <nav class="sgsg-dashboard-links" aria-label="Dashboard navigation">
-                <a href="index.html">Home</a>
-                <a href="index.html#leaderboard" aria-current="page">Dashboards</a>
-                <a href="MoneyList2026.html">Money List</a>
-                <a href="index.html#contact">Contact</a>
+            <nav class="nav-menu">
+                <a class="nav-btn" href="index.html">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2026.html">
+                    <i data-lucide="badge-dollar-sign" aria-hidden="true"></i>
+                    <span>2026 Money List</span>
+                </a>
+                <a class="nav-btn active" href="PlayerStats.html">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                    <span>Player Statistics</span>
+                </a>
+                <a class="nav-btn" href="AverageScore.html">
+                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                    <span>Average Score</span>
+                </a>
+                <a class="nav-btn" href="HoleIndex.html">
+                    <i data-lucide="flag" aria-hidden="true"></i>
+                    <span>Hole Index</span>
+                </a>
+                <a class="nav-btn" href="MoneyList2025.html">
+                    <i data-lucide="archive" aria-hidden="true"></i>
+                    <span>2025 Money List</span>
+                </a>
+                <a class="nav-btn" href="index.html#results">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                    <span>Results Log</span>
+                </a>
             </nav>
-        </div>
-    </header>
 
-    <main class="container sgsg-dashboard-shell mx-auto px-6 py-12">
-        <section class="bg-white p-8 rounded-lg shadow-lg">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Player Metrics</h2>
-                <p class="text-gray-600">Net Score vs Par</p>
+            <div class="sidebar-footer">
+                <p>Monthly Tournament</p>
+                <p>Sterling Grove CC</p>
             </div>
+        </aside>
 
-            <div id="player-grid" class="stats-grid">
-                <!-- Grid will be populated by JS -->
-            </div>
-
-            <div class="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-                <p class="font-semibold mb-2">Gauge Legend</p>
-                <div class="flex justify-center items-center gap-4 flex-wrap">
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span>
-                        Excellent (<= Par)</span>
-                            <span class="flex items-center gap-1"><span
-                                    class="w-3 h-3 rounded-full bg-yellow-500"></span> Average (<= +5)</span>
-                                    <span class="flex items-center gap-1"><span
-                                            class="w-3 h-3 rounded-full bg-red-500"></span> High (> +5)</span>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <div>
+                        <p class="eyebrow">Dashboards</p>
+                        <h2>Player Statistics</h2>
+                        <p>Net score versus par, with gross and net averages for every SG@SG player.</p>
+                    </div>
+                    <div class="header-mark" aria-hidden="true">
+                        <img src="assets/sgsg-tournament-logo.png" alt="">
+                    </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </header>
 
-    <footer id="contact" class="sgsg-dashboard-footer">
-        <div class="sgsg-dashboard-footer-inner">
-            <p>Sterling Grove Golf & Country Club · Surprise, AZ</p>
-            <a href="index.html">Back to SG@SG</a>
-        </div>
-    </footer>
+            <div class="content-wrapper">
+                <section class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">Player Metrics</p>
+                            <h2 class="section-title">Net Score vs Par</h2>
+                        </div>
+                    </div>
+
+                    <div id="player-grid" class="gauge-grid">
+                        <!-- Grid will be populated by JS -->
+                    </div>
+
+                    <div class="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
+                        <p class="font-semibold mb-2">Gauge Legend</p>
+                        <div class="flex justify-center items-center gap-4 flex-wrap">
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span>
+                                Excellent (<= Par)</span>
+                                    <span class="flex items-center gap-1"><span
+                                            class="w-3 h-3 rounded-full bg-yellow-500"></span> Average (<= +5)</span>
+                                            <span class="flex items-center gap-1"><span
+                                                    class="w-3 h-3 rounded-full bg-red-500"></span> High (> +5)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="quiet-footer">
+                    <a href="index.html">Back to SG@SG home</a>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
     <script>
         const playerStatsData = `Player,Gross_Score,net_score,Net_to_Par
 Andrew Burnheimer,83.0,84.5,12.5
